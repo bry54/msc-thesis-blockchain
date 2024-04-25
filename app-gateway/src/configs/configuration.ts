@@ -14,5 +14,9 @@ export default () => ({
         username: env.DB_USER,
         password: env.DB_PASSWORD,
         schema: env.DB_SCHEMA,
+    },
+    auth:{
+        jwtSecret: env.JWT_SECRET,
+        jwtIssuer: env.JWT_ISSUER
     }
 });
