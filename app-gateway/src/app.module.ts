@@ -7,6 +7,10 @@ import configuration from './configs/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
 import { loggerParams } from './configs/logger.config';
+import {AuthModule} from "./modules/auth/auth.module";
+import {APP_GUARD} from "@nestjs/core";
+import {JwtAuthGuard} from "./utils/guards/jwt-auth.guard";
+import {JwtStrategy} from "./modules/auth/strategies/jwt.strategy";
 
 @Module({
     imports: [
@@ -30,9 +34,16 @@ import { loggerParams } from './configs/logger.config';
             load: [configuration],
         }),
         LoggerModule.forRoot(loggerParams),
-        UsersModule
+        AuthModule,
+        UsersModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [
+        AppService,
+        {
+            provide: APP_GUARD,
+            useClass: JwtAuthGuard,
+        },
+    ],
 })
 export class AppModule {}

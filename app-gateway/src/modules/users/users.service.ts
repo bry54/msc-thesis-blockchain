@@ -1,11 +1,6 @@
-import * as grpc from '@grpc/grpc-js';
-import { connect, Contract, Identity, Signer, signers } from '@hyperledger/fabric-gateway';
-import {BadRequestException, Injectable} from '@nestjs/common';
-import * as FabricCAServices from 'fabric-ca-client';
-import * as path from "path";
-import * as fs from "fs";
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {Injectable} from '@nestjs/common';
+import {CreateUserDto} from './dto/create-user.dto';
+import {UpdateUserDto} from './dto/update-user.dto';
 import {ConfigService} from "@nestjs/config";
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "./entities/user.entity";
@@ -51,6 +46,14 @@ export class UsersService {
    * @param id
    */
   async findOne(id: string) {
+
+    return {
+      id: 'my-id',
+      username: 'bsithole',
+      password: 'string',
+      fullName: 'Brian Paidamoyo Sithole',
+    } as User
+
     try {
       return await this.usersRepo.findOne({
         where: {
