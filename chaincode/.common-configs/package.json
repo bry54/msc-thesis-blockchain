@@ -4,6 +4,8 @@
   "description": "chaincode for todomanager",
   "main": "dist/index.js",
   "scripts": {
+    "i:pkg": "cd ../.common-configs && npm install ",
+    "u:pkg": "cd ../.common-configs && npm uninstall ",
     "build": "tsc",
     "start": "set -x && fabric-chaincode-node start",
     "docker": "docker build -f ./Dockerfile -t todomanager .",

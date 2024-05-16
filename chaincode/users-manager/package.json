@@ -4,6 +4,8 @@
   "description": "Chaincode for managing users",
   "main": "dist/index.js",
   "scripts": {
+    "i:pkg": "cd ../.common-configs && npm install ",
+    "u:pkg": "cd ../.common-configs && npm uninstall ",
     "build": "tsc",
     "start": "tsc && node ./dist/index.js",
     "docker": "docker build -f ./Dockerfile -t users-manager .",
