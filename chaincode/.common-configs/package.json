@@ -1,0 +1,29 @@
+{
+  "name": "todomanager",
+  "version": "1.0.0",
+  "description": "chaincode for todomanager",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "set -x && fabric-chaincode-node start",
+    "docker": "docker build -f ./Dockerfile -t todomanager .",
+    "test": "jest"
+  },
+  "keywords": [
+    "chaincode"
+  ],
+  "author": "Brian Paidamoyo Sithole",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "fabric-contract-api": "^2.5.4",
+    "fabric-shim": "^2.5.4",
+    "json-stringify-deterministic": "^1.0.12",
+    "sort-keys-recursive": "^2.1.10"
+  }
+}
