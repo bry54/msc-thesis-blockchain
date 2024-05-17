@@ -1,5 +1,5 @@
 import { Context } from 'fabric-contract-api';
-import { UsersManagerContract } from './usersManager';
+import { UserManagerContract } from './userManager';
 
 // Mocking the Context object
 const mockContext: Partial<Context> = {
@@ -11,12 +11,12 @@ const mockContext: Partial<Context> = {
      },
 } as unknown as Partial<Context>;
 
-describe('UsersManagerContract', () => {
-    let contractManager: UsersManagerContract;
+describe('UserManagerContract', () => {
+    let contractManager: UserManagerContract;
 
     beforeEach(() => {
         // Create a new instance of TodoManagerContract before each test
-        contractManager = new UsersManagerContract();
+        contractManager = new UserManagerContract();
 
         // Clear the mock state before each test
         (mockContext.stub.putState as jest.Mock).mockClear();

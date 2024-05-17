@@ -1,0 +1,31 @@
+{
+  "name": "stakeholder-manager",
+  "version": "1.0.0",
+  "description": "Chaincode for managing stakeholder",
+  "main": "dist/index.js",
+  "scripts": {
+    "i:pkg": "cd ../.common-configs && npm install ",
+    "u:pkg": "cd ../.common-configs && npm uninstall ",
+    "build": "tsc",
+    "start": "tsc && node ./dist/index.js",
+    "docker": "docker build -f ./Dockerfile -t stakeholder-manager .",
+    "test": "jest"
+  },
+  "keywords": [
+    "chaincode"
+  ],
+  "author": "Brian Paidamoyo Sithole",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "fabric-contract-api": "^2.5.4",
+    "fabric-shim": "^2.5.4",
+    "json-stringify-deterministic": "^1.0.12",
+    "sort-keys-recursive": "^2.1.10"
+  }
+}

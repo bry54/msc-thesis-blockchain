@@ -7,8 +7,8 @@ import {Context, Contract, Info, Returns, Transaction} from 'fabric-contract-api
 import stringify from 'json-stringify-deterministic';
 import sortKeysRecursive from 'sort-keys-recursive';
 
-@Info({ title: 'UsersManager', description: 'Smart contract for managing Users items' })
-export class UsersManagerContract extends Contract{
+@Info({ title: 'ProductionManager', description: 'Smart contract for managing Production items' })
+export class ProductionManagerContract extends Contract{
 
     @Transaction()
     public async initLedger(ctx: Context): Promise<void> {
