@@ -9,6 +9,6 @@ export class AppController {
 
   @Get('health-check')
   healthCheck(): unknown {
-    return this.appService.getHealthCheck()
+    return this.appService.getHealthCheck();
   }
 }
