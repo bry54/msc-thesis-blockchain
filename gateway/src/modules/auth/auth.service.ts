@@ -1,35 +1,33 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
-import {UsersService} from '../users/users.service';
-import {JwtService} from "@nestjs/jwt";
-import {SignInDto} from "./dto/sign-in.dto";
-import {AgentsEnum} from "../../utils/enums/agents.enum";
-import {ConfigService} from "@nestjs/config";
-import {PinoLogger} from "nestjs-pino";
+import { Injectable } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private usersService: UsersService,
-        private jwtService: JwtService,
-        private configService: ConfigService,
-        private readonly logger: PinoLogger
-    ) {}
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+    private configService: ConfigService,
+    private readonly logger: PinoLogger,
+  ) {}
 
-    async login(user: any) {
-        const payload = { username: user.username, sub: user.userId };
-        return {
-            access_token: this.jwtService.sign(payload, {
-                issuer: this.configService.get('auth.jwtIssuer')
-            }),
-        };
-    }
+  async login(user: any) {
+    const payload = { username: user.username, sub: user.userId };
+    return {
+      access_token: this.jwtService.sign(payload, {
+        issuer: this.configService.get('auth.jwtIssuer'),
+      }),
+    };
+  }
 
-    async validateUser(username: string, pass: string): Promise<any> {
-        const user = await this.usersService.findOne(username);
-        if (user && user.password === pass) {
-            const { password, ...result } = user;
-            return result;
-        }
-        return null;
+  async validateUser(username: string, pass: string): Promise<any> {
+    const user = await this.usersService.findOne(username);
+    if (user && user.password === pass) {
+      const { password, ...result } = user;
+      return result;
     }
+    return null;
+  }
 }

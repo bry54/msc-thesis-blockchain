@@ -1,19 +1,18 @@
-import {Injectable} from '@nestjs/common';
-import {CreateUserDto} from './dto/create-user.dto';
-import {UpdateUserDto} from './dto/update-user.dto';
-import {ConfigService} from "@nestjs/config";
-import {InjectRepository} from "@nestjs/typeorm";
-import {User} from "./entities/user.entity";
-import {Repository} from "typeorm";
-import {PinoLogger} from "nestjs-pino";
+import { Injectable } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class UsersService {
-
   constructor(
-      @InjectRepository(User) private usersRepo: Repository<User>,
-      private configService: ConfigService,
-      private readonly logger: PinoLogger
+    @InjectRepository(User) private usersRepo: Repository<User>,
+    private configService: ConfigService,
+    private readonly logger: PinoLogger,
   ) {
     this.logger.setContext(UsersService.name);
   }
@@ -26,7 +25,7 @@ export class UsersService {
     try {
       return await this.usersRepo.save(createUserDto);
     } catch (e) {
-      this.logger.error(e, 'Error creating user')
+      this.logger.error(e, 'Error creating user');
     }
   }
 
@@ -35,9 +34,9 @@ export class UsersService {
    */
   async findAll() {
     try {
-      return this.usersRepo.find()
+      return this.usersRepo.find();
     } catch (e) {
-      this.logger.error(e, 'Error retrieving users')
+      this.logger.error(e, 'Error retrieving users');
     }
   }
 
@@ -46,22 +45,21 @@ export class UsersService {
    * @param id
    */
   async findOne(id: string) {
-
     return {
       id: 'my-id',
       username: 'bsithole',
       password: 'string',
       fullName: 'Brian Paidamoyo Sithole',
-    } as User
+    } as User;
 
     try {
       return await this.usersRepo.findOne({
         where: {
-          id: id
-        }
-      })
+          id: id,
+        },
+      });
     } catch (e) {
-      this.logger.error(e, `Error retrieving user with id: ${id}`)
+      this.logger.error(e, `Error retrieving user with id: ${id}`);
     }
   }
 
@@ -73,9 +71,9 @@ export class UsersService {
    */
   async update(id: string, updateUserDto: UpdateUserDto) {
     try {
-      return await this.usersRepo.update( id, updateUserDto );
+      return await this.usersRepo.update(id, updateUserDto);
     } catch (e) {
-      this.logger.error(e, `Error updating user with id: ${id}`)
+      this.logger.error(e, `Error updating user with id: ${id}`);
     }
   }
 
@@ -85,9 +83,9 @@ export class UsersService {
    */
   remove(id: string) {
     try {
-      return this.usersRepo.delete(id)
+      return this.usersRepo.delete(id);
     } catch (e) {
-      this.logger.error(e, `Error deleting user with id: ${id}`)
+      this.logger.error(e, `Error deleting user with id: ${id}`);
     }
   }
 }

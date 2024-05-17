@@ -1,5 +1,5 @@
-import {Injectable} from '@nestjs/common';
-import {uptime} from 'process'
+import { Injectable } from '@nestjs/common';
+import { uptime } from 'process';
 
 @Injectable()
 export class AppService {
@@ -10,7 +10,7 @@ export class AppService {
   getHealthCheck(): unknown {
     return {
       status: 'alive',
-      upTime: uptime()
+      upTime: uptime(),
     };
   }
 }

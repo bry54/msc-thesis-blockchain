@@ -1,9 +1,9 @@
-import {ExecutionContext} from "@nestjs/common";
+import { ExecutionContext } from '@nestjs/common';
 
 export function getRequestFromContext(context: ExecutionContext) {
-    if (context.getType() === 'http') {
-        return context.switchToHttp().getRequest();
-    } else if (context.getType() === 'ws') {
-        return context.switchToWs().getClient();
-    }
+  if (context.getType() === 'http') {
+    return context.switchToHttp().getRequest();
+  } else if (context.getType() === 'ws') {
+    return context.switchToWs().getClient();
+  }
 }

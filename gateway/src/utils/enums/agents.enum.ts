@@ -1,4 +1,4 @@
 export enum AgentsEnum {
-    MOBILE = 'MOBILE',
-    WEB = 'WEB'
+  MOBILE = 'MOBILE',
+  WEB = 'WEB',
 }

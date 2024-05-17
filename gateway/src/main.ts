@@ -1,13 +1,13 @@
-import {NestFactory} from '@nestjs/core';
-import {AppModule} from './app.module';
-import {Logger} from 'nestjs-pino';
-import {json, urlencoded} from 'express';
-import {ConfigService} from '@nestjs/config';
-import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
-import {ValidationPipe} from "@nestjs/common";
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { Logger } from 'nestjs-pino';
+import { json, urlencoded } from 'express';
+import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule,{});
+  const app = await NestFactory.create(AppModule, {});
   const config = app.get(ConfigService);
   const logger = app.get(Logger);
 
@@ -17,18 +17,18 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   const host = config.get('host.url');
-  const port = config.get('host.port')
-  const prefix = config.get('app.prefix')
+  const port = config.get('host.port');
+  const prefix = config.get('app.prefix');
 
   app.setGlobalPrefix(prefix);
 
   const swaggerConfig = new DocumentBuilder()
-      .setTitle('Todo App Gateway')
-      .setDescription('Gateway application to communicate with the blockchain')
-      .setVersion('1.0')
-      .addTag('Gateway Endpoints')
-      .addBearerAuth()
-      .build();
+    .setTitle('Todo App Gateway')
+    .setDescription('Gateway application to communicate with the blockchain')
+    .setVersion('1.0')
+    .addTag('Gateway Endpoints')
+    .addBearerAuth()
+    .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup(`${prefix}/swagger`, app, document);
 
