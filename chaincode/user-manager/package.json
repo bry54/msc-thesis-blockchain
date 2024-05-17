@@ -6,10 +6,16 @@
   "scripts": {
     "i:pkg": "cd ../.common-configs && npm install ",
     "u:pkg": "cd ../.common-configs && npm uninstall ",
-    "build": "tsc",
-    "start": "tsc && node ./dist/index.js",
     "docker": "docker build -f ./Dockerfile -t user-manager .",
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc",
+    "start": "set -x && fabric-chaincode-node start",
+    "prepublishOnly": "npm run build",
+    "package": "npm run build && npm shrinkwrap",
+    "start:server-nontls": "set -x && fabric-chaincode-node server --chaincode-address=$CHAINCODE_SERVER_ADDRESS --chaincode-id=$CHAINCODE_ID",
+    "start:server-debug": "set -x && NODE_OPTIONS='--inspect=0.0.0.0:9229' fabric-chaincode-node server --chaincode-address=$CHAINCODE_SERVER_ADDRESS --chaincode-id=$CHAINCODE_ID",
+    "start:server": "set -x && fabric-chaincode-node server --chaincode-address=$CHAINCODE_SERVER_ADDRESS --chaincode-id=$CHAINCODE_ID --chaincode-tls-key-file=/hyperledger/privatekey.pem --chaincode-tls-client-cacert-file=/hyperledger/rootcert.pem --chaincode-tls-cert-file=/hyperledger/cert.pem"
+
   },
   "keywords": [
     "chaincode"
