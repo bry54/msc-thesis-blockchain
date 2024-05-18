@@ -1,26 +1,152 @@
-import { Injectable } from '@nestjs/common';
-import { CreateStakeholderDto } from './dto/create-stakeholder.dto';
-import { UpdateStakeholderDto } from './dto/update-stakeholder.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { FabricService } from '../fabric/fabric.service';
+import { PinoLogger } from 'nestjs-pino';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DeepPartial, Repository } from 'typeorm';
+import { Stakeholder } from './entities/stakeholder.entity';
+import { TypeOrmCrudService } from '@dataui/crud-typeorm';
+import { CrudRequest } from '@dataui/crud';
+
+const CHAINCODE_NAME = 'participants';
 
 @Injectable()
-export class StakeholderService {
-  create(createStakeholderDto: CreateStakeholderDto) {
-    return 'This action adds a new stakeholder';
+export class StakeholderService extends TypeOrmCrudService<Stakeholder> {
+  constructor(
+    @InjectRepository(Stakeholder) repo: Repository<Stakeholder>,
+    private readonly fabricService: FabricService,
+    private readonly logger: PinoLogger,
+  ) {
+    super(repo);
   }
 
-  findAll() {
-    return `This action returns all stakeholder`;
+  async createOne(
+    req: CrudRequest,
+    dto: DeepPartial<Stakeholder>,
+  ): Promise<Stakeholder> {
+    const res = await super.createOne(req, dto);
+    await this.blockChainCreateOne(res);
+    return res;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} stakeholder`;
+  async updateOne(
+    req: CrudRequest,
+    dto: DeepPartial<Stakeholder>,
+  ): Promise<Stakeholder> {
+    const res = await super.updateOne(req, dto);
+    await this.blockchainUpdateOne(res.id, dto);
+    return res;
   }
 
-  update(id: number, updateStakeholderDto: UpdateStakeholderDto) {
-    return `This action updates a #${id} stakeholder`;
+  async deleteOne(req: CrudRequest): Promise<void | Stakeholder> {
+    const id = req.parsed.paramsFilter.find(
+      (item) => item.field === 'id'
+    ).value;
+    const res = await super.deleteOne(req);
+    await this.blockchainRemoveOne(id);
+    return res;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} stakeholder`;
+  async blockchainFindMany() {
+    try {
+      return this.fabricService.evaluateTransaction(
+        CHAINCODE_NAME,
+        'queryAllStakeholders',
+      );
+    } catch (error: any) {
+      this.logger.error(
+        error,
+        `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: queryAllStakeholders}`,
+      );
+      throw new HttpException(
+        error?.details[0]?.message,
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+
+  async blockchainFindOne(id: string) {
+    try {
+      return this.fabricService.evaluateTransaction(
+        CHAINCODE_NAME,
+        'queryStakeholder',
+        [id],
+      );
+    } catch (error) {
+      this.logger.error(
+        error,
+        `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: queryStakeholder}`,
+      );
+      throw new HttpException(
+        error?.details[0]?.message,
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+
+  async blockchainRemoveOne(id: string) {
+    try {
+      await this.fabricService.submitTransaction(
+        CHAINCODE_NAME,
+        'deleteStakeholder',
+        JSON.stringify({ ID: id }),
+      );
+    } catch (error) {
+      this.logger.error(
+        error,
+        `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: deleteStakeholder}`,
+      );
+      throw new HttpException(
+        error?.details[0]?.message,
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+
+  async blockchainUpdateOne(id: string, dto) {
+    try {
+      const chaincodeDto = {
+        ID: id,
+        ...dto,
+      };
+
+      await this.fabricService.submitTransaction(
+        CHAINCODE_NAME,
+        'updateStakeholder',
+        JSON.stringify(chaincodeDto),
+      );
+    } catch (error) {
+      this.logger.error(
+        error,
+        `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} transaction: updateStakeholder}`,
+      );
+      throw new HttpException(
+        error?.details[0]?.message,
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+
+  async blockChainCreateOne(res: Stakeholder) {
+    try {
+      const chaincodeDto = {
+        ID: res.id,
+        ...res,
+      };
+      delete chaincodeDto.id;
+      await this.fabricService.submitTransaction(
+        CHAINCODE_NAME,
+        'createStakeholder',
+        JSON.stringify(chaincodeDto),
+      );
+    } catch (error) {
+      this.logger.error(
+        error,
+        `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: createStakeholder}`,
+      );
+      throw new HttpException(
+        error?.details[0]?.message,
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
   }
 }

@@ -1,0 +1,6 @@
+export enum StakeholderTypes {
+  FARM = 'FARM',
+  WHOLESALER = 'WHOLESALER',
+  MARKET = 'MARKET',
+  REGULATOR = 'REGULATORY AUTHORITY',
+}

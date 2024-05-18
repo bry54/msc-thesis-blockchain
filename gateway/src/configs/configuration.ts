@@ -19,4 +19,13 @@ export default () => ({
     jwtSecret: env.JWT_SECRET,
     jwtIssuer: env.JWT_ISSUER,
   },
+  fabric: {
+    networkDir: env.FABRIC_NETWORK_DIR,
+    configDir: env.FABRIC_CONFIG_DIR,
+    cryptoDir: env.FABRIC_CRYPTO_DIR,
+    mspId: env.FABRIC_MSPID,
+    peerEndpoint: env.FABRIC_PEER_ENDPOINT,
+    peerHostAlias: env.FABRIC_PEER_HOST_ALIAS,
+    channel: env.FABRIC_CHANNEL,
+  },
 });

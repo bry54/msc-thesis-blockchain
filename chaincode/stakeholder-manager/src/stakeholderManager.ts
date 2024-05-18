@@ -52,4 +52,35 @@ export class StakeholderManagerContract extends Contract{
         }
         return JSON.stringify(allResults);
     }
+
+    @Transaction()
+    async updateStakeholder(ctx: Context, stakeholderData: string) {
+        const updateData: Stakeholder = JSON.parse(stakeholderData);
+
+        const found = await this.queryStakeholder(ctx, updateData.ID);
+        if (!found || found.length === 0) {
+            throw new Error(`${updateData.ID} does not exist`);
+        }
+        let stakeholder = JSON.parse(found);
+        stakeholder = {
+            ...stakeholder,
+            ...updateData
+        }
+
+        await ctx.stub.putState(stakeholder.ID, Buffer.from(JSON.stringify(stakeholder)));
+    }
+
+    @Transaction()
+    async deleteStakeholder(ctx: Context, stakeholderData: string): Promise<void> {
+        const toDelete: Stakeholder = JSON.parse(stakeholderData);
+
+        const found = await this.queryStakeholder(ctx, toDelete.ID);
+        if (!found || found.length === 0) {
+            throw new Error(`${toDelete.ID} does not exist`);
+        }
+
+        ctx.stub.deleteState(toDelete.ID).then((res) => {
+            console.log(`The stakeholder ${toDelete.ID} deleted`)
+        });
+    }
 }
