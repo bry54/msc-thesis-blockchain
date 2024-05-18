@@ -5,20 +5,23 @@
 
 import {Context, Contract, Info, Returns, Transaction} from 'fabric-contract-api';
 import {Stakeholder} from "./stakeholder";
+const logger = require('pino')()
 
 @Info({ title: 'StakeholderManager', description: 'Smart contract for managing Stakeholder items' })
 export class StakeholderManagerContract extends Contract{
 
-    @Transaction()
+    @Transaction(false)
     public async initLedger(ctx: Context): Promise<void> {
-        //Implement any logic to initialise the ledger
+        logger.info('ledger initialized')
     }
 
     @Transaction()
     @Returns('void')
     public async createStakeholder(ctx: Context, stakeholderData: string): Promise<void> {
+        logger.info(JSON.parse(stakeholderData), 'CREATING STAKEHOLDER')
         const stakeholder: Stakeholder = JSON.parse(stakeholderData);
         await ctx.stub.putState(stakeholder.ID, Buffer.from(JSON.stringify(stakeholder)));
+        logger.info('STAKEHOLDER CREATED')
     }
 
     @Transaction(false)
@@ -87,7 +90,6 @@ export class StakeholderManagerContract extends Contract{
 
     @Transaction(false)
     async queryStakeholderHistory(ctx: Context, id: string): Promise<string> {
-        console.log(id)
         const iterator = await ctx.stub.getHistoryForKey(id);
         const allResults = [];
         let res = await iterator.next();
