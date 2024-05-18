@@ -41,8 +41,12 @@ export class StakeholderService extends TypeOrmCrudService<Stakeholder> {
     const id = req.parsed.paramsFilter.find(
       (item) => item.field === 'id'
     ).value;
-    const res = await super.deleteOne(req);
-    await this.blockchainRemoveOne(id);
+    let rec;
+    const res = await super.deleteOne(req).then( async ( res) => {
+      rec = await this.repo.findOne({ where: { id: id }, withDeleted: true });
+      return res;
+    });
+    await this.blockchainUpdateOne(id, { deletedDate: rec.deletedDate });
     return res;
   }
 
@@ -142,6 +146,32 @@ export class StakeholderService extends TypeOrmCrudService<Stakeholder> {
       this.logger.error(
         error,
         `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: createStakeholder}`,
+      );
+      throw new HttpException(
+        error?.details[0]?.message,
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+
+  async blockchainHistory(id: string){
+    try {
+      const history: any[] = await this.fabricService.evaluateTransaction(
+        CHAINCODE_NAME,
+        'queryStakeholderHistory',
+        [id],
+      );
+
+      return history.map((rec) => {
+        return {
+          ...rec,
+          Record: JSON.parse(rec.Record)
+        }
+      })
+    } catch (error) {
+      this.logger.error(
+        error,
+        `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: queryStakeholderHistory}`,
       );
       throw new HttpException(
         error?.details[0]?.message,

@@ -53,7 +53,8 @@ export class StakeholderManagerContract extends Contract{
         return JSON.stringify(allResults);
     }
 
-    @Transaction()
+    @Returns('string')
+    @Transaction(false)
     async updateStakeholder(ctx: Context, stakeholderData: string) {
         const updateData: Stakeholder = JSON.parse(stakeholderData);
 
@@ -82,5 +83,22 @@ export class StakeholderManagerContract extends Contract{
         ctx.stub.deleteState(toDelete.ID).then((res) => {
             console.log(`The stakeholder ${toDelete.ID} deleted`)
         });
+    }
+
+    @Transaction(false)
+    async queryStakeholderHistory(ctx: Context, id: string): Promise<string> {
+        console.log(id)
+        const iterator = await ctx.stub.getHistoryForKey(id);
+        const allResults = [];
+        let res = await iterator.next();
+        while (!res.done) {
+            if (res.value) {
+                const Record = res.value.value.toString();
+                allResults.push({ TxId: res.value.txId, Timestamp: res.value.timestamp, Record });
+            }
+            res = await iterator.next();
+        }
+        await iterator.close();
+        return JSON.stringify(allResults);
     }
 }
