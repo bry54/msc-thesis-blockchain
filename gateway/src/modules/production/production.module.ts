@@ -14,6 +14,9 @@ import { BlockchainController } from './controllers/blockchain.controller';
     BlockchainController,
     RegulatoryChecksController,
   ],
-  providers: [ProductionService, RegulatoryChecksService],
+  providers: [
+    ProductionService,
+    BlockchainController,
+    RegulatoryChecksService],
 })
 export class ProductionModule {}

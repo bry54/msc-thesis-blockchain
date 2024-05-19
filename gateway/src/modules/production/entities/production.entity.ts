@@ -30,7 +30,7 @@ export class Production {
   @IsNotEmpty({ groups: [CREATE] })
   @IsOptional({ groups: [UPDATE] })
   @Column('json')
-  product: Production;
+  product: Product;
 
   @ApiProperty({ type: Stakeholder })
   @IsNotEmpty({ groups: [CREATE] })
