@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Stakeholder } from '../../stakeholder/entities/stakeholder.entity';
+import { User } from '../../users/entities/user.entity';
 
 export class Product {
   @ApiProperty()
@@ -31,11 +32,10 @@ export class RegulatoryCheck {
   @ApiProperty()
   notes: string;
 
-  @ApiProperty()
-  date: Date;
+  date: string;
 
   @ApiProperty()
-  signedBy: Record<any, any>;
+  signedBy: User;
 }
 
 export class HoldingArea {
