@@ -46,17 +46,14 @@ export class HoldingArea {
   address: string;
 
   @ApiProperty()
-  arrivalTime: string;
+  date: string;
 
   @ApiProperty()
-  departureTime: string;
+  notes: string;
 }
 
 export class TransportationDetail {
   id: string;
-
-  @ApiProperty()
-  notes: string;
 
   @ApiProperty()
   departure: HoldingArea;

@@ -3,30 +3,30 @@ import { Production } from '../entities/production.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PinoLogger } from 'nestjs-pino';
-import { RegulatoryCheck } from '../dto/create-production.dto';
+import { TransportationDetail } from '../dto/create-production.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { BlockchainService } from '../../fabric/services/blockchain.service';
 import { ChaincodeNames } from '../../../utils/enums/chaincode-operations.enum';
 
 @Injectable()
-export class RegulatoryChecksService {
+export class TransportationDetailsService {
   constructor(
     @InjectRepository(Production) private repo: Repository<Production>,
     private readonly blochchainService: BlockchainService,
     private readonly logger: PinoLogger,
   ) {}
 
-  async getAll(productionId: string) {
+  async getAll(productionId: string): Promise<TransportationDetail[] | void> {
     const production = await this.repo.findOne({ where: { id: productionId } });
 
     if (!production) {
       throw new NotFoundException('Production not found');
     }
 
-    return production.regulatoryChecks;
+    return production.transportationDetail;
   }
 
-  async createOne(productionId: string, dto: RegulatoryCheck) {
+  async createOne(productionId: string, dto: TransportationDetail) {
     let production = await this.repo.findOne({ where: { id: productionId } });
 
     if (!production) {
@@ -34,19 +34,18 @@ export class RegulatoryChecksService {
     }
 
     dto.id = uuidv4();
-    dto.date = new Date().toISOString();
 
-    if (!production.regulatoryChecks) {
-      production.regulatoryChecks = [dto];
+    if (!production.transportationDetail) {
+      production.transportationDetail = [dto];
     } else {
-      production.regulatoryChecks.push(dto);
+      production.transportationDetail.push(dto);
     }
     production = await this.repo.save(production);
     await this.blochchainService.updateOne(
       ChaincodeNames.PRODUCTIONS,
       production.id,
       {
-        regulatoryChecks: production.regulatoryChecks,
+        transportationDetail: production.transportationDetail,
       } as Partial<Production>,
     );
 
@@ -55,25 +54,25 @@ export class RegulatoryChecksService {
 
   async updateOne(
     productionId: string,
-    checkId: string,
-    dto: RegulatoryCheck,
-  ): Promise<RegulatoryCheck> {
+    transportationId: string,
+    dto: TransportationDetail,
+  ): Promise<TransportationDetail> {
     let production = await this.repo.findOne({ where: { id: productionId } });
 
     if (!production) {
       throw new NotFoundException('Production not found');
     }
 
-    const regulatoryCheckIndex = production.regulatoryChecks.findIndex(
-      (check) => check.id === checkId,
+    const index = production.transportationDetail.findIndex(
+      (transportation) => transportation.id === transportationId,
     );
 
-    if (regulatoryCheckIndex === -1) {
-      throw new NotFoundException('RegulatoryCheck not found');
+    if (index === -1) {
+      throw new NotFoundException('Transportation detail not found');
     }
 
-    production.regulatoryChecks[regulatoryCheckIndex] = {
-      ...production.regulatoryChecks[regulatoryCheckIndex],
+    production.transportationDetail[index] = {
+      ...production.transportationDetail[index],
       ...dto,
     };
 
@@ -83,29 +82,29 @@ export class RegulatoryChecksService {
       ChaincodeNames.PRODUCTIONS,
       production.id,
       {
-        regulatoryChecks: production.regulatoryChecks,
+        transportationDetail: production.transportationDetail,
       } as Partial<Production>,
     );
 
-    return production.regulatoryChecks[regulatoryCheckIndex];
+    return production.transportationDetail[index];
   }
 
-  async deleteOne(productionId: string, checkId: string) {
+  async deleteOne(productionId: string, transportationId: string) {
     let production = await this.repo.findOne({ where: { id: productionId } });
 
     if (!production) {
       throw new NotFoundException('Production not found');
     }
 
-    const regulatoryCheckIndex = production.regulatoryChecks.findIndex(
-      (check) => check.id === checkId,
+    const index = production.transportationDetail.findIndex(
+      (transportation) => transportation.id === transportationId,
     );
 
-    if (regulatoryCheckIndex === -1) {
-      throw new NotFoundException('RegulatoryCheck not found');
+    if (index === -1) {
+      throw new NotFoundException('Transportation detail not found');
     }
 
-    production.regulatoryChecks.splice(regulatoryCheckIndex);
+    production.transportationDetail.splice(index);
 
     production = await this.repo.save(production);
 
@@ -113,7 +112,7 @@ export class RegulatoryChecksService {
       ChaincodeNames.PRODUCTIONS,
       production.id,
       {
-        regulatoryChecks: production.regulatoryChecks,
+        transportationDetail: production.transportationDetail,
       } as Partial<Production>,
     );
 

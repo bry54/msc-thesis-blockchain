@@ -19,7 +19,7 @@ export class RegulatoryChecksController {
 
   @Get(':productionId')
   async getRegulatoryChecks(@Param('productionId') productionId: string) {
-    return await this.service.getRegulatoryChecks(productionId);
+    return await this.service.getAll(productionId);
   }
 
   @Post(':productionId/create')
@@ -27,7 +27,7 @@ export class RegulatoryChecksController {
     @Param('productionId') productionId: string,
     @Body() dto: RegulatoryCheck,
   ) {
-    return await this.service.createRegulatoryCheck(productionId, dto);
+    return await this.service.createOne(productionId, dto);
   }
 
   @Patch(':productionId/update/:checkId')
@@ -36,7 +36,7 @@ export class RegulatoryChecksController {
     @Param('checkId') checkId: string,
     @Body() dto: RegulatoryCheck,
   ) {
-    const updatedProduction = await this.service.updateRegulatoryCheck(
+    const updatedProduction = await this.service.updateOne(
       productionId,
       checkId,
       dto,
@@ -52,6 +52,6 @@ export class RegulatoryChecksController {
     @Param('productionId') productionId: string,
     @Param('checkId') checkId: string,
   ) {
-    return await this.service.deleteRegulatoryCheck(productionId, checkId);
+    return await this.service.deleteOne(productionId, checkId);
   }
 }
