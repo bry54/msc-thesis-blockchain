@@ -23,7 +23,7 @@ async function bootstrap() {
   app.setGlobalPrefix(prefix);
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Todo App Gateway')
+    .setTitle('Supply Chain Application Gateway')
     .setDescription('Gateway application to communicate with the blockchain')
     .setVersion('1.0')
     .addTag('Gateway Endpoints')

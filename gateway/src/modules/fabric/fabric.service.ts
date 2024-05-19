@@ -36,7 +36,9 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
   }
 
   async initGateway() {
-    await this.displayInputParameters();
+    await this.displayInputParameters().then((res) => {
+      this.logger.info( res,'FABRIC CONFIGURATIONS' );
+    });
 
     this.client = await this.newGrpcConnection();
 
@@ -113,8 +115,11 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
     return signers.newPrivateKeySigner(privateKey);
   }
 
-  private async displayInputParameters(): Promise<void> {
-    //this.logger.info('FABRIC INPUT PARAMS', {});
+  async displayInputParameters(): Promise<unknown> {
+    return {
+      prop: 'some value',
+      propTwo: 'Another value'
+    }
   }
 
   async submitTransaction(
