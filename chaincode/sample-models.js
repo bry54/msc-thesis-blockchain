@@ -4,28 +4,28 @@ const production = {
     productId: 'uuid',
     name: 'string',
   },
-  farm: {
+  origin: {
     farmId: 'uuid',
     name: 'string'
   },
   planting: {
     quantity: 'number',
-    date: 'string'
+    date: '2024-05-01T00:00:00Z'
   },
   harvesting: {
     quantity: 'number',
-    date: 'string'
+    date: '2024-06-01T00:00:00Z'
   },
   regulatoryChecks: [
     {
       checkId: 'uuid',
       detail: 'string',
-      date: 'string',
+      date: '2024-07-01T00:00:00Z',
       signedBy: {
         userId: 'uuid',
         userName: 'string',
         companyId: 'uuid',
-        companyName: 'uuid'
+        companyName: 'string'
       },
     }
   ],
@@ -34,18 +34,44 @@ const production = {
       transportationId: 'uuid',
       notes: 'string',
       departure: {
-        location: "Farm A",
+        location: {
+          name: "Farm A",
+          address: "123 Farm Lane, Rural Town",
+          coordinates: {
+            latitude: "xx.xxxx",
+            longitude: "yy.yyyy"
+          }
+        },
         time: "2024-05-01T08:00:00Z"
       },
       destination: {
-        location: "Wholesale B",
-        time: "2024-05-01T16:00:00Z",
+        location: {
+          name: "Wholesale B",
+          address: "456 Wholesale Blvd, City",
+          coordinates: {
+            latitude: "aa.aaaa",
+            longitude: "bb.bbbb"
+          }
+        },
+        time: "2024-05-01T16:00:00Z"
       },
     }
   ],
-  pricingDetail: {
-    ['farmerName']: '$5.00 / kg',
-    ['wholesalerName']: '$7.00 / kg',
-    ['marketName']: '$10.00 / kg'
-  }
+  pricingDetail: [
+    {
+      entity: 'farmer',
+      name: 'farmerName',
+      pricePerKg: '$5.00'
+    },
+    {
+      entity: 'wholesaler',
+      name: 'wholesalerName',
+      pricePerKg: '$7.00'
+    },
+    {
+      entity: 'market',
+      name: 'marketName',
+      pricePerKg: '$10.00'
+    }
+  ]
 }

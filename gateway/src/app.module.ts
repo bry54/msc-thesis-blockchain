@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { FabricModule } from './modules/fabric/fabric.module';
 import { StakeholderModule } from './modules/stakeholder/stakeholder.module';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { ProductionModule } from './modules/production/production.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
     AuthModule,
     UsersModule,
     StakeholderModule,
+    ProductionModule,
   ],
   controllers: [AppController],
   providers: [
