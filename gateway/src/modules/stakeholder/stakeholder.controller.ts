@@ -26,7 +26,7 @@ export class StakeholderController implements CrudController<Stakeholder> {
     public blockchainService: BlockchainService
   ) {}
 
-  @Get('blockchain-records')
+  /*@Get('blockchain-records')
   async blockchainFindMany() {
     return this.blockchainService.findMany();
   }
@@ -39,5 +39,5 @@ export class StakeholderController implements CrudController<Stakeholder> {
   @Get('blockchain-history/:id')
   async blockchainHistory(@Param('id') id: string) {
     return this.blockchainService.history(id);
-  }
+  }*/
 }
