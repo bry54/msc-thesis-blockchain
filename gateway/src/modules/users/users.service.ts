@@ -30,6 +30,9 @@ export class UsersService extends TypeOrmCrudService<User> {
   }
 
   async updateOne(req: CrudRequest, dto: DeepPartial<User>): Promise<User> {
+    if(dto.password) {
+      dto.password = bcrypt.hashSync(dto.password, 10);
+    }
     const res = await super.updateOne(req, dto);
     await this.blockchainService.updateOne(ChaincodeNames.USERS, res.id, dto);
     return res;
