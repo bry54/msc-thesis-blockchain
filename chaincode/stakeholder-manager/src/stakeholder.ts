@@ -17,7 +17,7 @@ export class Stakeholder {
     public type: string; // e.g., "farm", "wholesaler", "market", "regulatory organization"
 
     @Property()
-    public contactNUmber: string;
+    public contactNumber: string;
 
     @Property()
     public location: string;

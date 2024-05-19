@@ -18,7 +18,7 @@ export class BlockchainController {
   @Get(':id')
   @ApiOperation({ summary: `Get the current world state for a ${resource} record` })
   @ApiParam({ name: 'id', description: `The ID of the ${resource} to query on the blockchain`, type: String })
-  async findOne(@Param() id: string) {
+  async findOne(@Param('id') id: string) {
     return this.service.findOne(id);
   }
 

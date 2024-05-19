@@ -17,16 +17,14 @@ export class StakeholderManagerContract extends Contract{
 
     @Transaction()
     @Returns('void')
-    public async createStakeholder(ctx: Context, stakeholderData: string): Promise<void> {
-        logger.info(JSON.parse(stakeholderData), 'CREATING STAKEHOLDER')
+    public async createOne(ctx: Context, stakeholderData: string): Promise<void> {
         const stakeholder: Stakeholder = JSON.parse(stakeholderData);
         await ctx.stub.putState(stakeholder.ID, Buffer.from(JSON.stringify(stakeholder)));
-        logger.info('STAKEHOLDER CREATED')
     }
 
     @Transaction(false)
     @Returns('string')
-    public async queryStakeholder(ctx: Context, stakeholderId: string): Promise<string>{
+    public async queryOne(ctx: Context, stakeholderId: string): Promise<string>{
         const stakeholderAsBytes = await ctx.stub.getState(stakeholderId);
         if (!stakeholderAsBytes || stakeholderAsBytes.length === 0) {
             throw new Error(`Stakeholder ${stakeholderId} does not exist`);
@@ -36,7 +34,7 @@ export class StakeholderManagerContract extends Contract{
 
     @Transaction(false)
     @Returns('string')
-    public async queryAllStakeholders(ctx: Context): Promise<string> {
+    public async queryAll(ctx: Context): Promise<string> {
         const allResults = [];
         const iterator = await ctx.stub.getStateByRange('', '');
         let result = await iterator.next();
@@ -58,10 +56,10 @@ export class StakeholderManagerContract extends Contract{
 
     @Returns('string')
     @Transaction(false)
-    async updateStakeholder(ctx: Context, stakeholderData: string) {
+    async updateOne(ctx: Context, stakeholderData: string) {
         const updateData: Stakeholder = JSON.parse(stakeholderData);
 
-        const found = await this.queryStakeholder(ctx, updateData.ID);
+        const found = await this.queryOne(ctx, updateData.ID);
         if (!found || found.length === 0) {
             throw new Error(`${updateData.ID} does not exist`);
         }
@@ -75,10 +73,10 @@ export class StakeholderManagerContract extends Contract{
     }
 
     @Transaction()
-    async deleteStakeholder(ctx: Context, stakeholderData: string): Promise<void> {
+    async deleteOne(ctx: Context, stakeholderData: string): Promise<void> {
         const toDelete: Stakeholder = JSON.parse(stakeholderData);
 
-        const found = await this.queryStakeholder(ctx, toDelete.ID);
+        const found = await this.queryOne(ctx, toDelete.ID);
         if (!found || found.length === 0) {
             throw new Error(`${toDelete.ID} does not exist`);
         }
@@ -89,7 +87,7 @@ export class StakeholderManagerContract extends Contract{
     }
 
     @Transaction(false)
-    async queryStakeholderHistory(ctx: Context, id: string): Promise<string> {
+    async queryHistory(ctx: Context, id: string): Promise<string> {
         const iterator = await ctx.stub.getHistoryForKey(id);
         const allResults = [];
         let res = await iterator.next();

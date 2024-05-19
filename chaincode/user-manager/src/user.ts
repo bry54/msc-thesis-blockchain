@@ -11,7 +11,8 @@ export class User {
     public ID: string;
 
     @Property()
-    public name: string;
+    public fullname: string;
 
-    //other properties here
+    @Property()
+    public username: string;
 }

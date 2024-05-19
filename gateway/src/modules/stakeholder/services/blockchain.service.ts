@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Stakeholder } from '../entities/stakeholder.entity';
 import { FabricService } from '../../fabric/fabric.service';
 import { PinoLogger } from 'nestjs-pino';
+import { ChaincodeOperations } from '../../../utils/enums/chaincode-operations.enum';
 
 const CHAINCODE_NAME = 'stakeholders';
 
@@ -14,27 +15,27 @@ export class BlockchainService {
 
   async findMany() {
     try {
-      return this.fabricService.evaluateTransaction(CHAINCODE_NAME, 'queryAllStakeholders');
+      return this.fabricService.evaluateTransaction(CHAINCODE_NAME, ChaincodeOperations.QUERY_ALL);
     } catch (error: any) {
-      this.logger.error(error, `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: queryAllStakeholders}`);
+      this.logger.error(error, `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: ${ChaincodeOperations.QUERY_ALL}`);
       throw new HttpException(error?.details[0]?.message, HttpStatus.EXPECTATION_FAILED);
     }
   }
 
   async findOne(id: string) {
     try {
-      return this.fabricService.evaluateTransaction(CHAINCODE_NAME, 'queryStakeholder', [id]);
+      return this.fabricService.evaluateTransaction(CHAINCODE_NAME, ChaincodeOperations.QUERY_ONE, [id]);
     } catch (error) {
-      this.logger.error(error, `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: queryStakeholder}`);
+      this.logger.error(error, `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: ${ChaincodeOperations.QUERY_ONE}}`);
       throw new HttpException(error?.details[0]?.message, HttpStatus.EXPECTATION_FAILED);
     }
   }
 
   async removeOne(id: string) {
     try {
-      await this.fabricService.submitTransaction(CHAINCODE_NAME, 'deleteStakeholder', JSON.stringify({ ID: id }));
+      await this.fabricService.submitTransaction(CHAINCODE_NAME, ChaincodeOperations.DELETE_ONE, JSON.stringify({ ID: id }));
     } catch (error) {
-      this.logger.error(error, `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: deleteStakeholder}`);
+      this.logger.error(error, `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: ${ChaincodeOperations.DELETE_ONE}}`);
       throw new HttpException(error?.details[0]?.message, HttpStatus.EXPECTATION_FAILED);
     }
   }
@@ -46,9 +47,9 @@ export class BlockchainService {
         ...dto,
       };
 
-      await this.fabricService.submitTransaction(CHAINCODE_NAME, 'updateStakeholder', JSON.stringify(chaincodeDto));
+      await this.fabricService.submitTransaction(CHAINCODE_NAME, ChaincodeOperations.UPDATE_ONE, JSON.stringify(chaincodeDto));
     } catch (error) {
-      this.logger.error(error, `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} transaction: updateStakeholder}`);
+      this.logger.error(error, `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} transaction: ${ChaincodeOperations.UPDATE_ONE}`);
       throw new HttpException(error?.details[0]?.message, HttpStatus.EXPECTATION_FAILED);
     }
   }
@@ -60,16 +61,16 @@ export class BlockchainService {
         ...res,
       };
       delete chaincodeDto.id;
-      await this.fabricService.submitTransaction(CHAINCODE_NAME, 'createStakeholder', JSON.stringify(chaincodeDto));
+      await this.fabricService.submitTransaction(CHAINCODE_NAME, ChaincodeOperations.CREATE_ONE, JSON.stringify(chaincodeDto));
     } catch (error) {
-      this.logger.error(error, `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: createStakeholder}`);
+      this.logger.error(error, `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: ${ChaincodeOperations.CREATE_ONE}`);
       throw new HttpException(error?.details[0]?.message, HttpStatus.EXPECTATION_FAILED);
     }
   }
 
   async history(id: string) {
     try {
-      const history: any[] = await this.fabricService.evaluateTransaction(CHAINCODE_NAME, 'queryStakeholderHistory', [
+      const history: any[] = await this.fabricService.evaluateTransaction(CHAINCODE_NAME, ChaincodeOperations.QUERY_HISTORY, [
         id,
       ]);
 
@@ -82,7 +83,7 @@ export class BlockchainService {
     } catch (error) {
       this.logger.error(
         error,
-        `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: queryStakeholderHistory}`,
+        `BLOCKCHAIN ERROR: {chaincode: ${CHAINCODE_NAME} | transaction: ${ChaincodeOperations.QUERY_HISTORY}`,
       );
       throw new HttpException(error?.details[0]?.message, HttpStatus.EXPECTATION_FAILED);
     }
