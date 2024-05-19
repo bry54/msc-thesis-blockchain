@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const fields = [
@@ -37,7 +38,7 @@ export default function LoginPage() {
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form className="space-y-6" action="#" method="POST">
-          { fields.map(f => {
+          {fields.map(f => {
             return (
               <div key={f.id}>
                 <label htmlFor={f.id} className="block text-sm font-medium leading-6 text-gray-900">{f.label}</label>
@@ -57,6 +58,12 @@ export default function LoginPage() {
             </button>
           </div>
         </form>
+
+        <div className="text-sm mt-10 flex justify-between">
+          <Link href="/auth/login" className="font-semibold text-yellow-600 hover:text-yellow-500">Login</Link>
+
+          <a href="/auth/forgot-password" className="ml-5 font-semibold leading-6 text-green-600 hover:text-green-500 end-0">Forgot Password</a>
+        </div>
       </div>
     </>
   )
