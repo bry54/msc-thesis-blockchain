@@ -3,10 +3,9 @@
 */
 // Deterministic JSON.stringify()
 
-import {Context, Contract, Info, Returns, Transaction} from 'fabric-contract-api';
-import stringify from 'json-stringify-deterministic';
-import sortKeysRecursive from 'sort-keys-recursive';
+import { Context, Contract, Info, Returns, Transaction } from 'fabric-contract-api';
 import { User } from './user';
+
 const logger = require('pino')()
 
 @Info({ title: 'UserManager', description: 'Smart contract for managing User items' })

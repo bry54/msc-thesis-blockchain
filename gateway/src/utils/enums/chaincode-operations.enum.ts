@@ -6,3 +6,9 @@ export enum ChaincodeOperations {
   DELETE_ONE = 'deleteOne',
   QUERY_HISTORY = 'queryHistory',
 }
+
+export enum ChaincodeNames {
+  STAKEHOLDERS = 'stakeholders-manager',
+  USERS = 'users-manager',
+  PRODUCTIONS = 'productions-manager',
+}

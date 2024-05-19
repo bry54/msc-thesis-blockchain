@@ -1,13 +1,12 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { BlockchainService } from '../services/blockchain.service';
 
 const resource: string = 'production';
 
 @ApiTags(`Blockchain ${resource} queries`)
 @Controller(`blockchain/${resource}`)
 export class BlockchainController {
-  constructor(public service: BlockchainService) {}
+  /*constructor(public service: BlockchainService) {}
 
   @Get('')
   @ApiOperation({ summary: `Get all current world state for ${resource} records as they are on the blockchain` })
@@ -27,5 +26,5 @@ export class BlockchainController {
   @ApiParam({ name: 'id', description: `The ID of the ${resource} whose history will be queried on blockchain`, type: String })
   async history(@Param('id') id: string) {
     return this.service.history(id);
-  }
+  }*/
 }

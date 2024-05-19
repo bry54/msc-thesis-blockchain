@@ -45,14 +45,20 @@ export class RegulatoryChecksService {
     return dto;
   }
 
-  async updateRegulatoryCheck(productionId: string, checkId: string, dto: RegulatoryCheck): Promise<Production> {
+  async updateRegulatoryCheck(
+    productionId: string,
+    checkId: string,
+    dto: RegulatoryCheck,
+  ): Promise<Production> {
     const production = await this.repo.findOne({ where: { id: productionId } });
 
     if (!production) {
       throw new NotFoundException('Production not found');
     }
 
-    const regulatoryCheckIndex = production.regulatoryChecks.findIndex((check) => check.id === checkId);
+    const regulatoryCheckIndex = production.regulatoryChecks.findIndex(
+      (check) => check.id === checkId,
+    );
 
     if (regulatoryCheckIndex === -1) {
       throw new NotFoundException('RegulatoryCheck not found');
@@ -74,7 +80,9 @@ export class RegulatoryChecksService {
       throw new NotFoundException('Production not found');
     }
 
-    const regulatoryCheckIndex = production.regulatoryChecks.findIndex((check) => check.id === checkId);
+    const regulatoryCheckIndex = production.regulatoryChecks.findIndex(
+      (check) => check.id === checkId,
+    );
 
     if (regulatoryCheckIndex === -1) {
       throw new NotFoundException('RegulatoryCheck not found');

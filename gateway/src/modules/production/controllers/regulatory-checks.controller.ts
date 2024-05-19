@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RegulatoryChecksService } from '../services/regulatory-checks.service';
 import { RegulatoryCheck } from '../dto/create-production.dto';
@@ -14,7 +23,10 @@ export class RegulatoryChecksController {
   }
 
   @Post(':productionId/create')
-  async createRegulatoryCheck(@Param('productionId') productionId: string, @Body() dto: RegulatoryCheck) {
+  async createRegulatoryCheck(
+    @Param('productionId') productionId: string,
+    @Body() dto: RegulatoryCheck,
+  ) {
     return await this.service.createRegulatoryCheck(productionId, dto);
   }
 
@@ -24,7 +36,11 @@ export class RegulatoryChecksController {
     @Param('checkId') checkId: string,
     @Body() dto: RegulatoryCheck,
   ) {
-    const updatedProduction = await this.service.updateRegulatoryCheck(productionId, checkId, dto);
+    const updatedProduction = await this.service.updateRegulatoryCheck(
+      productionId,
+      checkId,
+      dto,
+    );
     if (!updatedProduction) {
       throw new NotFoundException('Production or RegulatoryCheck not found');
     }
@@ -34,7 +50,7 @@ export class RegulatoryChecksController {
   @Delete(':productionId/delete/:checkId')
   async deleteRegulatoryCheck(
     @Param('productionId') productionId: string,
-    @Param('checkId') checkId: string
+    @Param('checkId') checkId: string,
   ) {
     return await this.service.deleteRegulatoryCheck(productionId, checkId);
   }

@@ -3,8 +3,9 @@
 */
 // Deterministic JSON.stringify()
 
-import {Context, Contract, Info, Returns, Transaction} from 'fabric-contract-api';
-import {Stakeholder} from "./stakeholder";
+import { Context, Contract, Info, Returns, Transaction } from 'fabric-contract-api';
+import { Stakeholder } from './stakeholder';
+
 const logger = require('pino')()
 
 @Info({ title: 'StakeholderManager', description: 'Smart contract for managing Stakeholder items' })

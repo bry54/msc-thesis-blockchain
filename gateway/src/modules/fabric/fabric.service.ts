@@ -45,13 +45,13 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
       identity: await this.newIdentity(),
       signer: await this.newSigner(),
       evaluateOptions: () => {
-        return { deadline: Date.now() + 5000 }; // 5 seconds
+        return { deadline: Date.now() + 15000 }; // 5 seconds
       },
       endorseOptions: () => {
         return { deadline: Date.now() + 15000 }; // 15 seconds
       },
       submitOptions: () => {
-        return { deadline: Date.now() + 5000 }; // 5 seconds
+        return { deadline: Date.now() + 15000 }; // 5 seconds
       },
       commitStatusOptions: () => {
         return { deadline: Date.now() + 60000 }; // 1 minute
@@ -159,6 +159,7 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
       const resultString = this.utf8Decoder.decode(resultBytes);
       return JSON.parse(resultString);
     } catch (err) {
+      this.logger.error(err);
       throw err;
     }
   }

@@ -6,11 +6,14 @@ import { Production } from './entities/production.entity';
 import { RegulatoryChecksController } from './controllers/regulatory-checks.controller';
 import { RegulatoryChecksService } from './services/regulatory-checks.service';
 import { BlockchainController } from './controllers/blockchain.controller';
-import { BlockchainService } from './services/blockchain.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Production])],
-  controllers: [ProductionController, BlockchainController, RegulatoryChecksController],
-  providers: [ProductionService, RegulatoryChecksService, BlockchainService],
+  controllers: [
+    ProductionController,
+    BlockchainController,
+    RegulatoryChecksController,
+  ],
+  providers: [ProductionService, RegulatoryChecksService],
 })
 export class ProductionModule {}

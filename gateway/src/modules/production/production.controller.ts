@@ -1,4 +1,10 @@
-import { Body, Controller, NotFoundException, Param, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  NotFoundException,
+  Param,
+  Patch,
+} from '@nestjs/common';
 import { ProductionService } from './production.service';
 import { Crud, CrudController } from '@dataui/crud';
 import { crudGeneralOptions } from '../../utils/helpers/request-helpers';
@@ -20,6 +26,6 @@ import { RegulatoryCheck } from './dto/create-production.dto';
 })
 @ApiTags('Production')
 @Controller('production')
-export class ProductionController implements CrudController<Production>{
+export class ProductionController implements CrudController<Production> {
   constructor(public service: ProductionService) {}
 }
