@@ -1,7 +1,7 @@
 export default function UsersPage() {
     return (
-        <main className="">
+        <section className="text-black">
             This is users page inside dashboard
-        </main>
+        </section>
     );
 }

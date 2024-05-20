@@ -1,13 +1,17 @@
-import Image from 'next/image';
+'use client'
 import Link from 'next/link';
+import { login } from '@/app/actions/auth';
+import { useActionState } from 'react';
+import { useFormik } from 'formik';
 
 export default function LoginPage() {
+
   const fields = [
     {
-      label: 'Email Address',
-      type: 'email',
-      id: 'email',
-      autoComplete: 'email'
+      label: 'Username',
+      type: 'text',
+      id: 'username',
+      autoComplete: ''
     },
     {
       label: 'Password',
@@ -15,7 +19,17 @@ export default function LoginPage() {
       id: 'password',
       autoComplete: ''
     }
-  ]
+  ];
+
+  const formik = useFormik({
+    initialValues: {
+      username: '', password: '', agent: 'WEB'
+    },
+    onSubmit: async (values) => {
+      const response = await login(values)
+      alert(JSON.stringify(response.data));
+    }
+  });
 
   return (
     <>
@@ -27,14 +41,18 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form className="space-y-6" action="#" method="POST">
+        <form className="space-y-6" onSubmit={formik.handleSubmit}>
           {fields.map(f => {
             return (
               <div key={f.id}>
                 <label htmlFor={f.id} className="block text-sm font-medium leading-6 text-gray-900">{f.label}</label>
                 <div className="mt-2">
                   <input
-                    id={f.id} name={f.id} type={f.type} autoComplete={f.autoComplete} required
+                    id={f.id}
+                    type={f.type}
+                    autoComplete={f.autoComplete}
+                    {...formik.getFieldProps(f.id)}
+                    required
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
