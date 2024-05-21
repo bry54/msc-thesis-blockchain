@@ -6,7 +6,6 @@ import { DeepPartial, Repository } from 'typeorm';
 import { FabricService } from '../fabric/fabric.service';
 import { PinoLogger } from 'nestjs-pino';
 import { CrudRequest } from '@dataui/crud';
-import { Stakeholder } from '../stakeholder/entities/stakeholder.entity';
 import { ChaincodeNames } from '../../utils/enums/chaincode-operations.enum';
 import { BlockchainService } from '../fabric/services/blockchain.service';
 

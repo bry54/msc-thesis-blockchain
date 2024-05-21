@@ -1,11 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import {
-  connect,
-  Gateway,
-  Identity,
-  Signer,
-  signers,
-} from '@hyperledger/fabric-gateway';
+import { connect, Gateway, Identity, Signer, signers } from '@hyperledger/fabric-gateway';
 import { ConfigService } from '@nestjs/config';
 import * as grpc from '@grpc/grpc-js';
 import { PinoLogger } from 'nestjs-pino';

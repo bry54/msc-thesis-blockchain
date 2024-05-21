@@ -1,10 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 import { FabricService } from '../fabric.service';
-import {
-  ChaincodeNames,
-  ChaincodeOperations,
-} from '../../../utils/enums/chaincode-operations.enum';
+import { ChaincodeNames, ChaincodeOperations } from '../../../utils/enums/chaincode-operations.enum';
 
 @Injectable()
 export class BlockchainService {

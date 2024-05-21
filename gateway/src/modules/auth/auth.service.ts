@@ -6,7 +6,7 @@ import { PinoLogger } from 'nestjs-pino';
 import { SignInDto } from './dto/sign-in.dto';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
-//import { SignInResponseDto, TokenDto } from './dto/token.dto';
+import { SignInResponseDto, TokenDto } from './dto/token.dto';
 
 @Injectable()
 export class AuthService {

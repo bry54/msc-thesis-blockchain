@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import {
   Harvesting,
   Planting,
@@ -18,13 +11,12 @@ import {
 import { Stakeholder } from '../../stakeholder/entities/stakeholder.entity';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import { CrudValidationGroups } from '@dataui/crud';
+import { BaseEntity } from '../../../utils/helpers/base.entity';
 
 const { CREATE, UPDATE } = CrudValidationGroups;
 
 @Entity()
-export class Production {
-  @PrimaryGeneratedColumn('uuid')
-  public id: string;
+export class Production extends BaseEntity {
 
   @ApiProperty({ type: Product })
   @IsNotEmpty({ groups: [CREATE] })
@@ -63,12 +55,5 @@ export class Production {
   @Column({ type: 'json', nullable: true })
   pricingDetail: PricingDetail[];
 
-  @CreateDateColumn()
-  createdAt: Date;
 
-  @UpdateDateColumn()
-  updatedDate: Date;
-
-  @DeleteDateColumn()
-  deletedDate: Date;
 }

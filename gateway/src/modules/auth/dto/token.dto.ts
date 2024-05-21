@@ -1,6 +1,3 @@
-import { AgentsEnum } from '../../../utils/enums/agents.enum';
-import { ApiProperty } from '@nestjs/swagger';
-
 export class TokenDto {
   sub: string;
 
