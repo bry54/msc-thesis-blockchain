@@ -5,7 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { PinoLogger } from 'nestjs-pino';
 import { SignInDto } from './dto/sign-in.dto';
 import * as bcrypt from 'bcrypt';
-import { SignInResponseDto, TokenDto } from './dto/token.dto';
+import { User } from '../users/entities/user.entity';
+//import { SignInResponseDto, TokenDto } from './dto/token.dto';
 
 @Injectable()
 export class AuthService {
@@ -42,6 +43,10 @@ export class AuthService {
         issuer: this.configService.get('auth.jwtIssuer'),
       }),
     };
+  }
+
+  async register(dto: User) {
+    return this.usersService.createOne(null, dto);
   }
 
   async validateUser(username: string, pass: string): Promise<any> {

@@ -25,6 +25,20 @@ export const logout = async ( ) => {
   }
 }
 
+export const register = async (formData: Record<string, any>) => {
+  delete formData.confirmPassword;
+
+  try {
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/auth/register`, formData);
+    //await createSession(response.data);
+    return response.data;
+  } catch (e: any) {
+    console.log(e.response?.data || e.message);
+    throw new Error(e.response?.data?.message || 'Registration failed');
+  }
+}
+
+
 export async function createSession(dto: SignInResponseDto) {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 

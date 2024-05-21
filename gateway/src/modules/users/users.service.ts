@@ -23,8 +23,13 @@ export class UsersService extends TypeOrmCrudService<User> {
   }
 
   async createOne(req: CrudRequest, dto: DeepPartial<User>): Promise<User> {
+    let res;
     dto.password = bcrypt.hashSync(dto.password, 10);
-    const res = await super.createOne(req, dto);
+    if (req) {
+      res = await super.createOne(req, dto);
+    } else {
+      res = await this.repo.save(dto);
+    }
     await this.blockchainService.createOne(ChaincodeNames.USERS, res);
     return res;
   }
