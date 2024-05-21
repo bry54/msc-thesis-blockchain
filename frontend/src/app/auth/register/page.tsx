@@ -34,7 +34,7 @@ const fields = [
   },
 ]
 
-export default function LoginPage() {
+export default function RegistrationPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 

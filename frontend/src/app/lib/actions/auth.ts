@@ -21,7 +21,7 @@ export const logout = async ( ) => {
     await deleteSession()
   } catch (e: any) {
     console.log(e.response?.data || e.message);
-    throw new Error(e.response?.data?.message || 'Login failed');
+    throw new Error(e.response?.data?.message || 'Logout failed');
   }
 }
 
