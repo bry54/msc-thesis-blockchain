@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -23,6 +23,17 @@ export class UsersService extends TypeOrmCrudService<User> {
   }
 
   async createOne(req: CrudRequest, dto: DeepPartial<User>): Promise<User> {
+    const user = await this.repo.findOne({
+      where: {
+        username: dto.username,
+      },
+      withDeleted: true,
+    });
+
+    if (user) {
+      throw new BadRequestException('Username is already taken')
+    }
+
     let res;
     dto.password = bcrypt.hashSync(dto.password, 10);
     if (req) {
