@@ -3,7 +3,7 @@ import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { logout } from '@/app/lib/actions/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 const user = {
   name: 'Tom Cook',
@@ -12,15 +12,14 @@ const user = {
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
 const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
-  { name: 'Reports', href: '#', current: false },
+  { name: 'Dashboard', href: '/dashboard' },
+  { name: 'Users', href: '/dashboard/users' },
+  { name: 'Stakeholders', href: '/dashboard/stakeholders' },
+  { name: 'Productions', href: '/dashboard/productions' },
 ]
 const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
+  { name: 'Profile', href: '/dashboard/profile' },
+  { name: 'Settings', href: '/dashboard/settings' },
 ]
 
 function classNames(...classes: string[]) {
@@ -31,6 +30,11 @@ export default function DashboardLayout(
   { children } : { children: React.ReactNode}
 ) {
   const router = useRouter();
+
+  const pathName = usePathname();
+
+  const isActive =  (path: string) => pathName === path ;
+
   const handleLogout = async () =>{
     await logout();
     router.push('/dashboard')
@@ -58,12 +62,12 @@ export default function DashboardLayout(
                             key={item.name}
                             href={item.href}
                             className={classNames(
-                              item.current
+                              isActive(item.href)
                                 ? 'bg-gray-900 text-white'
                                 : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                               'rounded-md px-3 py-2 text-sm font-medium'
                             )}
-                            aria-current={item.current ? 'page' : undefined}
+                            aria-current={isActive(item.href) ? 'page' : undefined}
                           >
                             {item.name}
                           </a>
@@ -153,10 +157,10 @@ export default function DashboardLayout(
                       as="a"
                       href={item.href}
                       className={classNames(
-                        item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          isActive(item.href)  ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                         'block rounded-md px-3 py-2 text-base font-medium'
                       )}
-                      aria-current={item.current ? 'page' : undefined}
+                      aria-current={isActive(item.href)  ? 'page' : undefined}
                     >
                       {item.name}
                     </Disclosure.Button>
@@ -206,16 +210,10 @@ export default function DashboardLayout(
           )}
         </Disclosure>
 
-        <header className="bg-white shadow">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
-          </div>
-        </header>
-        <main>
-          <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-            {children}
-          </div>
-        </main>
+        <section>
+          { children }
+        </section>
+
       </div>
     </>
   )
