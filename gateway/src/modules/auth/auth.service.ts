@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { PinoLogger } from 'nestjs-pino';
 import { SignInDto } from './dto/sign-in.dto';
 import * as bcrypt from 'bcrypt';
+import { SignInResponseDto, TokenDto } from './dto/token.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,19 +16,29 @@ export class AuthService {
     private readonly logger: PinoLogger,
   ) {}
 
-  async login(dto: SignInDto) {
-    const user = await this.usersService.findOne({ where: {username: dto.username} });
-    if ( !user ){
+  async login(dto: SignInDto): Promise<SignInResponseDto> {
+    const user = await this.usersService.findOne({
+      where: { username: dto.username },
+    });
+
+    if (!user) {
       throw new UnauthorizedException('User not found');
     }
-    console.log(dto, user);
+
     if (!bcrypt.compareSync(dto.password, user.password)) {
       throw new UnauthorizedException();
     }
 
-    const payload = { username: user.username, sub: user.id };
+    const payload: TokenDto = {
+      username: user.username,
+      sub: user.id,
+      role: null,
+      organizationId: null,
+    };
+
     return {
-      access_token: this.jwtService.sign(payload, {
+      fullName: user.fullName,
+      accessToken: this.jwtService.sign(payload, {
         issuer: this.configService.get('auth.jwtIssuer'),
       }),
     };
