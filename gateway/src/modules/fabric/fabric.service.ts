@@ -36,6 +36,13 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
   }
 
   async initGateway() {
+    if (!this.configService.get<boolean>('fabric.isEnabled')) {
+      return;
+    }
+
+    if (!this.configService.get<boolean>('fabric.isEnabled')) {
+      return;
+    }
     await this.displayInputParameters().then((res) => {
       this.logger.info( res,'FABRIC CONFIGURATIONS' );
     });
@@ -118,8 +125,8 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
   async displayInputParameters(): Promise<unknown> {
     return {
       prop: 'some value',
-      propTwo: 'Another value'
-    }
+      propTwo: 'Another value',
+    };
   }
 
   async submitTransaction(
@@ -127,6 +134,9 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
     transactionName: string,
     ...args: string[]
   ) {
+    if (!this.configService.get<boolean>('fabric.isEnabled')) {
+      return;
+    }
     try {
       const network = this.gateway.getNetwork(
         this.configService.get<string>('fabric.channel'),
@@ -143,6 +153,9 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
     transactionName: string,
     args?: string[],
   ) {
+    if (!this.configService.get<boolean>('fabric.isEnabled')) {
+      return;
+    }
     try {
       let resultBytes;
       const network = this.gateway.getNetwork(

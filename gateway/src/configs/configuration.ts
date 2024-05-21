@@ -27,5 +27,6 @@ export default () => ({
     peerEndpoint: env.FABRIC_PEER_ENDPOINT,
     peerHostAlias: env.FABRIC_PEER_HOST_ALIAS,
     channel: env.FABRIC_CHANNEL,
+    isEnabled: env.BLOCKCHAIN_ENABLED === 'true',
   },
 });
