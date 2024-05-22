@@ -1,3 +1,5 @@
+// Consider using tabs to show these sections in product
+// Antd Components to use: Lists, Descriptions, Empty, Message, Timeline, Collapse, Form
 const production = {
   batchId: 'uuid',
   product: {
