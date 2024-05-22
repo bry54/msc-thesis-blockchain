@@ -77,7 +77,6 @@ export default function UsersPage() {
     };
 
     const handleCancel = (modalName: 'addModal' | 'deleteModal') => {
-        console.log('Clicked cancel button');
         setOpen({
             ...open,
             [modalName]: false

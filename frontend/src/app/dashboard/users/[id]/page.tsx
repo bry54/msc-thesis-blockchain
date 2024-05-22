@@ -1,15 +1,15 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
-import {Button, Descriptions, DescriptionsProps, Table, TableColumnsType, TableProps} from 'antd';
-import {ArrowPathRoundedSquareIcon, PlusCircleIcon, UserIcon,} from '@heroicons/react/20/solid';
-import {HeaderButton, HeaderIconWithText} from '@/app/lib/components/header-items';
-import {deleteUser, queryUser} from '@/app/lib/actions/users';
-import {EllipsisMiddle} from '@/app/lib/components/CommonItems';
-import {DownloadOutlined, HistoryOutlined, LeftOutlined} from '@ant-design/icons';
-import {redirect, useRouter} from "next/navigation";
-import {BackwardIcon} from "@heroicons/react/16/solid";
-import Link from "next/link";
+import React, { useEffect, useState } from 'react';
+import { Badge, Button, Descriptions, DescriptionsProps, List, Table, TableColumnsType, TableProps, Tag, Typography } from 'antd';
+import { ArrowPathRoundedSquareIcon, UserIcon } from '@heroicons/react/20/solid';
+import { HeaderButton, HeaderIconWithText } from '@/app/lib/components/header-items';
+import { deleteUser, queryUser, queryUserHistory } from '@/app/lib/actions/users';
+import { EllipsisMiddle } from '@/app/lib/components/CommonItems';
+import { AimOutlined, DownloadOutlined, HistoryOutlined, LeftOutlined } from '@ant-design/icons';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { addSummaries } from '@/app/lib/helpers';
 
 
 const descriptionLabels = [
@@ -23,10 +23,28 @@ const descriptionLabels = [
     {key: 'deletedDate', value: 'Deleted At'},
 ]
 
-interface DataType {
+interface UserModel {
     id: string,
     fullName: string,
     username: string
+}
+
+interface RecordHistory {
+    "TxId": string,
+    "Timestamp": {
+        "seconds": number,
+        "nanos": number
+    },
+    "Record": {
+        "ID": string,
+        "fullName": string,
+        "username": string,
+        "password": string,
+        "createdAt": string,
+        "updatedDate": string,
+        "deletedDate": string
+    }
+    summary: any
 }
 
 interface Modals {
@@ -36,12 +54,13 @@ interface Modals {
 
 export default function UserPage({ params }: { params: { id: string } }) {
 
-    const [data, setData] = useState<DataType>(null);
+    const [data, setData] = useState<UserModel>(null);
     const [items, setItems] = useState<DescriptionsProps['items']>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [open, setOpen] = useState<Modals>({ addModal: false, deleteModal: false });
     const [confirmLoading, setConfirmLoading] = useState<Modals>({ addModal: false, deleteModal: false });
     const [error, setError] = useState<string | null>(null);
+    const [userHistory, setUserHistory] = useState<RecordHistory[]>([])
     const router = useRouter()
 
     const fetchData = async () => {
@@ -49,7 +68,6 @@ export default function UserPage({ params }: { params: { id: string } }) {
         try {
             const data: any = await queryUser(params.id);
             setData(data);
-
             const items: DescriptionsProps['items'] = Object.keys(data).map((d: any) =>{
                 return {
                     key: d,
@@ -59,8 +77,21 @@ export default function UserPage({ params }: { params: { id: string } }) {
                         data[d] : (<span> {data[d]}</span>)
                 }
             })
-
             setItems(items)
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchHistory = async () => {
+        setLoading(true)
+        try {
+            const data: RecordHistory[] = await queryUserHistory(params.id);
+            const withSummary = addSummaries(data)
+            const withKeys = withSummary.map(d => ({ key: d.TxId, ...d}))
+            setUserHistory(withKeys);
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
@@ -72,7 +103,7 @@ export default function UserPage({ params }: { params: { id: string } }) {
         setLoading(true)
         try {
             await deleteUser(id);
-            redirect('dashboard/users')
+            router.push('/dashboard/users')
         } catch (error){
             console.error('Error deleting user:', error);
         } finally {
@@ -81,38 +112,40 @@ export default function UserPage({ params }: { params: { id: string } }) {
     }
 
     const handleUpdateUser = (data: any) => {
-        console.log(data)
+        //console.log(data)
     }
 
-
     useEffect(() => {
-        fetchData();
+        fetchData().then(res => {
+            fetchHistory()
+        });
     }, []); // Empty dependency array means this effect runs once after the initial render
 
-
-    const columns: TableColumnsType<DataType> = [{
+    const columns: TableColumnsType<RecordHistory> = [{
         title: 'Transaction Id',
-        dataIndex: 'txid',
-        key: 'txid',
+        dataIndex: 'TxId',
+        key: 'TxId',
         filters: [],
         width: '20%',
         render: (text) => (
             <EllipsisMiddle
                 suffixCount={8}
-                textClasses="text-sm font-bold">
+                textClasses="text-sm font-bold font-mono">
                 { text }
             </EllipsisMiddle>
         ),
-        sorter: (a, b) => a.fullName.length - b.fullName.length,
     }, {
         title: 'Summary',
         dataIndex: 'summary',
         key: 'summary',
-        render: (text) => (<span className="text-sm font-medium">{ text } </span>),
+        render: (summary) => {
+            if(summary.changes)
+                return (<span className="text-sm font-medium font-mono">Record Updated: Changes on {JSON.stringify(Object.keys(summary.changes))} </span>)
+            else
+                return (<span className="text-sm font-medium font-mono">{JSON.stringify(summary.summary)} </span>)
+        },
         showSorterTooltip: { target: 'full-header' },
         filters: [], // specify the condition of filtering result
-        onFilter: (value, record) => record.fullName.indexOf(value as string) === 0,
-        sorter: (a, b) => a.fullName.length - b.fullName.length,
     },{
         title: 'Actions',
         key: 'operation',
@@ -123,7 +156,7 @@ export default function UserPage({ params }: { params: { id: string } }) {
         </span>),
     },];
 
-    const onChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter, extra) => {
+    const onChange: TableProps<RecordHistory>['onChange'] = (pagination, filters, sorter, extra) => {
         console.log('params', pagination, filters, sorter, extra);
     };
 
@@ -167,8 +200,6 @@ export default function UserPage({ params }: { params: { id: string } }) {
                                 label="Refresh"
                                 clickHandler={fetchData}
                             />
-
-
                         </div>
                     </div>
                 </div>
@@ -188,9 +219,39 @@ export default function UserPage({ params }: { params: { id: string } }) {
                         scroll={{ x: 1500 }}
                         loading={loading}
                         columns={columns}
-                        dataSource={[]}
+                        dataSource={userHistory}
                         onChange={onChange}
                         showSorterTooltip={{ target: 'sorter-icon' }}
+                        expandable={{
+                            expandedRowRender: (record) => {
+                                const changes = record.summary.changes
+                                const summary = record.summary.summary
+                                const data = Object.keys(changes).map(k => {
+                                    return {
+                                        key: k,
+                                        data: record.summary.changes[k]
+                                    }
+                                })
+                                return(
+                                  <div>
+                                      <List
+                                        header={<p className={'text-sm font-medium font-mono'}>{JSON.stringify(summary)}</p>}
+                                        bordered
+                                        dataSource={data}
+                                        renderItem={(item) => (
+                                          <Badge.Ribbon text={JSON.stringify(record.summary.localTimestamp)}>
+                                              <List.Item className='text-sm font-medium font-mono'>
+                                                  <Tag color="geekblue" icon={<AimOutlined />}>{item.key}</Tag>{JSON.stringify(item.data)}
+                                              </List.Item>
+                                          </Badge.Ribbon>
+
+                                        )}
+                                      />
+                                  </div>
+                                )
+                            },
+                            rowExpandable: (record) => record.summary.summary !== 'Initial record',
+                        }}
                     />
                 </div>
             </main>
