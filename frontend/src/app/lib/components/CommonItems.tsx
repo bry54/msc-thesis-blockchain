@@ -1,6 +1,5 @@
-import { Typography } from 'antd';
-import { Button, Modal, Space } from 'antd';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import {Modal, Typography} from 'antd';
+import {ExclamationCircleFilled} from '@ant-design/icons';
 
 const { confirm } = Modal;
 const { Paragraph, Text } = Typography;
@@ -42,4 +41,3 @@ export const showDeleteConfirm = (handleDelete: Function, title: string, descrip
     },
   });
 };
-

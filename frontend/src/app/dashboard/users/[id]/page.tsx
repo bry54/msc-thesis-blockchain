@@ -6,8 +6,11 @@ import {ArrowPathRoundedSquareIcon, PlusCircleIcon, UserIcon,} from '@heroicons/
 import {HeaderButton, HeaderIconWithText} from '@/app/lib/components/header-items';
 import {deleteUser, queryUser} from '@/app/lib/actions/users';
 import {EllipsisMiddle} from '@/app/lib/components/CommonItems';
-import {DownloadOutlined, HistoryOutlined} from '@ant-design/icons';
-import {useRouter} from "next/navigation";
+import {DownloadOutlined, HistoryOutlined, LeftOutlined} from '@ant-design/icons';
+import {redirect, useRouter} from "next/navigation";
+import {BackwardIcon} from "@heroicons/react/16/solid";
+import Link from "next/link";
+
 
 const descriptionLabels = [
     {key: 'id', value: 'Local ID'},
@@ -51,8 +54,9 @@ export default function UserPage({ params }: { params: { id: string } }) {
                 return {
                     key: d,
                     label: descriptionLabels.find(label => label.key === d)?.value || 'Label',
-                    children: data[d]
-
+                    children: [].find(v => v ===d )
+                        ?
+                        data[d] : (<span> {data[d]}</span>)
                 }
             })
 
@@ -68,12 +72,16 @@ export default function UserPage({ params }: { params: { id: string } }) {
         setLoading(true)
         try {
             await deleteUser(id);
-            // redirect back to users pages
+            redirect('dashboard/users')
         } catch (error){
             console.error('Error deleting user:', error);
         } finally {
             setLoading(false)
         }
+    }
+
+    const handleUpdateUser = (data: any) => {
+        console.log(data)
     }
 
 
@@ -121,41 +129,47 @@ export default function UserPage({ params }: { params: { id: string } }) {
 
     return (
         <div className='text-neutral-950'>
-            <header className="bg-white shadow pl-24 pr-20 pt-10 pb-10 ">
-                <div className="lg:flex lg:items-center lg:justify-between">
-                    <div className="min-w-0 flex-1">
-                        <h2
-                            className="font-medium text-2xl leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                            Users History
-                        </h2>
-                        <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
-                            <HeaderIconWithText
-                                icon={<UserIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                aria-hidden="true" />}
-                                label={'user-name'}
-                            />
-                            <HeaderIconWithText
-                                icon={<HistoryOutlined className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                aria-hidden="true" />}
-                                label={'history'}
-                            />
+            <header className="bg-white shadow">
+                <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                    <div className="lg:flex lg:items-center lg:justify-between">
+                        <div className="min-w-0 flex-1">
+                            <h2
+                                className="font-medium text-2xl leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                                Users History
+                            </h2>
+                            <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
+                                <HeaderIconWithText
+                                    icon={<UserIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                    aria-hidden="true"/>}
+                                    label={data?.fullName}
+                                />
+                                <HeaderIconWithText
+                                    icon={<HistoryOutlined className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                           aria-hidden="true"/>}
+                                    label={'history'}
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="mt-5 flex lg:ml-4 lg:mt-0">
-                        <HeaderButton
-                            btnClasses="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                            icon={<ArrowPathRoundedSquareIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />}
-                            label="Refresh"
-                            clickHandler={fetchData}
-                        />
+                        <div className="mt-5 flex lg:ml-4 lg:mt-0">
+                            <Link href='/dashboard/users'>
+                                <HeaderButton
+                                    btnClasses="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    icon={<LeftOutlined className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true"/>}
+                                    label="Back"
+                                />
+                            </Link>
 
-                        <HeaderButton
-                            btnClasses="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            icon={<PlusCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />}
-                            label="Add User"
-                            clickHandler={() => handleUserDelete('')}
-                        />
+                            <HeaderButton
+                                btnClasses="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                icon={<ArrowPathRoundedSquareIcon className="-ml-0.5 mr-1.5 h-5 w-5"
+                                                                  aria-hidden="true"/>}
+                                label="Refresh"
+                                clickHandler={fetchData}
+                            />
+
+
+                        </div>
                     </div>
                 </div>
             </header>
@@ -163,10 +177,11 @@ export default function UserPage({ params }: { params: { id: string } }) {
             <main>
                 <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
                     <div className='mt-2 mb-5'>
-                    <Descriptions
-                        title={ (<h1 className='text-2xl'>Current State</h1>) }
-                        className={'text-2xl'}
-                        items={items} />
+                        <Descriptions
+                            extra={<Button danger type="primary" onClick={() => handleUserDelete(data.id)}>Delete User</Button>}
+                            title={ (<h1 className='text-2xl'>Current State</h1>) }
+                            className={'text-2xl'}
+                            items={items} />
                     </div>
                     <Table
                         title={() =>(<h1 className="text-2xl">Record History on blockchain</h1>)}

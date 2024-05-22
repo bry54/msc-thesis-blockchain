@@ -155,36 +155,38 @@ export default function UsersPage() {
 
     return (
       <div className='text-neutral-950'>
-          <header className="bg-white shadow pl-24 pr-20 pt-10 pb-10 ">
-              <div className="lg:flex lg:items-center lg:justify-between">
-                  <div className="min-w-0 flex-1">
-                      <h2
-                        className="font-medium text-2xl leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                          Users Management
-                      </h2>
-                      <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
-                          <HeaderIconWithText
-                            icon={<UserIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                            aria-hidden="true" />}
-                            label={'Some label'}
+          <header className="bg-white shadow">
+              <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                  <div className="lg:flex lg:items-center lg:justify-between">
+                      <div className="min-w-0 flex-1">
+                          <h2
+                              className="font-medium text-2xl leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                              Users Management
+                          </h2>
+                          <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
+                              <HeaderIconWithText
+                                  icon={<UserIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                  aria-hidden="true"/>}
+                                  label={'Some label'}
+                              />
+                          </div>
+                      </div>
+
+                      <div className="mt-5 flex lg:ml-4 lg:mt-0">
+                          <HeaderButton
+                              btnClasses="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                              icon={<ArrowPathRoundedSquareIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true"/>}
+                              label="Refresh"
+                              clickHandler={fetchData}
+                          />
+
+                          <HeaderButton
+                              btnClasses="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                              icon={<PlusCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true"/>}
+                              label="Add User"
+                              clickHandler={() => showModal('addModal')}
                           />
                       </div>
-                  </div>
-
-                  <div className="mt-5 flex lg:ml-4 lg:mt-0">
-                      <HeaderButton
-                        btnClasses="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                        icon={<ArrowPathRoundedSquareIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />}
-                        label="Refresh"
-                        clickHandler={fetchData}
-                      />
-
-                      <HeaderButton
-                        btnClasses="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        icon={<PlusCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />}
-                        label="Add User"
-                        clickHandler={() => showModal('addModal')}
-                      />
                   </div>
               </div>
           </header>

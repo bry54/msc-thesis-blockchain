@@ -4,7 +4,7 @@ interface HeaderBtnInterface {
   icon: ReactNode,
   label: string,
   btnClasses:  string,
-  clickHandler: () => void
+  clickHandler?: () => void
 }
 
 interface HeaderIconWithText {
