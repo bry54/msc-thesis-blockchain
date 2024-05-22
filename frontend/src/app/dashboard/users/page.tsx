@@ -1,29 +1,29 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Button, Modal, Table, TableColumnsType, TableProps } from 'antd';
-import {
-    PlusCircleIcon,
-    UserIcon,
-    ArrowPathRoundedSquareIcon,
-    TrashIcon,
-    EyeIcon,
-    PencilSquareIcon,
-} from '@heroicons/react/20/solid';
-import { HeaderButton, HeaderIconWithText } from '@/app/lib/components/header-items';
-import { deleteUser, queryUsers } from '@/app/lib/actions/users';
-import { EllipsisMiddle, showDeleteConfirm } from '@/app/lib/components/CommonItems';
+import React, {useEffect, useState} from 'react';
+import {Button, Modal, Table, TableColumnsType, TableProps} from 'antd';
+import {ArrowPathRoundedSquareIcon, PlusCircleIcon, UserIcon,} from '@heroicons/react/20/solid';
+import {HeaderButton, HeaderIconWithText} from '@/app/lib/components/header-items';
+import {deleteUser, queryUsers} from '@/app/lib/actions/users';
+import {EllipsisMiddle, showDeleteConfirm} from '@/app/lib/components/CommonItems';
 import * as Yup from 'yup';
-import { register } from '@/app/lib/actions/auth';
-import { useFormikContext, ErrorMessage, Field, Form, Formik } from 'formik';
-import { useRouter } from 'next/navigation';
-import { DeleteOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
+import {register} from '@/app/lib/actions/auth';
+import {ErrorMessage, Field, Form, Formik} from 'formik';
+import {DeleteOutlined, DownloadOutlined, EditOutlined, EyeOutlined} from '@ant-design/icons';
+import {fields} from "@/app/dashboard/users/definitions";
+import {redirect} from "next/navigation";
+import Link from "next/link";
 
 interface DataType {
     //key: React.Key
     id: string,
     fullName: string,
     username: string
+}
+
+interface Modals {
+    addModal: boolean,
+    deleteModal: boolean
 }
 
 interface UsersQueryResponse {
@@ -34,33 +34,14 @@ interface UsersQueryResponse {
     "pageCount": number
 }
 
-const fields = [
-    {
-        label: 'Full name',
-        type: 'text',
-        id: 'fullName',
-        autoComplete: ''
-    },
-    {
-        label: 'Email Address',
-        type: 'email',
-        id: 'username',
-        autoComplete: 'email'
-    },
-    {
-        label: 'Password',
-        type: 'password',
-        id: 'password',
-        autoComplete: ''
-    }
-]
+
 
 export default function UsersPage() {
 
     const [data, setData] = useState<DataType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [open, setOpen] = useState({ addModal: false, deleteModal: false });
-    const [confirmLoading, setConfirmLoading] = useState({ addModal: false, deleteModal: false });
+    const [open, setOpen] = useState<Modals>({ addModal: false, deleteModal: false });
+    const [confirmLoading, setConfirmLoading] = useState<Modals>({ addModal: false, deleteModal: false });
     const [error, setError] = useState<string | null>(null);
 
 
@@ -155,9 +136,11 @@ export default function UsersPage() {
         fixed: 'right',
         width: 120,
         render: (data) => (<span className='flex justify-between'>
-            <Button type="primary" icon={<DownloadOutlined />} size={'small'} title='Download User History'/>
-            <Button type="dashed" icon={<EditOutlined />} size={'small'} title='Edit User'/>
-            <Button danger icon={<DeleteOutlined />} size={'small'} title='Delete User'
+
+                <Link href={`/dashboard/users/${data.id}`}>
+                    <Button type="primary" icon={<EyeOutlined />} size={'small'} title='View User'/>
+                </Link>
+            <Button danger type='primary' icon={<DeleteOutlined />} size={'small'} title='Delete User'
                     onClick={() => showDeleteConfirm(
                       ()=>handleUserDelete(data.id),
                       'Are you sure want to Delete User', `${data.fullName} will be permanently deleted from the system. This process can not be undone`
