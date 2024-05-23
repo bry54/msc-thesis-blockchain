@@ -6,6 +6,7 @@ import { PinoLogger } from 'nestjs-pino';
 import * as crypto from 'crypto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import {ChaincodeNames, ChaincodeOperations} from "../../utils/enums/chaincode-operations.enum";
 
 @Injectable()
 export class FabricService implements OnModuleInit, OnModuleDestroy {
@@ -124,8 +125,8 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
   }
 
   async submitTransaction(
-    chaincodeName: string,
-    transactionName: string,
+    chaincodeName: ChaincodeNames,
+    transactionName: ChaincodeOperations,
     ...args: string[]
   ) {
     if (!this.configService.get<boolean>('fabric.isEnabled')) {
@@ -143,12 +144,12 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
   }
 
   async evaluateTransaction(
-    chaincodeName: string,
-    transactionName: string,
+    chaincodeName: ChaincodeNames,
+    transactionName: ChaincodeOperations,
     args?: string[],
   ) {
     if (!this.configService.get<boolean>('fabric.isEnabled')) {
-      return;
+      return transactionName == ChaincodeOperations.QUERY_ONE ? {} : [];
     }
     try {
       let resultBytes;
