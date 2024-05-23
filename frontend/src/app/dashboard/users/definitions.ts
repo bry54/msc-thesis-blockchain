@@ -38,5 +38,12 @@ export const editUserFields = [
         type: 'email',
         id: 'username',
         autoComplete: 'email'
+    },
+    {
+        label: 'Organization',
+        type: 'select',
+        id: 'stakeholderId',
+        autoComplete: '',
+        dataSource: 'stakeholders'
     }
 ]

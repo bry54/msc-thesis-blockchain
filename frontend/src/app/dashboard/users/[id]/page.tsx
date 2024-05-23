@@ -103,7 +103,7 @@ export default function UserPage({ params }: { params: { id: string } }) {
                     label: descriptionLabels.find(label => label.key === d)?.value || 'Label',
                     children: [].find(v => v ===d )
                         ?
-                        data[d] : (<span> {data[d]}</span>)
+                        data[d] : (<span> {d=='stakeholder' ? `${data[d]?.name}, ${data[d]?.location}` : data[d] } </span>)
                 }
             })
             setItems(items)

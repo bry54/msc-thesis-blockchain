@@ -269,19 +269,23 @@ export default function UsersPage() {
                                         {f.dataSource =='stakeholders' ? (
                                             <div className='mt-2'>
                                                 <Field name={f.id}>
-                                                    {({ field, form, meta }) => (
-                                                        <select
-                                                            {...field}
-                                                            id={f.id}
-                                                            autoComplete="none"
-                                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                                            <option key={'default'} value={''}>{'Select organization to which the user belongs'}</option>
-                                                            <option key={'set-null'} value={undefined}>{'--'}</option>
-                                                            {stakeholders.map(s => (
-                                                                <option key={s.id} value={s.id}>{s.name}</option>
-                                                            ))}
-                                                        </select>
-                                                    )}
+                                                    {({ field, form, meta }) => {
+                                                        return (
+                                                            <select
+                                                                {...field}
+                                                                id={f.id}
+                                                                autoComplete="none"
+                                                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                                                <option key={'default'}
+                                                                        value={''}>{'Select organization to which the user belongs'}</option>
+                                                                <option key={'set-null'}
+                                                                        value={undefined}>{'--'}</option>
+                                                                {stakeholders.map(s => (
+                                                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                                                ))}
+                                                            </select>
+                                                        )
+                                                    }}
                                                 </Field>
                                             </div>
                                         ) : (
