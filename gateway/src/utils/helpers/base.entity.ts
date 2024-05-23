@@ -1,7 +1,6 @@
-import { CreateDateColumn, DeleteDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {Column, CreateDateColumn, DeleteDateColumn, PrimaryGeneratedColumn, UpdateDateColumn,} from 'typeorm';
 
 export class BaseEntity {
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -13,4 +12,7 @@ export class BaseEntity {
 
   @DeleteDateColumn()
   deletedDate: Date;
+
+  @Column({ nullable: true })
+  updatedBy: string;
 }
