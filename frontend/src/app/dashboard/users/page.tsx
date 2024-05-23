@@ -204,13 +204,14 @@ export default function UsersPage() {
                     />
                 </div>
 
-
                 <Formik
                     initialValues={{ fullName: '', username: '', password: '', stakeholderId: '', role: '' }}
                     validationSchema={Yup.object({
                         fullName: Yup.string().required('Required'),
                         username: Yup.string().required('Required'),
                         password: Yup.string().required('Required'),
+                        role: Yup.string().required('Role can not be empty').typeError(''),
+                        stakeholderId: Yup.string().required('Organization can not be empty').typeError(''),
                     })}
                     onSubmit={async (values, { setSubmitting, resetForm }) => {
                         setConfirmLoading({
@@ -270,6 +271,7 @@ export default function UsersPage() {
                                                     {({ field, form, meta }) => {
                                                         if (f.id == 'stakeholderId') {
                                                             return (
+                                                                <>
                                                                 <select
                                                                     {...field}
                                                                     id={f.id}
@@ -285,11 +287,16 @@ export default function UsersPage() {
                                                                                 value={s.id}>{s.name}</option>
                                                                     ))}
                                                                 </select>
+                                                                    {meta.touched &&
+                                                                        meta.error && <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{meta.error}</div>}
+                                                                    </>
+
                                                             )
                                                         }
 
                                                         if (f.id == 'role'){
                                                             return (
+                                                                <>
                                                                 <select
                                                                     {...field}
                                                                     id={f.id}
@@ -305,6 +312,9 @@ export default function UsersPage() {
                                                                                 value={s}>{ s }</option>
                                                                     ))}
                                                                 </select>
+                                                                    {meta.touched &&
+                                                                        meta.error && <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{meta.error}</div>}
+                                                                </>
                                                             )
                                                         }
                                                     }}

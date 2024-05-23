@@ -17,7 +17,7 @@ import { crudGeneralOptions } from '../../utils/helpers/request-helpers';
     ...crudGeneralOptions.query,
     join: {
       ...crudGeneralOptions.query.join,
-      stakeholder: { eager: true, alias: 's' },
+      stakeholder: { eager: true, alias: 'stakeholder' },
     },
   },
 })
