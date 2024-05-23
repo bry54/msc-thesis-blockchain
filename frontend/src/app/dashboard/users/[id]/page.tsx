@@ -1,35 +1,28 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Badge,
     Button,
     Descriptions,
     DescriptionsProps,
+    Form,
     List,
-    Modal,
     Table,
     TableColumnsType,
     TableProps,
     Tag,
-    Form, Input, Empty, Typography,
+    Typography,
 } from 'antd';
-import { ArrowPathRoundedSquareIcon, UserIcon } from '@heroicons/react/20/solid';
-import { HeaderButton, HeaderIconWithText } from '@/app/lib/components/header-items';
-import { deleteUser, queryUser, queryUserHistory, updateUser } from '@/app/lib/actions/users';
+import {ArrowPathRoundedSquareIcon, UserIcon} from '@heroicons/react/20/solid';
+import {HeaderButton, HeaderIconWithText} from '@/app/lib/components/header-items';
+import {deleteUser, queryUser, queryUserHistory, updateUser} from '@/app/lib/actions/users';
 import {EllipsisMiddle, RecordNotFound} from '@/app/lib/components/CommonItems';
-import {
-    AimOutlined,
-    DownloadOutlined,
-    HistoryOutlined,
-    InfoOutlined,
-    LeftOutlined,
-    UserOutlined,
-} from '@ant-design/icons';
-import { useRouter } from 'next/navigation';
+import {AimOutlined, DownloadOutlined, InfoOutlined, LeftOutlined,} from '@ant-design/icons';
+import {useRouter} from 'next/navigation';
 import Link from 'next/link';
-import { addSummaries } from '@/app/lib/helpers';
-import { addUserFields, editUserFields } from '@/app/dashboard/users/definitions';
+import {addSummaries} from '@/app/lib/helpers';
+import {editUserFields} from '@/app/dashboard/users/definitions';
 
 const { Text } = Typography;
 

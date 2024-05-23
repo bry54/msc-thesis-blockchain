@@ -1,8 +1,8 @@
 'use server';
 
 import axios from 'axios';
-import { SignInResponseDto } from '@/app/lib/interfaces';
-import { cookies } from 'next/headers';
+import {SignInResponseDto} from '@/app/lib/interfaces';
+import {cookies} from 'next/headers';
 
 export const login = async (formData: Record<string, any>) => {
 

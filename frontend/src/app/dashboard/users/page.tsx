@@ -10,9 +10,8 @@ import {EllipsisMiddle, showDeleteConfirm} from '@/app/lib/components/CommonItem
 import * as Yup from 'yup';
 import {register} from '@/app/lib/actions/auth';
 import {ErrorMessage, Field, Form, Formik} from 'formik';
-import {DeleteOutlined, DownloadOutlined, EditOutlined, EyeOutlined} from '@ant-design/icons';
-import {addUserFields} from "@/app/dashboard/users/definitions";
-import {redirect} from "next/navigation";
+import {DeleteOutlined, EyeOutlined} from '@ant-design/icons';
+import {addUserFields, Roles} from "@/app/dashboard/users/definitions";
 import Link from "next/link";
 
 interface DataType {
@@ -130,7 +129,7 @@ export default function UsersPage() {
             title: 'Organization',
             dataIndex: 'stakeholder',
             key: 'stakeholder',
-            render: (data) => (<span className="text-sm font-medium">{ `${data?.name}, ${data?.location}` } </span>),
+            render: (data) => (<span className="text-sm font-medium">{ data ? `${data?.name}, ${data?.location}` : '--' } </span>),
             sorter: (a, b) => a.fullName.length - b.fullName.length,
         },{
             title: 'Actions',
@@ -207,7 +206,7 @@ export default function UsersPage() {
 
 
                 <Formik
-                    initialValues={{ fullName: '', username: '', password: '', 'confirmPassword': '' }}
+                    initialValues={{ fullName: '', username: '', password: '', stakeholderId: '', role: '' }}
                     validationSchema={Yup.object({
                         fullName: Yup.string().required('Required'),
                         username: Yup.string().required('Required'),
@@ -232,7 +231,6 @@ export default function UsersPage() {
                             });
                             fetchData()
                             resetForm()
-                            //router.push('/auth/login');
                         } catch (err: any) {
                             setError(err.message);
                         } finally {
@@ -266,31 +264,55 @@ export default function UsersPage() {
                                             className="block text-sm font-medium leading-6 text-gray-900">
                                             {f.label}
                                         </label>
-                                        {f.dataSource =='stakeholders' ? (
+                                        { ( ['stakeholders', 'roles'].includes(f.dataSource as string)) ? (
                                             <div className='mt-2'>
                                                 <Field name={f.id}>
                                                     {({ field, form, meta }) => {
-                                                        return (
-                                                            <select
-                                                                {...field}
-                                                                id={f.id}
-                                                                autoComplete="none"
-                                                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                                                <option key={'default'}
-                                                                        value={''}>{'Select organization to which the user belongs'}</option>
-                                                                <option key={'set-null'}
-                                                                        value={undefined}>{'--'}</option>
-                                                                {stakeholders.map(s => (
-                                                                    <option key={s.id} value={s.id}>{s.name}</option>
-                                                                ))}
-                                                            </select>
-                                                        )
+                                                        if (f.id == 'stakeholderId') {
+                                                            return (
+                                                                <select
+                                                                    {...field}
+                                                                    id={f.id}
+                                                                    name={f.id}
+                                                                    autoComplete="none"
+                                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                                                    <option key={'default'}
+                                                                            value={''}>{'Select organization to which the user belongs'}</option>
+                                                                    <option key={'set-null'}
+                                                                            value={undefined}>{'--'}</option>
+                                                                    {stakeholders.map(s => (
+                                                                        <option key={s.id}
+                                                                                value={s.id}>{s.name}</option>
+                                                                    ))}
+                                                                </select>
+                                                            )
+                                                        }
+
+                                                        if (f.id == 'role'){
+                                                            return (
+                                                                <select
+                                                                    {...field}
+                                                                    id={f.id}
+                                                                    name={f.id}
+                                                                    autoComplete="none"
+                                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                                                    <option key={'default'}
+                                                                            value={''}>{'Select role for the user'}</option>
+                                                                    <option key={'set-null'}
+                                                                            value={undefined}>{'--'}</option>
+                                                                    {Object.values(Roles).map(s => (
+                                                                        <option key={s}
+                                                                                value={s}>{ s }</option>
+                                                                    ))}
+                                                                </select>
+                                                            )
+                                                        }
                                                     }}
                                                 </Field>
                                             </div>
                                         ) : (
                                             <div className="mt-2">
-                                            <Field
+                                                <Field
                                                     id={f.id}
                                                     name={f.id}
                                                     type={f.type}
