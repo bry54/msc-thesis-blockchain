@@ -39,3 +39,15 @@ export const deleteUser = async (id: string) => {
     throw new Error(e.response?.data?.message || 'Error deleting user');
   }
 }
+
+export const updateUser = async (id: string, data: any) => {
+  console.log(data);
+  return
+  try {
+    const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_HOST}/users/${id}`, data );
+    return response.data
+  } catch (e: any){
+    console.log(e.response?.data || e.message);
+    throw new Error(e.response?.data?.message || 'Error deleting user');
+  }
+}

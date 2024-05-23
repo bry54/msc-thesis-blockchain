@@ -10,7 +10,7 @@ import * as Yup from 'yup';
 import {register} from '@/app/lib/actions/auth';
 import {ErrorMessage, Field, Form, Formik} from 'formik';
 import {DeleteOutlined, DownloadOutlined, EditOutlined, EyeOutlined} from '@ant-design/icons';
-import {fields} from "@/app/dashboard/users/definitions";
+import {addUserFields} from "@/app/dashboard/users/definitions";
 import {redirect} from "next/navigation";
 import Link from "next/link";
 
@@ -43,7 +43,6 @@ export default function UsersPage() {
     const [open, setOpen] = useState<Modals>({ addModal: false, deleteModal: false });
     const [confirmLoading, setConfirmLoading] = useState<Modals>({ addModal: false, deleteModal: false });
     const [error, setError] = useState<string | null>(null);
-
 
     const fetchData = async () => {
         setLoading(true)
@@ -88,7 +87,8 @@ export default function UsersPage() {
     }, []); // Empty dependency array means this effect runs once after the initial render
 
 
-    const columns: TableColumnsType<DataType> = [{
+    const columns: TableColumnsType<DataType> = [
+      {
         title: 'ID',
         dataIndex: 'id',
         key: 'id',
@@ -255,7 +255,7 @@ export default function UsersPage() {
                       confirmLoading={confirmLoading.addModal}
                       onCancel={() => handleCancel('addModal')}>
                         <Form className="space-y-6">
-                            {fields.map((f) => (
+                            {addUserFields.map((f) => (
                               <div key={f.id}>
                                   <label
                                     htmlFor={f.id}
