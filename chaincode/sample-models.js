@@ -21,7 +21,7 @@ const production = {
   regulatoryChecks: [
     {
       checkId: 'uuid',
-      detail: 'string',
+      notes: 'string',
       date: '2024-07-01T00:00:00Z',
       signedBy: {
         userId: 'uuid',

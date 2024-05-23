@@ -50,7 +50,7 @@ export default function LoginPage() {
             setError(null);
             try {
               await login(values);
-              router.push('/dashboard');
+              router.push('/dashboard/users');
             } catch (err: any) {
               setError(err.message);
             } finally {
