@@ -12,7 +12,8 @@ import {FabricModule} from './modules/fabric/fabric.module';
 import {StakeholderModule} from './modules/stakeholder/stakeholder.module';
 import {SnakeNamingStrategy} from 'typeorm-naming-strategies';
 import {ProductionModule} from './modules/production/production.module';
-import {SetUserMiddleware} from "./utils/middlewares/set-user.middleware";
+import {SetUserInterceptor} from "./utils/interceptors/set-user.interceptor";
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -46,19 +47,14 @@ import {SetUserMiddleware} from "./utils/middlewares/set-user.middleware";
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: SetUserInterceptor,
+    }
     /*{
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },*/
   ],
 })
-export class AppModule implements NestModule{
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-        .apply(SetUserMiddleware)
-        .exclude(
-            {path: '*', method: RequestMethod.GET},
-        )
-        .forRoutes('*');
-  }
-}
+export class AppModule {}

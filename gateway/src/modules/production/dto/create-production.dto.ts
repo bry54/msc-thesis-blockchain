@@ -50,11 +50,17 @@ export class HoldingArea {
 
   @ApiProperty()
   notes: string;
+
+  @ApiProperty()
+  responsiblePerson: Partial<User>;
 }
 
 export class TransportationDetail {
   id: string;
 
+  @ApiProperty()
+  responsiblePerson: Partial<User>;
+  _
   @ApiProperty()
   departure: HoldingArea;
 
