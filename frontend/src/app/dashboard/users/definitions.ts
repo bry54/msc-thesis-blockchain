@@ -23,6 +23,13 @@ export const addUserFields = [
         id: 'stakeholderId',
         autoComplete: '',
         dataSource: 'stakeholders'
+    },
+    {
+        label: 'Role',
+        type: 'select',
+        id: 'role',
+        autoComplete: '',
+        dataSource: 'roles'
     }
 ]
 
@@ -47,3 +54,10 @@ export const editUserFields = [
         dataSource: 'stakeholders'
     }
 ]
+
+export enum Roles {
+    FARMER = 'FARMER',
+    REGULATION_CHECHER = 'REGULATION CHECKER',
+    MANAGER = 'MANAGER',
+    ADMINISTRATOR = 'ADMINISTRATOR',
+}
