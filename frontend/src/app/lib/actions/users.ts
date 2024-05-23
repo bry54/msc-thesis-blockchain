@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const queryUsers = async () => {
   try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/users` );
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/user` );
     return response.data.data.map((d: any) => ({ key: d.id, ...d }))
   } catch (e: any){
     console.log(e.response?.data || e.message);
@@ -12,7 +12,7 @@ export const queryUsers = async () => {
 
 export const queryUser = async (id: string) => {
   try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/users/${id}` );
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/user/${id}` );
     return  response.data
   } catch (e: any){
     console.log(e.response?.data || e.message);
@@ -32,7 +32,7 @@ export const queryUserHistory = async (id: string) => {
 
 export const deleteUser = async (id: string) => {
   try {
-    const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_HOST}/users/${id}` );
+    const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_HOST}/user/${id}` );
     return response.data
   } catch (e: any){
     console.log(e.response?.data || e.message);
@@ -41,13 +41,11 @@ export const deleteUser = async (id: string) => {
 }
 
 export const updateUser = async (id: string, data: any) => {
-  console.log(data);
-  return
   try {
-    const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_HOST}/users/${id}`, data );
+    const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_HOST}/user/${id}`, data );
     return response.data
   } catch (e: any){
     console.log(e.response?.data || e.message);
-    throw new Error(e.response?.data?.message || 'Error deleting user');
+    throw new Error(e.response?.data?.message || 'Error updating user');
   }
 }

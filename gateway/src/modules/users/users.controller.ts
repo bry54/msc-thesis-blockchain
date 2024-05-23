@@ -15,10 +15,14 @@ import { crudGeneralOptions } from '../../utils/helpers/request-helpers';
   },
   query: {
     ...crudGeneralOptions.query,
+    join: {
+      ...crudGeneralOptions.query.join,
+      stakeholder: { eager: true, alias: 's' },
+    },
   },
 })
 @ApiTags('Users')
-@Controller('users')
+@Controller('user')
 export class UsersController implements CrudController<User> {
   constructor(public service: UsersService) {}
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -46,12 +46,19 @@ export class UsersService extends TypeOrmCrudService<User> {
   }
 
   async updateOne(req: CrudRequest, dto: DeepPartial<User>): Promise<User> {
-    if(dto.password) {
-      dto.password = bcrypt.hashSync(dto.password, 10);
+    try {
+      if (dto.password) {
+        dto.password = bcrypt.hashSync(dto.password, 10);
+      }
+      const res = await super.updateOne(req, dto);
+      await this.blockchainService.updateOne(ChaincodeNames.USERS, res.id, dto);
+      return res;
+    } catch (e){
+      if (e.code == '23505' || e.code == 'ER_DUP_ENTRY') {
+        throw new ConflictException('Unique constraint violation. Email is possibly taken');
+      }
+      throw e;
     }
-    const res = await super.updateOne(req, dto);
-    await this.blockchainService.updateOne(ChaincodeNames.USERS, res.id, dto);
-    return res;
   }
 
   async deleteOne(req: CrudRequest): Promise<void | User> {

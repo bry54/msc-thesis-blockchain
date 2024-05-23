@@ -16,6 +16,13 @@ export const addUserFields = [
         type: 'password',
         id: 'password',
         autoComplete: ''
+    },
+    {
+        label: 'Organization',
+        type: 'select',
+        id: 'stakeholderId',
+        autoComplete: '',
+        dataSource: 'stakeholders'
     }
 ]
 
