@@ -13,6 +13,9 @@ import {
     TableProps,
     Tag,
     Typography,
+    Modal,
+    Input,
+    Select
 } from 'antd';
 import {ArrowPathRoundedSquareIcon, UserIcon} from '@heroicons/react/20/solid';
 import {HeaderButton, HeaderIconWithText} from '@/app/lib/components/header-items';
@@ -22,7 +25,8 @@ import {AimOutlined, DownloadOutlined, InfoOutlined, LeftOutlined,} from '@ant-d
 import {useRouter} from 'next/navigation';
 import Link from 'next/link';
 import {addSummaries} from '@/app/lib/helpers';
-import {editUserFields} from '@/app/dashboard/users/definitions';
+import {editUserFields, Roles} from '@/app/dashboard/users/definitions';
+import { queryStakeholders } from '@/app/lib/actions/stakeholders';
 
 const { Text } = Typography;
 
@@ -41,7 +45,9 @@ const descriptionLabels = [
 interface UserModel {
     id: string,
     fullName: string,
-    username: string
+    username: string,
+    role: string,
+    stakeholderId: string
 }
 
 interface RecordHistory {
@@ -76,6 +82,7 @@ export default function UserPage({ params }: { params: { id: string } }) {
     const [formData, setFormData] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
     const [recordHistory, setRecordHistory] = useState<RecordHistory[]>([])
+    const [stakeholders, setStakeholders] = useState<any[]>([])
     const router = useRouter()
     const [form] = Form.useForm();
 
@@ -83,6 +90,15 @@ export default function UserPage({ params }: { params: { id: string } }) {
         setError(null);
         setAllowUpdating(false)
     }
+
+    const openForm = async() => {
+        const data = await queryStakeholders();
+        setStakeholders((prevState)=>{
+            return data
+        })
+        setAllowUpdating(true)
+    }
+
     const fetchData = async () => {
         setLoading(true)
         try {
@@ -90,7 +106,14 @@ export default function UserPage({ params }: { params: { id: string } }) {
             await fetchHistory()
             setData(data);
             setFormData(data)
-            const items: DescriptionsProps['items'] = Object.keys(data).map((d: any) =>{
+            const toShow = {...data}
+            delete toShow.createAt;
+            delete toShow.updatedDate;
+            delete toShow.deletedDate;
+            delete toShow.stakeholderId;
+            delete toShow.updatedBy;
+
+            const items: DescriptionsProps['items'] = Object.keys(toShow).map((d: any) =>{
                 return {
                     key: d,
                     label: descriptionLabels.find(label => label.key === d)?.value || 'Label',
@@ -136,11 +159,12 @@ export default function UserPage({ params }: { params: { id: string } }) {
     }
 
     const handleUpdate = async () => {
+        const values: any = form.getFieldsValue();
         try {
             setError(null)
             const {fullName, username } = formData
             const editableFields = {fullName, username}
-            await updateUser(data.id, editableFields)
+            await updateUser(data.id, values)
             await fetchData()
             closeForm()
         } catch (e: any){
@@ -178,15 +202,7 @@ export default function UserPage({ params }: { params: { id: string } }) {
         },
         showSorterTooltip: { target: 'full-header' },
         filters: [], // specify the condition of filtering result
-    },{
-        title: 'Actions',
-        key: 'operation',
-        fixed: 'right',
-        width: 100,
-        render: (data) => (<span className='flex justify-between'>
-            <Button type="primary" icon={<DownloadOutlined />} size={'small'} title='Download User History'/>
-        </span>),
-    },];
+    }];
 
     const onChange: TableProps<RecordHistory>['onChange'] = (pagination, filters, sorter, extra) => {
         console.log('params', pagination, filters, sorter, extra);
@@ -234,60 +250,12 @@ export default function UserPage({ params }: { params: { id: string } }) {
                     <RecordNotFound redirectPath={"/dashboard/users"}/>
                 ) : (
                     <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8 ">
-                        {allowUpdating ? (
-                            <div className={'mb-5'}>
-                                <div>
-                                    <div className="space-y-12">
-                                        <div className="pb-4">
-                                            <div className="mt-0 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                                {editUserFields.map(f => (
-                                                        <div className="sm:col-span-2" key={f.id}>
-                                                            <label htmlFor={f.id}
-                                                                   className="block text-sm font-medium leading-6 text-gray-900">
-                                                                {f.label}
-                                                            </label>
-                                                            <div className="mt-2">
-                                                                <input
-                                                                    value={formData[f.id] as any}
-                                                                    type={f.type}
-                                                                    name={f.id}
-                                                                    id={f.id}
-                                                                    autoComplete={f.autoComplete}
-                                                                    onChange={(e) => setFormData({
-                                                                        ...formData,
-                                                                        [f.id]: e.target.value
-                                                                    })}
-                                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <Text type="danger">{error}</Text>
-
-                                    <div className="mt-6 mb-6 flex items-center justify-center gap-x-6">
-                                        <button type="button" className="text-sm font-semibold leading-6 text-gray-900"
-                                                onClick={() => closeForm()}>
-                                            Cancel
-                                        </button>
-                                        <button
-                                            onClick={handleUpdate}
-                                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                            Save
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
+                        
                             <div className="mt-2 mb-5 ">
                                 <Descriptions
                                     extra={
                                         <div>
-                                            <Button type="primary" onClick={() => setAllowUpdating(true)}>
+                                            <Button type="primary" onClick={openForm}>
                                                 Modify Record</Button>
                                             <Button className={'ml-3'} danger type="primary"
                                                     onClick={() => handleDelete(data.id)}>Delete Record</Button>
@@ -298,7 +266,72 @@ export default function UserPage({ params }: { params: { id: string } }) {
 
                                     items={items}/>
                             </div>
-                        )}
+
+                            {data && <Form form={form}
+                  name="updateUser"
+                  labelCol={{ span: 8 }}
+                  wrapperCol={{ span: 16 }}
+                  style={{ maxWidth: 600 }}
+                  initialValues={{ 
+                    stakeholderId: data?.stakeholderId,
+                    fullName: data?.fullName,
+                    username: data?.username,
+                    role: data?.role,
+
+                }}
+                  onFinish={() => alert('onFinish invoked')}
+                  onFinishFailed={() => alert('onFinishFailed invoked')}
+                  autoComplete="off">
+
+              <Modal
+                title="Update User"
+                open={allowUpdating}
+                onOk={handleUpdate}
+                confirmLoading={false}
+                onCancel={closeForm}>
+                <Form.Item
+                  label="Fullname"
+                  name="fullName"
+                  rules={[{ required: true, message: 'Fullname can not be empty' }]}>
+                  <Input
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Username"
+                  name="username"
+                  rules={[{ required: true, message: 'Username can not be empty' }]}>
+                  <Input
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="role"
+                  label="Role"
+                  rules={[{ required: true, message: 'Role can not be empty' }]}>
+                  <Select placeholder="select product origin">
+                    {[Roles.ADMINISTRATOR, Roles.FARMER, Roles.MANAGER, Roles.REGULATION_CHECHER].map(s =>{
+                      return (<Select.Option key={s} value={s}> {s} </Select.Option>)
+                    })}
+                  </Select>
+                </Form.Item>
+
+                <Form.Item
+                  name="stakeholderId"
+                  label="Organization"
+                  rules={[{ required: false, message: 'Select organization for the user' }]}>
+                  <Select placeholder="Select organization for the user">
+                    {stakeholders.map(s =>{
+                      return (<Select.Option key={s.id} value={s.id}> {s.name} </Select.Option>)
+                    })}
+                  </Select>
+                </Form.Item>
+              </Modal>
+            </Form>}
+
+                        
                         <div className={'mt-6 border-t border-gray-900/10 pb-12'}>
                             <Table
                                 title={() => (
@@ -307,6 +340,8 @@ export default function UserPage({ params }: { params: { id: string } }) {
                                             <h1 className="text-2xl">Record History on blockchain</h1>
                                             <span className={'text-sm'}>This is a read only table, with a history of all changes made to this entry</span>
                                         </div>
+
+                                        <div className='flex flex-end'>
                                         <HeaderButton
                                             btnClasses="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
                                             icon={<ArrowPathRoundedSquareIcon className="-ml-0.5 mr-1.5 h-5 w-5"
@@ -314,6 +349,15 @@ export default function UserPage({ params }: { params: { id: string } }) {
                                             label="Refresh"
                                             clickHandler={fetchData}
                                         />
+                                        
+                                        <HeaderButton
+                                            btnClasses="inline-flex items-center rounded-md bg-teal-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                                            icon={<DownloadOutlined className="-ml-0.5 mr-1.5 h-5 w-5"
+                                                                              aria-hidden="true"/>}
+                                            label="Download"
+                                            clickHandler={() => alert('exports full log of record history')}
+                                        />
+                                        </div>
                                     </div>
                                 )}
                                 scroll={{x: 1000}}

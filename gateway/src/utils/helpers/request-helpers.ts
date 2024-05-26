@@ -21,6 +21,9 @@ export const crudGeneralOptions: Partial<CrudOptions> = {
     maxLimit: 100,
     softDelete: true,
     alwaysPaginate: true,
+    sort: [
+      { field: 'updatedDate', order: 'DESC'}
+    ],
     exclude: ['password', 'accessToken'],
   },
 };

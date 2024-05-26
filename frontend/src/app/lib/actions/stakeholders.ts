@@ -49,3 +49,13 @@ export const updateStakeholder = async (id: string, data: any) => {
     throw new Error(e.response?.data?.message || 'Error updating stakeholder');
   }
 }
+
+export const addStakeholder = async (data: any) => {
+  try {
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/stakeholder`, data );
+    return response.data
+  } catch (e: any){
+    console.log(e.response?.data || e.message);
+    throw new Error(e.response?.data?.message || 'Error adding stakeholder');
+  }
+}

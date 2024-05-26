@@ -26,30 +26,32 @@ interface Modals {
     deleteModal: boolean
 }
 
-interface UsersQueryResponse {
-    "data": [],
-    "count": number,
-    "total": number,
-    "page": number,
-    "pageCount": number
+interface Collections {
+    stakeholders: []
+    users: []
 }
 
-
-
 export default function UsersPage() {
-
-    const [data, setData] = useState<DataType[]>([]);
-    const [stakeholders, setStakeholders] = useState<any[]>([]);
+    const [collection, setCollectionState] = useState<Collections>({stakeholders: [], users: []})
     const [loading, setLoading] = useState<boolean>(true);
     const [open, setOpen] = useState<Modals>({ addModal: false, deleteModal: false });
     const [confirmLoading, setConfirmLoading] = useState<Modals>({ addModal: false, deleteModal: false });
     const [error, setError] = useState<string | null>(null);
 
+    const updateCollectionsState = (collectionName:'stakeholders' | 'users', data: any) => {
+        setCollectionState((prevState) =>{
+            return {
+                ...prevState,
+                [collectionName] : data
+            }
+        })
+    }
+
     const fetchData = async () => {
         setLoading(true)
         try {
             const data: DataType[] = await queryUsers();
-            setData(data);
+            updateCollectionsState('users', data)
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
@@ -71,18 +73,19 @@ export default function UsersPage() {
 
     const showModal = async (modalName: 'addModal' | 'deleteModal') => {
         const stakeholders: any[] = await queryStakeholders();
-        setStakeholders(stakeholders)
-        setOpen({
-            ...open,
+        updateCollectionsState('stakeholders', stakeholders)
+
+        setOpen((prevState) =>({
+            ...prevState,
             [modalName]: true
-        });
+        }));
     };
 
     const handleCancel = (modalName: 'addModal' | 'deleteModal') => {
-        setOpen({
-            ...open,
+        setOpen((prevState) => ({
+            ...prevState,
             [modalName]: false
-        });
+        }));
     };
 
     useEffect(() => {
@@ -97,11 +100,11 @@ export default function UsersPage() {
             filters: [],
             width: '20%',
             render: (text) => (
-                <EllipsisMiddle
-                    suffixCount={8}
-                    textClasses="text-sm font-bold">
-                    { text }
-                </EllipsisMiddle>
+              <EllipsisMiddle
+                suffixCount={8}
+                textClasses="text-sm font-bold">
+                  { text }
+              </EllipsisMiddle>
             ),
             sorter: (a, b) => a.fullName.length - b.fullName.length,
         }, {
@@ -143,8 +146,8 @@ export default function UsersPage() {
                 </Link>
             <Button danger type='primary' icon={<DeleteOutlined />} size={'small'} title='Delete User'
                     onClick={() => showDeleteConfirm(
-                        ()=>handleUserDelete(data.id),
-                        'Are you sure want to Delete User', `${data.fullName} will be permanently deleted from the system. This process can not be undone`
+                      ()=>handleUserDelete(data.id),
+                      'Are you sure want to Delete User', `${data.fullName} will be permanently deleted from the system. This process can not be undone`
                     )}
             />
         </span>),
@@ -155,197 +158,198 @@ export default function UsersPage() {
     };
 
     return (
-        <div className='text-neutral-950'>
-            <header className="bg-white shadow">
-                <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                    <div className="lg:flex lg:items-center lg:justify-between">
-                        <div className="min-w-0 flex-1">
-                            <h2
-                                className="font-medium text-2xl leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                                Users Management
-                            </h2>
-                            <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
-                                <HeaderIconWithText
-                                    icon={<UserIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                    aria-hidden="true"/>}
-                                    label={'Manage users in the system'}
-                                />
-                            </div>
-                        </div>
+      <div className='text-neutral-950'>
+          <header className="bg-white shadow">
+              <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                  <div className="lg:flex lg:items-center lg:justify-between">
+                      <div className="min-w-0 flex-1">
+                          <h2
+                            className="font-medium text-2xl leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                              Users Management
+                          </h2>
+                          <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
+                              <HeaderIconWithText
+                                icon={<UserIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                aria-hidden="true"/>}
+                                label={'Manage users in the system'}
+                              />
+                          </div>
+                      </div>
 
-                        <div className="mt-5 flex lg:ml-4 lg:mt-0">
-                            <HeaderButton
-                                btnClasses="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                                icon={<ArrowPathRoundedSquareIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true"/>}
-                                label="Refresh"
-                                clickHandler={fetchData}
-                            />
+                      <div className="mt-5 flex lg:ml-4 lg:mt-0">
+                          <HeaderButton
+                            btnClasses="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                            icon={<ArrowPathRoundedSquareIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true"/>}
+                            label="Refresh"
+                            clickHandler={fetchData}
+                          />
 
-                            <HeaderButton
-                                btnClasses="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                icon={<PlusCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true"/>}
-                                label="Add User"
-                                clickHandler={() => showModal('addModal')}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </header>
+                          <HeaderButton
+                            btnClasses="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            icon={<PlusCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true"/>}
+                            label="Add User"
+                            clickHandler={() => showModal('addModal')}
+                          />
+                      </div>
+                  </div>
+              </div>
+          </header>
 
-            <main>
-                <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-                    <Table
-                        scroll={{ x: 1500 }}
-                        loading={loading}
-                        columns={columns}
-                        dataSource={data}
-                        onChange={onChange}
-                        showSorterTooltip={{ target: 'sorter-icon' }}
-                    />
-                </div>
+          <main>
+              <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+                  <Table
+                    scroll={{ x: 1500 }}
+                    loading={loading}
+                    columns={columns}
+                    dataSource={collection.users}
+                    onChange={onChange}
+                    showSorterTooltip={{ target: 'sorter-icon' }}
+                  />
+              </div>
 
-                <Formik
-                    initialValues={{ fullName: '', username: '', password: '', stakeholderId: '', role: '' }}
-                    validationSchema={Yup.object({
-                        fullName: Yup.string().required('Required'),
-                        username: Yup.string().required('Required'),
-                        password: Yup.string().required('Required'),
-                        role: Yup.string().required('Role can not be empty').typeError(''),
-                        stakeholderId: Yup.string().required('Organization can not be empty').typeError(''),
-                    })}
-                    onSubmit={async (values, { setSubmitting, resetForm }) => {
+              <Formik
+                initialValues={{ fullName: '', username: '', password: '', stakeholderId: '', role: '' }}
+                validationSchema={Yup.object({
+                    fullName: Yup.string().required('Required'),
+                    username: Yup.string().required('Required'),
+                    password: Yup.string().required('Required'),
+                    role: Yup.string().required('Role can not be empty').typeError(''),
+                    stakeholderId: Yup.string().required('Organization can not be empty').typeError(''),
+                })}
+                onSubmit={async (values, { setSubmitting, resetForm }) => {
+                    setConfirmLoading({
+                        ...confirmLoading,
+                        addModal: true
+                    });
+                    setError(null);
+                    try {
+                        console.log(values)
+                        await register(values);
+
+                        setOpen({
+                            ...open,
+                            addModal: false
+                        });
                         setConfirmLoading({
                             ...confirmLoading,
-                            addModal: true
+                            addModal: false
                         });
-                        setError(null);
-                        try {
-                            console.log(values)
-                            await register(values);
-                            setOpen({
-                                ...open,
-                                addModal: false
-                            });
-                            setConfirmLoading({
-                                ...confirmLoading,
-                                addModal: false
-                            });
-                            fetchData()
-                            resetForm()
-                        } catch (err: any) {
-                            setError(err.message);
-                        } finally {
-                            setConfirmLoading({
-                                ...confirmLoading,
-                                addModal: false
-                            })
-                            setSubmitting(false);
-                        }
-                    }}
-                >
-                    {({ isSubmitting, submitForm }) => (
-                        <Modal
-                            title={
-                                <span className="mb-5">
+                        fetchData()
+                        resetForm()
+                    } catch (err: any) {
+                        setError(err.message);
+                    } finally {
+                        setConfirmLoading({
+                            ...confirmLoading,
+                            addModal: false
+                        })
+                        setSubmitting(false);
+                    }
+                }}
+              >
+                  {({ isSubmitting, submitForm }) => (
+                    <Modal
+                      title={
+                          <span className="mb-5">
                               <p className="text-xl font-medium">Add User</p>
                               <p className="text-sm font-light">Provide user information & default password.</p>
                               <hr className="mt-3 mb-3"></hr>
                           </span>
-                            }
-                            okText={'Save User'}
-                            open={open.addModal}
-                            onOk={submitForm}
-                            confirmLoading={confirmLoading.addModal}
-                            onCancel={() => handleCancel('addModal')}>
-                            <Form className="space-y-6">
-                                {addUserFields.map((f) => (
-                                    <div key={f.id}>
-                                        <label
-                                            htmlFor={f.id}
-                                            className="block text-sm font-medium leading-6 text-gray-900">
-                                            {f.label}
-                                        </label>
-                                        { ( ['stakeholders', 'roles'].includes(f.dataSource as string)) ? (
-                                            <div className='mt-2'>
-                                                <Field name={f.id}>
-                                                    {({ field, form, meta }) => {
-                                                        if (f.id == 'stakeholderId') {
-                                                            return (
-                                                                <>
-                                                                <select
-                                                                    {...field}
-                                                                    id={f.id}
-                                                                    name={f.id}
-                                                                    autoComplete="none"
-                                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                                                    <option key={'default'}
-                                                                            value={''}>{'Select organization to which the user belongs'}</option>
-                                                                    <option key={'set-null'}
-                                                                            value={undefined}>{'--'}</option>
-                                                                    {stakeholders.map(s => (
-                                                                        <option key={s.id}
-                                                                                value={s.id}>{s.name}</option>
-                                                                    ))}
-                                                                </select>
-                                                                    {meta.touched &&
-                                                                        meta.error && <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{meta.error}</div>}
-                                                                    </>
+                      }
+                      okText={'Save User'}
+                      open={open.addModal}
+                      onOk={submitForm}
+                      confirmLoading={confirmLoading.addModal}
+                      onCancel={() => handleCancel('addModal')}>
+                        <Form className="space-y-6">
+                            {addUserFields.map((f) => (
+                              <div key={f.id}>
+                                  <label
+                                    htmlFor={f.id}
+                                    className="block text-sm font-medium leading-6 text-gray-900">
+                                      {f.label}
+                                  </label>
+                                  { ( ['stakeholders', 'roles'].includes(f.dataSource as string)) ? (
+                                    <div className='mt-2'>
+                                        <Field name={f.id}>
+                                            {({ field, form, meta }) => {
+                                                if (f.id == 'stakeholderId') {
+                                                    return (
+                                                      <>
+                                                          <select
+                                                            {...field}
+                                                            id={f.id}
+                                                            name={f.id}
+                                                            autoComplete="none"
+                                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                                              <option key={'default'}
+                                                                      value={''}>{'Select organization to which the user belongs'}</option>
+                                                              <option key={'set-null'}
+                                                                      value={undefined}>{'--'}</option>
+                                                              {collection.stakeholders.map((s: any) => (
+                                                                <option key={s.id}
+                                                                        value={s.id}>{s.name}</option>
+                                                              ))}
+                                                          </select>
+                                                          {meta.touched &&
+                                                            meta.error && <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{meta.error}</div>}
+                                                      </>
 
-                                                            )
-                                                        }
+                                                    )
+                                                }
 
-                                                        if (f.id == 'role'){
-                                                            return (
-                                                                <>
-                                                                <select
-                                                                    {...field}
-                                                                    id={f.id}
-                                                                    name={f.id}
-                                                                    autoComplete="none"
-                                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                                                    <option key={'default'}
-                                                                            value={''}>{'Select role for the user'}</option>
-                                                                    <option key={'set-null'}
-                                                                            value={undefined}>{'--'}</option>
-                                                                    {Object.values(Roles).map(s => (
-                                                                        <option key={s}
-                                                                                value={s}>{ s }</option>
-                                                                    ))}
-                                                                </select>
-                                                                    {meta.touched &&
-                                                                        meta.error && <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{meta.error}</div>}
-                                                                </>
-                                                            )
-                                                        }
-                                                    }}
-                                                </Field>
-                                            </div>
-                                        ) : (
-                                            <div className="mt-2">
-                                                <Field
-                                                    id={f.id}
-                                                    name={f.id}
-                                                    type={f.type}
-                                                    autoComplete={f.autoComplete}
-                                                    required
-                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                                />
-                                                <ErrorMessage name={f.id}
-                                                              className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium"
-                                                              component="p"/>
-                                            </div>
-                                        )}
+                                                if (f.id == 'role'){
+                                                    return (
+                                                      <>
+                                                          <select
+                                                            {...field}
+                                                            id={f.id}
+                                                            name={f.id}
+                                                            autoComplete="none"
+                                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                                              <option key={'default'}
+                                                                      value={''}>{'Select role for the user'}</option>
+                                                              <option key={'set-null'}
+                                                                      value={undefined}>{'--'}</option>
+                                                              {Object.values(Roles).map(s => (
+                                                                <option key={s}
+                                                                        value={s}>{ s }</option>
+                                                              ))}
+                                                          </select>
+                                                          {meta.touched &&
+                                                            meta.error && <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{meta.error}</div>}
+                                                      </>
+                                                    )
+                                                }
+                                            }}
+                                        </Field>
                                     </div>
-                                ))}
-                                {error &&
-                                    <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{error}</div>}
-                            </Form>
-                            <div className="mt-6 mb-6"></div>
-                        </Modal>
-                    )}
-                </Formik>
-            </main>
-        </div>
+                                  ) : (
+                                    <div className="mt-2">
+                                        <Field
+                                          id={f.id}
+                                          name={f.id}
+                                          type={f.type}
+                                          autoComplete={f.autoComplete}
+                                          required
+                                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                        <ErrorMessage name={f.id}
+                                                      className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium"
+                                                      component="p"/>
+                                    </div>
+                                  )}
+                              </div>
+                            ))}
+                            {error &&
+                              <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{error}</div>}
+                        </Form>
+                        <div className="mt-6 mb-6"></div>
+                    </Modal>
+                  )}
+              </Formik>
+          </main>
+      </div>
     );
 }
 

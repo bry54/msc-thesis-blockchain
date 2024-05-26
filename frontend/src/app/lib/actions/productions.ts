@@ -10,19 +10,19 @@ export const queryProductions = async () => {
   }
 }
 
-export const queryStakeholder = async (id: string) => {
+export const queryProduction = async (id: string) => {
   try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/stakeholder/${id}` );
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/production/${id}` );
     return  response.data
   } catch (e: any){
     console.log(e.response?.data || e.message);
-    throw new Error(e.response?.data?.message || 'Error getting stakeholder record');
+    throw new Error(e.response?.data?.message || 'Error getting production record');
   }
 }
 
-export const queryStakeholderHistory = async (id: string) => {
+export const queryProductHistory = async (id: string) => {
   try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST_BLOCKCHAIN}/stakeholder/${id}/history` );
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST_BLOCKCHAIN}/production/${id}/history` );
     return  response.data
   } catch (e: any){
     console.log(e.response?.data || e.message);
@@ -39,13 +39,21 @@ export const deleteProduction = async (id: string) => {
     throw new Error(e.response?.data?.message || 'Error deleting production');
   }
 }
-
-export const updateStakeholder = async (id: string, data: any) => {
-  try {
-    const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_HOST}/stakeholder/${id}`, data );
+export const updateProduction = async (id: string, data: any) => {  try {
+    const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_HOST}/production/${id}`, data );
     return response.data
   } catch (e: any){
     console.log(e.response?.data || e.message);
     throw new Error(e.response?.data?.message || 'Error updating stakeholder');
+  }
+}
+
+export const addProduction = async (values: any) => {
+  try {
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/production`, values );
+    return response.data
+  } catch (e: any){
+    console.log(e.response?.data || e.message);
+    throw new Error(e.response?.data?.message || 'Error adding production');
   }
 }

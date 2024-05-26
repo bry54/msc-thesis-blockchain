@@ -1,18 +1,22 @@
+
 'use client'
 
 import { HeaderButton, HeaderIconWithText } from '@/app/lib/components/header-items';
 import { ArrowPathRoundedSquareIcon, BriefcaseIcon, PlusCircleIcon, UserIcon } from '@heroicons/react/20/solid';
 import React, { useEffect, useState } from 'react';
-import { Badge, Button, Popconfirm, Table, TableColumnsType, Tag } from 'antd';
+import { Badge, Button, DatePicker, Form, Input, Modal, Popconfirm, Select, Table, TableColumnsType, Tag } from 'antd';
 import { EllipsisMiddle, showDeleteConfirm } from '@/app/lib/components/CommonItems';
 import Link from 'next/link';
 import { CheckCircleOutlined, DeleteOutlined, EyeOutlined, SyncOutlined } from '@ant-design/icons';
-import { deleteProduction, queryProductions } from '@/app/lib/actions/productions';
+import { addProduction, deleteProduction, queryProductions } from '@/app/lib/actions/productions';
 import moment from 'moment';
-import { deleteUser } from '@/app/lib/actions/users';
+import { queryStakeholders } from '@/app/lib/actions/stakeholders';
+
+const { Option } = Select
 
 interface Processing {
   deleting: boolean,
+  adding: boolean
   fetchingCollection: boolean
 }
 
@@ -23,13 +27,26 @@ interface PopUps {
   addModal: boolean
 }
 
+interface Collections {
+  productsList: any[],
+  stakeholders: any[]
+}
+
 export default function SettingsPage() {
 
-  const [processingState, setProcessingState] = useState<Processing>({ fetchingCollection: true, deleting: false });
+  const [processingState, setProcessingState] = useState<Processing>({ fetchingCollection: true, deleting: false, adding: false });
   const [popUpState, setPopUpState] = useState<PopUps>({ deleteModal: {  }, addModal: false });
-  const [collection, setCollection] = useState<any[]>([]);
+  const [collectionState, setCollectionState] = useState<Collections>({ productsList:[], stakeholders:[] });
+  const [form] = Form.useForm();
 
-  const updateProcessingState = (processName: 'deleting' | 'fetchingCollection', value: boolean) => {
+  const updateCollectionsState = (collectionName: 'productsList' | 'stakeholders', data: any) => {
+    setCollectionState({
+      ...collectionState,
+      [collectionName]: data
+    });
+  }
+
+  const updateProcessingState = (processName: 'deleting' | 'fetchingCollection' | 'adding', value: boolean) => {
     setProcessingState({
       ...processingState,
       [processName]: value
@@ -55,11 +72,23 @@ export default function SettingsPage() {
 
   }
 
-  const fetchData = async () => {
+  const fetchStakeholders = async () => {
+    updateProcessingState('fetchingCollection', true)
+    try {
+      const data: any[] = await queryStakeholders();
+      updateCollectionsState('stakeholders', data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      updateProcessingState('fetchingCollection', false)
+    }
+  };
+
+  const fetchProducts = async () => {
     updateProcessingState('fetchingCollection', true)
     try {
       const data: any[] = await queryProductions();
-      setCollection(data);
+      updateCollectionsState('productsList', data);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -71,7 +100,7 @@ export default function SettingsPage() {
     updateProcessingState('deleting', true)
     try {
       await deleteProduction(recordId)
-      await fetchData()
+      await fetchProducts()
     } catch (error){
       console.error('Error deleting production:', error);
     } finally {
@@ -79,8 +108,42 @@ export default function SettingsPage() {
     }
   }
 
+  const handleRecordAdd = async () =>{
+    const values: any = form.getFieldsValue();
+    const initialPlace = collectionState.stakeholders.find((s: any) => s.id == values.origin)
+
+    const product = {
+      name: values.name,
+      category: values.type
+    }
+
+    const origin = {
+      farmId: values.origin,
+      name: initialPlace.name,
+      location: initialPlace.location,
+    }
+
+    const planting = {
+      quantity: values.quantity,
+      date: values.plantingDate
+    }
+
+    updateProcessingState('adding', true)
+
+    try {
+      await addProduction({ product, origin, planting })
+      await fetchProducts()
+      form.resetFields();
+      updatePopsState('addModal', false, '')
+    } catch (error){
+      console.error('Error Adding production:', error);
+    } finally {
+      updateProcessingState('adding', false)
+    }
+  }
+
   useEffect(() => {
-    fetchData();
+    fetchProducts();
   }, []); // Empty dependency array means this effect runs once after the initial render
 
   const columns: TableColumnsType<any> = [
@@ -129,22 +192,23 @@ export default function SettingsPage() {
       },
     },
     {
-      title: 'Planting',
-      dataIndex: 'panting',
+      title: 'Planted On',
+      dataIndex: 'planting',
       key: 'planting',
+      width: 150,
       render: (data) => {
         if (!data)
           return (<Tag color="#f50">No Information</Tag>)
         return (
           <div className="text-sm font-medium">
             <Badge text={data?.quantity || '--'} color="green" className={'mb-1'} /><br />
-            <Badge text={data?.date || '--'} color="green" /><br />
+            <Badge text={data?.date ? moment(data.date).format("MMMM Do YYYY"): '--'} color="green" /><br />
           </div>
         );
       },
     },
     {
-      title: 'Harvesting',
+      title: 'Harvested On',
       dataIndex: 'harvesting',
       key: 'harvesting',
       render: (data) =>{
@@ -153,7 +217,7 @@ export default function SettingsPage() {
         return (
           <div className="text-sm font-medium">
             <Badge text={data?.quantity || '--'} color="orange" className={'mb-1'} /><br />
-            <Badge text={data?.date || '--'} color="orange" /><br />
+            <Badge text={data?.date ? moment(data.date).format("MMMM Do YYYY"): '--'} color="orange" /><br />
           </div>
         )
       },
@@ -169,8 +233,8 @@ export default function SettingsPage() {
           return (<Tag color="#f50">No Information</Tag>)
         return (
           <div className="text-sm font-medium">
-            <Badge text={rec?.notes || '--'} color="magenta" className={'mb-1'} /><br />
-            <Badge text={rec?.date ? moment(rec?.date).fromNow() : '--'} color="magenta" /><br />
+            <Badge text={rec?.date ? moment(rec?.date).fromNow() : '--'} color="magenta" className={'mb-1'}/><br />
+            {rec?.notes}
           </div>
         );
       },
@@ -266,14 +330,17 @@ export default function SettingsPage() {
                 btnClasses="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
                 icon={<ArrowPathRoundedSquareIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />}
                 label="Refresh"
-                clickHandler={fetchData}
+                clickHandler={fetchProducts}
               />
 
               <HeaderButton
                 btnClasses="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 icon={<PlusCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />}
                 label="Add Product"
-                clickHandler={() => alert('New product button clicked')}
+                clickHandler={ async () => {
+                  await fetchStakeholders();
+                  updatePopsState('addModal', true, '');
+                }}
               />
             </div>
           </div>
@@ -286,10 +353,74 @@ export default function SettingsPage() {
               scroll={{ x: 1500 }}
               loading={processingState.fetchingCollection}
               columns={columns}
-              dataSource={collection}
+              dataSource={collectionState.productsList}
               onChange={()=> console.log('On change operation')}
               showSorterTooltip={{ target: 'sorter-icon' }}
             />
+
+
+            <Form form={form}
+                  name="addProduct"
+                  labelCol={{ span: 8 }}
+                  wrapperCol={{ span: 16 }}
+                  style={{ maxWidth: 600 }}
+                  initialValues={{ remember: true }}
+                  onFinish={() => alert('onFinish invoked')}
+                  onFinishFailed={() => alert('onFinishFailed invoked')}
+                  autoComplete="off">
+
+              <Modal
+                title="Add new product"
+                open={popUpState.addModal}
+                onOk={handleRecordAdd}
+                confirmLoading={processingState.adding}
+                onCancel={() => updatePopsState('addModal', false, '')}>
+                <Form.Item
+                  label="Product Name"
+                  name="name"
+                  rules={[{ required: true, message: 'Please input product name' }]}>
+                  <Input
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Product Type"
+                  name="type"
+                  rules={[{ required: true, message: 'Please input product type' }]}>
+                  <Input
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Planting Date"
+                  name="plantingDate"
+                  rules={[{ required: true, message: 'Please input day of planting' }]}>
+                  <DatePicker />
+                </Form.Item>
+
+                <Form.Item
+                  label="Quantity Planted"
+                  name="quantity"
+                  rules={[{ required: true, message: 'Please input quantity planted' }]}>
+                  <Input
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="origin"
+                  label="Origin"
+                  rules={[{ required: true, message: 'Please select origin!' }]}>
+                  <Select placeholder="select product origin">
+                    {collectionState.stakeholders.map(s =>{
+                      return (<Option key={s.id} value={s.id}> {s.name} </Option>)
+                    })}
+                  </Select>
+                </Form.Item>
+              </Modal>
+            </Form>
           </div>
         </div>
       </main>

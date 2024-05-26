@@ -27,7 +27,7 @@ export class User extends BaseEntity {
   stakeholderId: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @Column({type: "enum", enum: Roles, nullable: true})
   role: Roles;
 
