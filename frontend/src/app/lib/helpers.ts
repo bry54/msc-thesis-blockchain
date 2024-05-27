@@ -1,4 +1,4 @@
-export const addSummaries =(records: any[]) => {
+export const addSummaries =(records: any[]): any[] => {
   // Sort records by timestamp
   records.sort((a, b) => {
     const aTime = a.Timestamp.seconds * 1000 + a.Timestamp.nanos / 1000000;

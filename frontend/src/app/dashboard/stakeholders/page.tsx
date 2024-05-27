@@ -1,30 +1,21 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  dataSetInitialState,
-  DataSetName,
-  DataSetProps,
-  ErrorProps,
-  errorsInitialState,
-  ModalName,
-  modalsInitialState,
-  ModalVisibilityProps,
   newStakeholderFields,
   OrganizationTypes,
-  processingInitialState,
-  ProcessingName,
-  ProcessingProps,
 } from '@/app/dashboard/stakeholders/definitions';
-import { deleteUser } from '@/app/lib/actions/users';
-import { addStakeholder, deleteStakeholder, queryStakeholders } from '@/app/lib/actions/stakeholders';
-import { Button, Modal, Table, TableColumnsType } from 'antd';
-import { EllipsisMiddle, showDeleteConfirm } from '@/app/lib/components/CommonItems';
+import {addStakeholder, deleteStakeholder, queryStakeholders} from '@/app/lib/actions/stakeholders';
+import {Button, Modal, Table, TableColumnsType} from 'antd';
+import {EllipsisMiddle, showDeleteConfirm} from '@/app/lib/components/CommonItems';
 import Link from 'next/link';
-import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { HeaderButton, HeaderIconWithText } from '@/app/lib/components/header-items';
-import { ArrowPathRoundedSquareIcon, BriefcaseIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import {DeleteOutlined, EyeOutlined} from '@ant-design/icons';
+import {HeaderButton, HeaderIconWithText} from '@/app/lib/components/header-items';
+import {ArrowPathRoundedSquareIcon, BriefcaseIcon, PlusCircleIcon} from '@heroicons/react/20/solid';
+import {ErrorMessage, Field, Form, Formik} from 'formik';
 import * as Yup from 'yup';
+import {DataSetProps, ErrorProps, ModalVisibilityProps, ProcessingProps} from "@/app/lib/interfaces";
+import {DataSetName, ModalName, ProcessName} from "@/app/lib/enums";
+import {dataSetInitialState, errorsInitialState, modalsInitialState, processingInitialState} from "@/app/lib/constants";
 
 export default function SettingsPage() {
   const [modalVisibilityState, setModalVisibilityState] = useState<ModalVisibilityProps>(modalsInitialState);
@@ -33,7 +24,7 @@ export default function SettingsPage() {
   const [errorState, setError] = useState<ErrorProps>(errorsInitialState);
 
   const updateModalVisibilityState = (modalName: ModalName, visible: boolean) => {
-    setModalVisibilityState((prevState) => {
+    setModalVisibilityState((prevState: ModalVisibilityProps) => {
       return {
         ...prevState,
         [modalName]: visible
@@ -41,8 +32,8 @@ export default function SettingsPage() {
     });
   }
 
-  const updateProcessingState = (processName: ProcessingName, status: boolean) => {
-    setProcessingState((prevState) => {
+  const updateProcessingState = (processName: ProcessName, status: boolean) => {
+    setProcessingState((prevState: ProcessingProps) => {
       return {
         ...prevState,
         [processName]: status
@@ -51,7 +42,7 @@ export default function SettingsPage() {
   }
 
   const updateDataSetState = (dataSetName: DataSetName, data: any) => {
-    setDataSetState((prevState) => {
+    setDataSetState((prevState: DataSetProps) => {
       return {
         ...prevState,
         [dataSetName]: data
@@ -59,8 +50,8 @@ export default function SettingsPage() {
     });
   }
 
-  const updateErrorState = (errName: ProcessingName, data: any) => {
-    setError((prevState) => {
+  const updateErrorState = (errName: ProcessName, data: any) => {
+    setError((prevState: ErrorProps) => {
       return {
         ...prevState,
         [errName]: data
@@ -69,26 +60,27 @@ export default function SettingsPage() {
   }
 
   const fetchAllRecords = async () => {
-    updateProcessingState(ProcessingName.LOADING_STAKEHOLDERS, true)
+    updateProcessingState(ProcessName.LOADING_ALL, true)
     try {
       const data: any[] = await queryStakeholders();
-      updateDataSetState(DataSetName.STAKEHOLDERS, data)
-    } catch (error) {
+      updateDataSetState(DataSetName.ALL_RESOURCES, data)
+    } catch (error: any) {
+      //updateErrorState(ProcessName.LOADING_ALL, error.message)
       console.error('Error fetching stakeholders:', error);
     } finally {
-      updateProcessingState(ProcessingName.LOADING_STAKEHOLDERS, false);
+      updateProcessingState(ProcessName.LOADING_ALL, false);
     }
   };
 
   const handleDeleteAction = async (id: string) => {
-    updateProcessingState(ProcessingName.DELETING_STAKEHOLDER, true)
+    updateProcessingState(ProcessName.DELETING_ONE, true)
     try {
       await deleteStakeholder(id);
       await fetchAllRecords()
     } catch (error){
       console.error('Error deleting stakeholder:', error);
     } finally {
-      updateProcessingState(ProcessingName.DELETING_STAKEHOLDER, false)
+      updateProcessingState(ProcessName.DELETING_ONE, false)
     }
   }
 
@@ -198,9 +190,9 @@ export default function SettingsPage() {
         <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
           <Table
             scroll={{ x: 1500 }}
-            loading={processingState[ProcessingName.LOADING_STAKEHOLDERS]}
+            loading={processingState[ProcessName.LOADING_ALL]}
             columns={columns}
-            dataSource={dataSetState[DataSetName.STAKEHOLDERS]}
+            dataSource={dataSetState[DataSetName.ALL_RESOURCES]}
             onChange={() => {console.log('stakeholders table changed')}}
             showSorterTooltip={{ target: 'sorter-icon' }}
           />
@@ -215,18 +207,18 @@ export default function SettingsPage() {
             location: Yup.string().required('Location can not be empty'),
           })}
           onSubmit={async (values, { setSubmitting, resetForm }) => {
-            updateProcessingState(ProcessingName.ADDING_STAKEHOLDER, true)
-            updateErrorState(ProcessingName.ADDING_STAKEHOLDER, null);
+            updateProcessingState(ProcessName.ADDING_ONE, true)
+            updateErrorState(ProcessName.ADDING_ONE, null);
             try {
               await addStakeholder(values);
               updateModalVisibilityState(ModalName.ADD_MODAL, false);
-              updateProcessingState(ProcessingName.ADDING_STAKEHOLDER, false);
-              fetchAllRecords()
+              updateProcessingState(ProcessName.ADDING_ONE, false);
+              await fetchAllRecords();
               resetForm()
             } catch (err: any) {
-              updateErrorState(ProcessingName.ADDING_STAKEHOLDER, err.message);
+              updateErrorState(ProcessName.ADDING_ONE, err.message);
             } finally {
-              updateProcessingState(ProcessingName.ADDING_STAKEHOLDER, false)
+              updateProcessingState(ProcessName.ADDING_ONE, false)
               setSubmitting(false);
             }
           }}
@@ -243,7 +235,7 @@ export default function SettingsPage() {
               okText={'Save Organization'}
               open={modalVisibilityState[ModalName.ADD_MODAL]}
               onOk={submitForm}
-              confirmLoading={processingState[ProcessingName.ADDING_STAKEHOLDER]}
+              confirmLoading={processingState[ProcessName.ADDING_ONE]}
               onCancel={() => updateModalVisibilityState(ModalName.ADD_MODAL, false)}>
               <Form className="space-y-6">
                 {newStakeholderFields.map((f) => (
@@ -255,7 +247,8 @@ export default function SettingsPage() {
                     </label>
                       <div className='mt-2'>
                         <Field name={f.id}>
-                          {({ field, form, meta }) => {
+                          {(props: any) => {
+                            const { field, form, meta } = props;
                             if (f.id == 'type') {
                               return (
                                 <>
@@ -301,8 +294,8 @@ export default function SettingsPage() {
                       </div>
                   </div>
                 ))}
-                {errorState[ProcessingName.ADDING_STAKEHOLDER] &&
-                  <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{errorState[ProcessingName.ADDING_STAKEHOLDER]}</div>}
+                {errorState[ProcessName.ADDING_ONE] &&
+                  <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{errorState[ProcessName.ADDING_ONE]}</div>}
               </Form>
               <div className="mt-6 mb-6"></div>
             </Modal>

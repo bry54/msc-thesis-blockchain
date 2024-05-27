@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useEffect, useState} from 'react';
-import {Button, Modal, Table, TableColumnsType, TableProps} from 'antd';
+import {Button, Modal, Table, TableColumnsType} from 'antd';
 import {ArrowPathRoundedSquareIcon, PlusCircleIcon, UserIcon,} from '@heroicons/react/20/solid';
 import {HeaderButton, HeaderIconWithText} from '@/app/lib/components/header-items';
 import {deleteUser, queryUsers} from '@/app/lib/actions/users';
@@ -11,88 +11,98 @@ import * as Yup from 'yup';
 import {register} from '@/app/lib/actions/auth';
 import {ErrorMessage, Field, Form, Formik} from 'formik';
 import {DeleteOutlined, EyeOutlined} from '@ant-design/icons';
-import {addUserFields, Roles} from "@/app/dashboard/users/definitions";
+import {addUserFields, UserModel} from "@/app/dashboard/users/definitions";
 import Link from "next/link";
+import {DataSetProps, ErrorProps, ModalVisibilityProps, ProcessingProps} from "@/app/lib/interfaces";
+import {dataSetInitialState, errorsInitialState, modalsInitialState, processingInitialState} from "@/app/lib/constants";
+import {DataSetName, ModalName, ProcessName, Roles} from "@/app/lib/enums";
 
-interface DataType {
-    //key: React.Key
-    id: string,
-    fullName: string,
-    username: string
-}
-
-interface Modals {
-    addModal: boolean,
-    deleteModal: boolean
-}
-
-interface Collections {
-    stakeholders: []
-    users: []
+enum Extras {
+    STAKEHOLDERS = 'stakeholders'
 }
 
 export default function UsersPage() {
-    const [collection, setCollectionState] = useState<Collections>({stakeholders: [], users: []})
-    const [loading, setLoading] = useState<boolean>(true);
-    const [open, setOpen] = useState<Modals>({ addModal: false, deleteModal: false });
-    const [confirmLoading, setConfirmLoading] = useState<Modals>({ addModal: false, deleteModal: false });
-    const [error, setError] = useState<string | null>(null);
+    const [modalVisibilityState, setModalVisibilityState] = useState<ModalVisibilityProps>(modalsInitialState);
+    const [processingState, setProcessingState] = useState<ProcessingProps>(processingInitialState);
+    const [dataSetState, setDataSetState] = useState<DataSetProps>(dataSetInitialState);
+    const [errorState, setError] = useState<ErrorProps>(errorsInitialState);
+    const [extras, setExtras] = useState<{ [k: string]: any }>(errorsInitialState);
 
-    const updateCollectionsState = (collectionName:'stakeholders' | 'users', data: any) => {
-        setCollectionState((prevState) =>{
+    const updateDatasetState = (datasetName: DataSetName, data: any) => {
+        setDataSetState((prevState: DataSetProps) =>{
             return {
                 ...prevState,
-                [collectionName] : data
+                [datasetName] : data
+            }
+        })
+    }
+
+    const updateProcessingState = (processName: ProcessName, state: boolean) => {
+        setProcessingState((prevState: ProcessingProps) => {
+            return {
+                ...prevState,
+                [processName]: state
+            }
+        })
+    }
+
+    const updateModalVisibilityState = (modalName: ModalName, state: boolean) =>{
+        setModalVisibilityState((prevState: ModalVisibilityProps) =>{
+            return {
+                ...prevState,
+                [modalName]: state
+            }
+        })
+    }
+
+    const updateErrorState = (processName: ProcessName, error: any) =>{
+        setError((prevState: ErrorProps) => {
+            return {
+                ...prevState,
+                [processName]: error
+            }
+        })
+    }
+
+    const updateExtrasState = (extraName: string, data: any) => {
+        setExtras((prevState) => {
+            return {
+                ...prevState,
+                [extraName] : data
             }
         })
     }
 
     const fetchData = async () => {
-        setLoading(true)
+        updateProcessingState(ProcessName.LOADING_ALL, true)
         try {
-            const data: DataType[] = await queryUsers();
-            updateCollectionsState('users', data)
+            const data = await queryUsers();
+            updateDatasetState(DataSetName.ALL_RESOURCES, data)
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
-            setLoading(false);
+            updateProcessingState(ProcessName.LOADING_ALL, false);
         }
     };
 
     const handleUserDelete = async (id: string) => {
-        setLoading(true)
+        updateProcessingState(ProcessName.DELETING_ONE, true)
         try {
             await deleteUser(id);
             await fetchData()
         } catch (error){
             console.error('Error deleting user:', error);
         } finally {
-            setLoading(false)
+            updateProcessingState(ProcessName.DELETING_ONE, false)
         }
     }
 
-    const showModal = async (modalName: 'addModal' | 'deleteModal') => {
-        const stakeholders: any[] = await queryStakeholders();
-        updateCollectionsState('stakeholders', stakeholders)
-
-        setOpen((prevState) =>({
-            ...prevState,
-            [modalName]: true
-        }));
-    };
-
-    const handleCancel = (modalName: 'addModal' | 'deleteModal') => {
-        setOpen((prevState) => ({
-            ...prevState,
-            [modalName]: false
-        }));
-    };
 
     useEffect(() => {
         fetchData();
     }, []); // Empty dependency array means this effect runs once after the initial render
 
-    const columns: TableColumnsType<DataType> = [
+    const columns: TableColumnsType<UserModel> = [
         {
             title: 'ID',
             dataIndex: 'id',
@@ -100,11 +110,11 @@ export default function UsersPage() {
             filters: [],
             width: '20%',
             render: (text) => (
-              <EllipsisMiddle
-                suffixCount={8}
-                textClasses="text-sm font-bold">
-                  { text }
-              </EllipsisMiddle>
+                <EllipsisMiddle
+                    suffixCount={8}
+                    textClasses="text-sm font-bold">
+                    { text }
+                </EllipsisMiddle>
             ),
             sorter: (a, b) => a.fullName.length - b.fullName.length,
         }, {
@@ -146,210 +156,200 @@ export default function UsersPage() {
                 </Link>
             <Button danger type='primary' icon={<DeleteOutlined />} size={'small'} title='Delete User'
                     onClick={() => showDeleteConfirm(
-                      ()=>handleUserDelete(data.id),
-                      'Are you sure want to Delete User', `${data.fullName} will be permanently deleted from the system. This process can not be undone`
+                        ()=>handleUserDelete(data.id),
+                        'Are you sure want to Delete User', `${data.fullName} will be permanently deleted from the system. This process can not be undone`
                     )}
             />
         </span>),
         },];
 
-    const onChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter, extra) => {
-        console.log('params', pagination, filters, sorter, extra);
-    };
-
     return (
-      <div className='text-neutral-950'>
-          <header className="bg-white shadow">
-              <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                  <div className="lg:flex lg:items-center lg:justify-between">
-                      <div className="min-w-0 flex-1">
-                          <h2
-                            className="font-medium text-2xl leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                              Users Management
-                          </h2>
-                          <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
-                              <HeaderIconWithText
-                                icon={<UserIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                aria-hidden="true"/>}
-                                label={'Manage users in the system'}
-                              />
-                          </div>
-                      </div>
+        <div className='text-neutral-950'>
+            <header className="bg-white shadow">
+                <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                    <div className="lg:flex lg:items-center lg:justify-between">
+                        <div className="min-w-0 flex-1">
+                            <h2
+                                className="font-medium text-2xl leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                                Users Management
+                            </h2>
+                            <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
+                                <HeaderIconWithText
+                                    icon={<UserIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                    aria-hidden="true"/>}
+                                    label={'Manage users in the system'}
+                                />
+                            </div>
+                        </div>
 
-                      <div className="mt-5 flex lg:ml-4 lg:mt-0">
-                          <HeaderButton
-                            btnClasses="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                            icon={<ArrowPathRoundedSquareIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true"/>}
-                            label="Refresh"
-                            clickHandler={fetchData}
-                          />
+                        <div className="mt-5 flex lg:ml-4 lg:mt-0">
+                            <HeaderButton
+                                btnClasses="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                icon={<ArrowPathRoundedSquareIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true"/>}
+                                label="Refresh"
+                                clickHandler={fetchData}
+                            />
 
-                          <HeaderButton
-                            btnClasses="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            icon={<PlusCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true"/>}
-                            label="Add User"
-                            clickHandler={() => showModal('addModal')}
-                          />
-                      </div>
-                  </div>
-              </div>
-          </header>
+                            <HeaderButton
+                                btnClasses="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                icon={<PlusCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true"/>}
+                                label="Add User"
+                                clickHandler={async () => {
+                                    const data = await queryStakeholders();
+                                    updateExtrasState(Extras.STAKEHOLDERS, data)
+                                    updateModalVisibilityState(ModalName.ADD_MODAL, true)
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-          <main>
-              <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-                  <Table
-                    scroll={{ x: 1500 }}
-                    loading={loading}
-                    columns={columns}
-                    dataSource={collection.users}
-                    onChange={onChange}
-                    showSorterTooltip={{ target: 'sorter-icon' }}
-                  />
-              </div>
+            <main>
+                <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+                    <Table
+                        scroll={{ x: 1500 }}
+                        loading={processingState[ProcessName.LOADING_ALL]}
+                        columns={columns}
+                        dataSource={dataSetState[DataSetName.ALL_RESOURCES]}
+                        onChange={() => console.log('Table change clicked')}
+                        showSorterTooltip={{ target: 'sorter-icon' }}
+                    />
+                </div>
 
-              <Formik
-                initialValues={{ fullName: '', username: '', password: '', stakeholderId: '', role: '' }}
-                validationSchema={Yup.object({
-                    fullName: Yup.string().required('Required'),
-                    username: Yup.string().required('Required'),
-                    password: Yup.string().required('Required'),
-                    role: Yup.string().required('Role can not be empty').typeError(''),
-                    stakeholderId: Yup.string().required('Organization can not be empty').typeError(''),
-                })}
-                onSubmit={async (values, { setSubmitting, resetForm }) => {
-                    setConfirmLoading({
-                        ...confirmLoading,
-                        addModal: true
-                    });
-                    setError(null);
-                    try {
-                        console.log(values)
-                        await register(values);
-
-                        setOpen({
-                            ...open,
-                            addModal: false
-                        });
-                        setConfirmLoading({
-                            ...confirmLoading,
-                            addModal: false
-                        });
-                        fetchData()
-                        resetForm()
-                    } catch (err: any) {
-                        setError(err.message);
-                    } finally {
-                        setConfirmLoading({
-                            ...confirmLoading,
-                            addModal: false
-                        })
-                        setSubmitting(false);
-                    }
-                }}
-              >
-                  {({ isSubmitting, submitForm }) => (
-                    <Modal
-                      title={
-                          <span className="mb-5">
+                <Formik
+                    initialValues={{ fullName: '', username: '', password: '', stakeholderId: '', role: '' }}
+                    validationSchema={Yup.object({
+                        fullName: Yup.string().required('Required'),
+                        username: Yup.string().required('Required'),
+                        password: Yup.string().required('Required'),
+                        role: Yup.string().required('Role can not be empty').typeError(''),
+                        stakeholderId: Yup.string().required('Organization can not be empty').typeError(''),
+                    })}
+                    onSubmit={async (values, { setSubmitting, resetForm }) => {
+                        updateProcessingState(ProcessName.ADDING_ONE, true);
+                        updateErrorState(ProcessName.ADDING_ONE, null);
+                        try {
+                            await register(values);
+                            updateModalVisibilityState(ModalName.ADD_MODAL, false)
+                            updateProcessingState(ProcessName.ADDING_ONE, false);
+                            await fetchData()
+                            resetForm()
+                        } catch (err: any) {
+                            setError(err.message);
+                        } finally {
+                            updateProcessingState(ProcessName.ADDING_ONE, false);
+                            setSubmitting(false);
+                        }
+                    }}
+                >
+                    {({ isSubmitting, submitForm }) => (
+                        <Modal
+                            title={
+                                <span className="mb-5">
                               <p className="text-xl font-medium">Add User</p>
                               <p className="text-sm font-light">Provide user information & default password.</p>
                               <hr className="mt-3 mb-3"></hr>
                           </span>
-                      }
-                      okText={'Save User'}
-                      open={open.addModal}
-                      onOk={submitForm}
-                      confirmLoading={confirmLoading.addModal}
-                      onCancel={() => handleCancel('addModal')}>
-                        <Form className="space-y-6">
-                            {addUserFields.map((f) => (
-                              <div key={f.id}>
-                                  <label
-                                    htmlFor={f.id}
-                                    className="block text-sm font-medium leading-6 text-gray-900">
-                                      {f.label}
-                                  </label>
-                                  { ( ['stakeholders', 'roles'].includes(f.dataSource as string)) ? (
-                                    <div className='mt-2'>
-                                        <Field name={f.id}>
-                                            {({ field, form, meta }) => {
-                                                if (f.id == 'stakeholderId') {
-                                                    return (
-                                                      <>
-                                                          <select
-                                                            {...field}
-                                                            id={f.id}
-                                                            name={f.id}
-                                                            autoComplete="none"
-                                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                                              <option key={'default'}
-                                                                      value={''}>{'Select organization to which the user belongs'}</option>
-                                                              <option key={'set-null'}
-                                                                      value={undefined}>{'--'}</option>
-                                                              {collection.stakeholders.map((s: any) => (
-                                                                <option key={s.id}
-                                                                        value={s.id}>{s.name}</option>
-                                                              ))}
-                                                          </select>
-                                                          {meta.touched &&
-                                                            meta.error && <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{meta.error}</div>}
-                                                      </>
+                            }
+                            okText={'Save User'}
+                            open={modalVisibilityState[ModalName.ADD_MODAL]}
+                            onOk={submitForm}
+                            confirmLoading={processingState[ProcessName.ADDING_ONE]}
+                            onCancel={() => updateModalVisibilityState(ModalName.ADD_MODAL, false)}>
+                            <Form className="space-y-6">
+                                {addUserFields.map((f) => (
+                                    <div key={f.id}>
+                                        <label
+                                            htmlFor={f.id}
+                                            className="block text-sm font-medium leading-6 text-gray-900">
+                                            {f.label}
+                                        </label>
 
-                                                    )
-                                                }
+                                        <div className='mt-2'>
+                                            <Field name={f.id}>
+                                                {(props: any) => {
+                                                    const { field, form, meta } = props
+                                                    if (f.id == 'stakeholderId') {
+                                                        return (
+                                                            <>
+                                                                <select
+                                                                    {...field}
+                                                                    id={f.id}
+                                                                    name={f.id}
+                                                                    autoComplete="none"
+                                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                                                    <option key={'default'}
+                                                                            value={''}>{'Select organization to which the user belongs'}</option>
+                                                                    <option key={'set-null'}
+                                                                            value={undefined}>{'--'}</option>
+                                                                    {extras[Extras.STAKEHOLDERS].map((s: any) => (
+                                                                        <option key={s.id}
+                                                                                value={s.id}>{s.name}</option>
+                                                                    ))}
+                                                                </select>
+                                                                {meta.touched &&
+                                                                    meta.error && <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{meta.error}</div>}
+                                                            </>
 
-                                                if (f.id == 'role'){
-                                                    return (
-                                                      <>
-                                                          <select
-                                                            {...field}
-                                                            id={f.id}
-                                                            name={f.id}
-                                                            autoComplete="none"
-                                                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                                              <option key={'default'}
-                                                                      value={''}>{'Select role for the user'}</option>
-                                                              <option key={'set-null'}
-                                                                      value={undefined}>{'--'}</option>
-                                                              {Object.values(Roles).map(s => (
-                                                                <option key={s}
-                                                                        value={s}>{ s }</option>
-                                                              ))}
-                                                          </select>
-                                                          {meta.touched &&
-                                                            meta.error && <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{meta.error}</div>}
-                                                      </>
-                                                    )
-                                                }
-                                            }}
-                                        </Field>
+                                                        )
+                                                    }
+
+                                                    else if (f.id == 'role'){
+                                                        return (
+                                                            <>
+                                                                <select
+                                                                    {...field}
+                                                                    id={f.id}
+                                                                    name={f.id}
+                                                                    autoComplete="none"
+                                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                                                    <option key={'default'}
+                                                                            value={''}>{'Select role for the user'}</option>
+                                                                    <option key={'set-null'}
+                                                                            value={undefined}>{'--'}</option>
+                                                                    {Object.values(Roles).map(s => (
+                                                                        <option key={s}
+                                                                                value={s}>{ s }</option>
+                                                                    ))}
+                                                                </select>
+                                                                {meta.touched &&
+                                                                    meta.error && <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{meta.error}</div>}
+                                                            </>
+                                                        )
+                                                    }
+
+                                                    else {
+                                                        return (
+                                                            <>
+                                                                <Field
+                                                                    id={f.id}
+                                                                    name={f.id}
+                                                                    type={f.type}
+                                                                    autoComplete={f.autoComplete}
+                                                                    required
+                                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                                />
+                                                                <ErrorMessage name={f.id}
+                                                                              className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium"
+                                                                              component="p"/>
+                                                            </>
+                                                        )
+                                                    }
+                                                }}
+                                            </Field>
+                                        </div>
                                     </div>
-                                  ) : (
-                                    <div className="mt-2">
-                                        <Field
-                                          id={f.id}
-                                          name={f.id}
-                                          type={f.type}
-                                          autoComplete={f.autoComplete}
-                                          required
-                                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        />
-                                        <ErrorMessage name={f.id}
-                                                      className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium"
-                                                      component="p"/>
-                                    </div>
-                                  )}
-                              </div>
-                            ))}
-                            {error &&
-                              <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{error}</div>}
-                        </Form>
-                        <div className="mt-6 mb-6"></div>
-                    </Modal>
-                  )}
-              </Formik>
-          </main>
-      </div>
+                                ))}
+                                {errorState[ProcessName.ADDING_ONE] &&
+                                    <div className="mt-2 text-sm text-red-600 dark:text-red-500 font-medium">{errorState[ProcessName.ADDING_ONE] }</div>}
+                            </Form>
+                            <div className="mt-6 mb-6"></div>
+                        </Modal>
+                    )}
+                </Formik>
+            </main>
+        </div>
     );
 }
 
