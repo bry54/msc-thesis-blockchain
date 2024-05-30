@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '../../../utils/helpers/base.entity';
 import {Stakeholder} from "../../stakeholder/entities/stakeholder.entity";
 import {Roles} from "../../../utils/enums/stakeholder-types.enum";
-import {IsNotEmpty, IsOptional, IsUUID, isUUID} from "class-validator";
+import {IsEnum, IsOptional, IsUUID} from "class-validator";
 
 @Entity()
 export class User extends BaseEntity {
@@ -26,8 +26,9 @@ export class User extends BaseEntity {
   @Column({ nullable: true})
   stakeholderId: string;
 
-  @ApiProperty()
+  @ApiProperty({enum: Roles})
   @IsOptional()
+  @IsEnum(Roles, {groups: Object.values(Roles)})
   @Column({type: "enum", enum: Roles, nullable: true})
   role: Roles;
 

@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {Column, Entity, OneToMany} from 'typeorm';
 import { BaseEntity } from '../../../utils/helpers/base.entity';
 import {User} from "../../users/entities/user.entity";
+import {StakeholderTypes} from "../../../utils/enums/stakeholder-types.enum";
 
 @Entity()
 export class Stakeholder extends BaseEntity{
@@ -10,9 +11,9 @@ export class Stakeholder extends BaseEntity{
   @Column('text')
   public name: string;
 
-  @ApiProperty()
-  @Column('text')
-  public type: string; // e.g., "farm", "wholesaler", "market", "regulatory organization"
+  @ApiProperty({enum: StakeholderTypes})
+  @Column('enum', { enum: StakeholderTypes })
+  public type: StakeholderTypes; // e.g., "farm", "wholesaler", "market", "regulatory organization"
 
   @ApiProperty()
   @Column('text')
