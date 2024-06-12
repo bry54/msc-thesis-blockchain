@@ -4,13 +4,20 @@ import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
 const MainScreen = () => {
-    const isLoggedIn = useSelector((state) => state.isLoggedIn);
+    const {isLoggedIn, username} = useSelector((state) => state);
     const navigation = useNavigation();
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Button title="View History" onPress={() => navigation.navigate('History')} />
-            <Button title="Update Details" onPress={() => navigation.navigate('UpdateDetails')} disabled={!isLoggedIn} />
+            {isLoggedIn ? (
+                <>
+                    <Button title="Update Details" onPress={() => navigation.navigate('UpdateDetails')} />
+                    <Text>Logged in as: {username}</Text>
+                </>
+            ) : (
+                <Button title="Login" onPress={() => navigation.navigate('Login')} />
+            )}
         </View>
     );
 };

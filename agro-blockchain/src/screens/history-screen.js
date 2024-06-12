@@ -8,7 +8,6 @@ const HistoryScreen = () => {
 
     return (
         <View style={{ flex: 1 }}>
-            <Button title="Back" onPress={() => navigation.goBack()} />
             <WebView source={{ uri: 'https://google.com' }} style={{ flex: 1 }} />
         </View>
     );
