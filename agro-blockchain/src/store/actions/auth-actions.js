@@ -1,20 +1,20 @@
 import axios from "axios";
-import Actions, {API_HOST} from '../constants'
+import {API_HOST, AuthActions} from '../constants'
 
 export const login = ({ username, password }) => {
     return async dispatch => {
-        dispatch({ type: Actions.LOGIN_REQUEST });
+        dispatch({ type: AuthActions.LOGIN_REQUEST });
         try {
             const response = await axios.post(`${API_HOST}/auth/login`, { username, password });
             const { accessToken, fullName } = response.data;
             dispatch({
-                type: Actions.LOGIN_SUCCESS,
+                type: AuthActions.LOGIN_SUCCESS,
                 payload: { username, accessToken, fullName }
             });
         } catch (error) {
             console.log(error)
             dispatch({
-                type: Actions.LOGIN_ERROR,
+                type: AuthActions.LOGIN_ERROR,
                 error: error.message,
             });
         }

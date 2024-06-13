@@ -1,10 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './reducers/auth-reducer';
 import { Provider } from 'react-redux';
+import {authReducer, qrScanReducer} from "./reducers";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
+    qrScan: qrScanReducer,
   }
 });
 

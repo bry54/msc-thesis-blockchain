@@ -2,14 +2,30 @@ import React from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import {Button, Text, Input} from '@rneui/themed';
+import {Button, Text, Skeleton} from '@rneui/themed';
 
 const MainScreen = () => {
     const {isLoggedIn, user } = useSelector((state) => state.auth);
+    const qrScanState = useSelector((state) => state.qrScan);
     const navigation = useNavigation();
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ marginVertical: 20 }}>
+                {
+                    qrScanState.isLoading ? (
+                        <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                            <Skeleton width={120} height={40} />
+                            <Skeleton circle width={40} height={40} />
+                        </View>
+                    ) : (
+                        <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                            <Text>{ JSON.stringify(qrScanState.product) }</Text>
+                        </View>
+                    )
+                }
+            </View>
+
             <Button
                 title="View Product History"
                 onPress={() => navigation.navigate('History')}

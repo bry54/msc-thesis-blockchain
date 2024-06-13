@@ -1,14 +1,20 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import {useNavigation} from "@react-navigation/native";
+import { useNavigation} from "@react-navigation/native";
+import { useDispatch} from "react-redux";
+import { queryOne} from "../store/actions";
 
 const QRScannerScreen = () => {
     const [facing, setFacing] = useState("back");
     const [permission, requestPermission] = useCameraPermissions();
     const navigation = useNavigation();
+    const dispatch = useDispatch();
 
-    const onSuccess = (e) => {
+    const onSuccess = async (e) => {
+        console.log(e.data)
+        await dispatch(queryOne());
+
         navigation.navigate('Main');
     };
 

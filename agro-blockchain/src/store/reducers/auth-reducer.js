@@ -1,4 +1,4 @@
-import Actions from '../constants'
+import {AuthActions} from "../constants";
 
 const initialState = {
   isLoading: false,
@@ -11,15 +11,15 @@ const initialState = {
   error: null,
 };
 
-const authReducer = (state = initialState, action) => {
+export const authReducer = (state = initialState, action) => {
   switch (action.type) {
-    case Actions.LOGIN_REQUEST:
+    case AuthActions.LOGIN_REQUEST:
       return {
         ...state,
         isLoading: true,
         error: null,
       };
-    case Actions.LOGIN_SUCCESS:
+    case AuthActions.LOGIN_SUCCESS:
       return {
         ...state,
         isLoading: false,
@@ -27,7 +27,7 @@ const authReducer = (state = initialState, action) => {
         user: action.payload,
         error: null,
       };
-    case Actions.LOGIN_ERROR:
+    case AuthActions.LOGIN_ERROR:
       return {
         ...state,
         isLoading: false,
@@ -39,5 +39,3 @@ const authReducer = (state = initialState, action) => {
       return state;
   }
 };
-
-export default authReducer;
