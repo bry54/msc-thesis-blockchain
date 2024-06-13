@@ -3,7 +3,11 @@ import Actions from '../constants'
 const initialState = {
   isLoading: false,
   isLoggedIn: false,
-  user: null,
+  user: {
+    username: null,
+    accessToken: null,
+    fullName: null
+  },
   error: null,
 };
 

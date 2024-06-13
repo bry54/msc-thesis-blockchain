@@ -46,7 +46,7 @@ const MainScreen = () => {
                             marginVertical: 10,
                         }}
                     />
-                    <Text>Logged in as: { user?.username }</Text>
+                    <Text>Logged in as: { user?.fullName }</Text>
                 </>
             ) : (
                 <Button
