@@ -1,11 +1,12 @@
 import axios from "axios";
-import Actions from './constants'
+import Actions from '../constants'
 
 export const login = ({ username, password }) => {
     return async dispatch => {
         dispatch({ type: Actions.LOGIN_REQUEST });
         try {
-            if (username === 'admin' && password === 'password') {
+            const response = await axios.post('/api/auth/login', { username, password });
+            if (response.data) {
                 // Simulate success response
                 dispatch({
                     type: Actions.LOGIN_SUCCESS,
