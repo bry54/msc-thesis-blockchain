@@ -1,20 +1,25 @@
 import axios from "axios";
 import Actions from './constants'
 
-export const login = async (authCredentials) => {
-    return async (dispatch) => {
+export const login = ({ username, password }) => {
+    return async dispatch => {
+        dispatch({ type: Actions.LOGIN_REQUEST });
         try {
-            const response = {}//await axios.post('/api/login', authCredentials);
-            dispatch({
-                type: Actions.LOGIN_SUCCESS,
-                payload: response.data
-            });
-        } catch (e) {
-            console.log(e)
+            if (username === 'admin' && password === 'password') {
+                // Simulate success response
+                dispatch({
+                    type: Actions.LOGIN_SUCCESS,
+                    payload: { username }
+                });
+            } else {
+                // Simulate failure response
+                throw new Error('Invalid credentials');
+            }
+        } catch (error) {
             dispatch({
                 type: Actions.LOGIN_ERROR,
-                payload: e
+                error: error.message,
             });
         }
-    }
+    };
 }

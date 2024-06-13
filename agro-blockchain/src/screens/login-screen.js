@@ -1,13 +1,14 @@
 // screens/LoginScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../store/actions';
 import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
     const [authCredentials, setAuthCredentials] = useState({username: '', password: ''});
     const dispatch = useDispatch();
+    const auth = useSelector((state) => state.auth);
     const navigation = useNavigation();
 
     const handleLogin = async () => {
@@ -43,6 +44,8 @@ const LoginScreen = () => {
             />
 
             <Button title="Login" onPress={handleLogin} />
+
+            {auth.error && <Text style={styles.error}>{auth.error}</Text>}
         </View>
     );
 };
