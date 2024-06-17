@@ -18,6 +18,12 @@ const QRScannerScreen = () => {
         navigation.navigate('Main');
     };
 
+    if (permission){
+        onSuccess({
+            data: 'd194b0c7-57bc-4c79-aa92-e1c49faf0b0e',
+        })
+    }
+
     if (!permission) {
         // Camera permissions are still loading.
         return (
