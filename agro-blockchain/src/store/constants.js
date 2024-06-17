@@ -1,5 +1,5 @@
 export const API_HOST = 'http://10.0.60.150:3020/api/v1';
-export const WEB_APP = 'http://10.0.60.150:3000/dashboard';
+export const WEB_APP = 'http://10.0.60.150:3000/details';
 export const AuthActions = {
     LOGIN_REQUEST: 'LOGIN_REQUEST',
     LOGIN_SUCCESS: 'LOGIN_SUCCESS',
