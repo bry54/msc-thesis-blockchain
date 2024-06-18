@@ -2,12 +2,12 @@ import {Text, View} from "react-native";
 import React, {useState} from "react";
 import {Button, Icon, Overlay, ListItem} from "@rneui/themed";
 
-const EditBtn = () =>{
+const EditBtn = ({ onPress }) =>{
     return (
         <Button
             title="Edit"
-            onPress={() => reset()}
-            icon={{ name: 'edit', color: 'white' }}
+            onPress={onPress}
+            icon={{ name: 'edit', color: 'white', type: 'font-awesome' }}
             buttonStyle={{ minHeight: '100%', backgroundColor: 'blue' }}
         />
     )

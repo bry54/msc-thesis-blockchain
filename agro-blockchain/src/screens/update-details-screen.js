@@ -145,13 +145,13 @@ const UpdateDetailsScreen = () => {
 
                         {
                             group.dataProp === 'transportationDetail' && (
-                                <UpdateTransportationDetails transportationDetail={prod.transportationDetail || []} />
+                                <UpdateTransportationDetails product={prod} />
                             )
                         }
 
                         {
                             group.dataProp === 'pricingDetail' && (
-                                <UpdatePricingDetails  pricingDetail={prod.pricingDetail || []} />
+                                <UpdatePricingDetails pricingDetail={prod.pricingDetail || []} />
                             )
                         }
 

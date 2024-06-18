@@ -27,7 +27,7 @@ const DeleteBtn = ({ onPress }) => {
 }
 
 export const UpdateRegulatoryChecks = ({ product }) => {
-    const [regulatoryChecks, setRegulatoryChecks] = useState([]);
+    const [records, setRecords] = useState([]);
     const [selectedRec, setSelectedRec] = useState(null);
     const [visible, setVisible] = useState(false);
 
@@ -35,9 +35,9 @@ export const UpdateRegulatoryChecks = ({ product }) => {
         const response = await axios.get(`${API_HOST}/regulatory-checks/${product.id}`)
         const data = response.data
 
-        setRegulatoryChecks(data)
+        setRecords(data)
     }
-    const updateCheckDetails = (prop, value) => {
+    const updateRecDetails = (prop, value) => {
         setSelectedRec((prev) => (
             {
                 ...prev,
@@ -73,7 +73,7 @@ export const UpdateRegulatoryChecks = ({ product }) => {
                     <Input
                         placeholder='Enter check notes'
                         value={selectedRec?.notes || ''}
-                        onChangeText={value => updateCheckDetails('notes', value)}
+                        onChangeText={value => updateRecDetails('notes', value)}
                     />
                 </View>
 
@@ -114,10 +114,10 @@ export const UpdateRegulatoryChecks = ({ product }) => {
                 }}
                 onPress={() => {
                     setSelectedRec(null);
-                    setVisible(!visible);
+                    setVisible(true);
                 }}
             />
-            {regulatoryChecks.map((l, i) => (
+            {records.map((l, i) => (
                 <ListItem.Swipeable
                     key={i}
                     leftContent={(reset) => (
