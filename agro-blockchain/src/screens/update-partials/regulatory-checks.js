@@ -9,8 +9,19 @@ const EditBtn = ({ onPress }) =>{
         <Button
             title="Edit"
             onPress={onPress}
-            icon={{ name: 'edit', color: 'white' }}
+            icon={{ name: 'edit', color: 'white', type: 'font-awesome' }}
             buttonStyle={{ minHeight: '100%', backgroundColor: 'blue' }}
+        />
+    )
+}
+
+const DeleteBtn = ({ onPress }) => {
+    return (
+        <Button
+            title="Delete"
+            onPress={onPress}
+            icon={{ name: 'trash', color: 'white', type: 'font-awesome' }}
+            buttonStyle={{ minHeight: '100%', backgroundColor: 'red' }}
         />
     )
 }
@@ -36,6 +47,11 @@ export const UpdateRegulatoryChecks = ({ product }) => {
 
     const patchRec = async () => {
         await axios.patch(`${API_HOST}/regulatory-checks/${product.id}/update/${selectedRec.id}`, selectedRec)
+        queryRecords();
+    }
+
+    const deleteRec = async () => {
+        await axios.delete(`${API_HOST}/regulatory-checks/${product.id}/delete/${selectedRec.id}`)
         queryRecords();
     }
 
@@ -104,12 +120,24 @@ export const UpdateRegulatoryChecks = ({ product }) => {
             {regulatoryChecks.map((l, i) => (
                 <ListItem.Swipeable
                     key={i}
+                    leftContent={(reset) => (
+                        <DeleteBtn
+                            onPress={() => {
+                                setSelectedRec(l);
+                                setVisible(false);
+                                deleteRec();
+                                reset()
+                            }}
+                        />
+                    )}
                     rightContent={(reset) => (
-                        <EditBtn onPress={() => {
-                            setSelectedRec(l);
-                            setVisible(!visible);
-                            reset()
-                        }} />
+                        <EditBtn
+                            onPress={() => {
+                                setSelectedRec(l);
+                                setVisible(true);
+                                reset()
+                            }}
+                        />
                     )}
                 >
                     <ListItem.Content>
