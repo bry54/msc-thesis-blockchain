@@ -31,18 +31,27 @@ export const UpdateRegulatoryChecks = ({ product }) => {
     const [selectedRec, setSelectedRec] = useState(null);
     const [visible, setVisible] = useState(false);
 
+    const updateSelectedRec = (value) => {
+        setSelectedRec((prevState) => ({
+            ...prevState,
+            ...value
+        }));
+    }
+
+    const updateRecDetails = (prop, value) => {
+        setSelectedRec((prev) => (
+            {
+                ...prev,
+                [prop]: value
+            }
+        ));
+    }
+
     const queryRecords = async () =>{
         const response = await axios.get(`${API_HOST}/regulatory-checks/${product.id}`)
         const data = response.data
 
         setRecords(data)
-    }
-    const updateRecDetails = (prop, value) => {
-        setSelectedRec((prev) => (
-            {
-                ...prev,
-                [prop]: value }
-        ));
     }
 
     const patchRec = async () => {
@@ -113,7 +122,7 @@ export const UpdateRegulatoryChecks = ({ product }) => {
                     justifyContent: 'center',
                 }}
                 onPress={() => {
-                    setSelectedRec(null);
+                    updateSelectedRec({});
                     setVisible(true);
                 }}
             />
@@ -123,7 +132,7 @@ export const UpdateRegulatoryChecks = ({ product }) => {
                     leftContent={(reset) => (
                         <DeleteBtn
                             onPress={() => {
-                                setSelectedRec(l);
+                                updateSelectedRec(l);
                                 setVisible(false);
                                 deleteRec();
                                 reset()
@@ -133,13 +142,14 @@ export const UpdateRegulatoryChecks = ({ product }) => {
                     rightContent={(reset) => (
                         <EditBtn
                             onPress={() => {
-                                setSelectedRec(l);
+                                updateSelectedRec(l);
                                 setVisible(true);
                                 reset()
                             }}
                         />
                     )}
                 >
+                    <Icon type='font-awesome-5' name={'clipboard-check'} size={20} style={{ marginRight: 10 }} />
                     <ListItem.Content>
                         <ListItem.Title>{ l.notes}</ListItem.Title>
                         <ListItem.Subtitle>{ l?.signedBy?.fullName}, {l?.date}</ListItem.Subtitle>

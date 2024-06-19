@@ -104,7 +104,7 @@ export class PricingDetailsService {
       throw new NotFoundException('Pricing detail not found');
     }
 
-    production.pricingDetail.splice(index);
+    production.pricingDetail.splice(index, 1);
 
     production = await this.repo.save(production);
 

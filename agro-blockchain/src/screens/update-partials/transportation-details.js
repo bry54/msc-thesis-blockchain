@@ -27,13 +27,16 @@ const DeleteBtn = ({ onPress }) => {
     )
 }
 
-const TransportationDetail = ({ data }) => {
+const TransportationDetail = ({ data, icon }) => {
     return (
-        <ListItem.Content containerStyle={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
-            <ListItem.Title>{ data?.name}</ListItem.Title>
-            <ListItem.Subtitle>{ data?.notes}</ListItem.Subtitle>
-            <ListItem.Subtitle>{ data?.responsiblePerson}, {data?.date}</ListItem.Subtitle>
-        </ListItem.Content>
+        <>
+            <Icon type='font-awesome-5' name={icon} size={20} style={{ marginRight: 10 }} />
+            <ListItem.Content containerStyle={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
+                <ListItem.Title>{ data?.name}</ListItem.Title>
+                <ListItem.Subtitle>{ data?.notes}</ListItem.Subtitle>
+                <ListItem.Subtitle>{ data?.responsiblePerson}, {data?.date}</ListItem.Subtitle>
+            </ListItem.Content>
+        </>
     )
 }
 
@@ -97,17 +100,6 @@ export const UpdateTransportationDetails = ({ product }) => {
     const [visible, setVisible] = useState(false);
     const [locations, setLocations] = useState([]);
 
-    const queryRecords = async () =>{
-        const response = await axios.get(`${API_HOST}/transportation-details/${product.id}`)
-        const data = response.data
-
-        const locResponse = await axios.get(`${API_HOST}/stakeholder`)
-        const locations = locResponse.data.data
-
-        setRecords(data)
-        setLocations(locations)
-    }
-
     const updateRecDetails = (mainProp, prop, value) => {
         if (prop === 'obj'){
             // Update the state with all changes at once
@@ -132,6 +124,24 @@ export const UpdateTransportationDetails = ({ product }) => {
                 }
             ));
         }
+    }
+
+    const updateSelectedRec = (value) => {
+        setSelectedRec((prevState) => ({
+            ...prevState,
+            ...value
+        }));
+    }
+
+    const queryRecords = async () =>{
+        const response = await axios.get(`${API_HOST}/transportation-details/${product.id}`)
+        const data = response.data
+
+        const locResponse = await axios.get(`${API_HOST}/stakeholder`)
+        const locations = locResponse.data.data
+
+        setRecords(data)
+        setLocations(locations)
     }
 
     const patchRec = async () => {
@@ -272,6 +282,7 @@ export const UpdateTransportationDetails = ({ product }) => {
                     >
                         <TransportationDetail
                             data={l.departure}
+                            icon={'upload'}
                         />
 
                     </ListItem.Swipeable>
@@ -289,7 +300,9 @@ export const UpdateTransportationDetails = ({ product }) => {
                         )}
                     >
                         <TransportationDetail
-                            data={l.destination} />
+                            data={l.destination}
+                            icon={'download'}
+                        />
                     </ListItem.Swipeable>
 
                     <Divider style={{height: 10}}></Divider>

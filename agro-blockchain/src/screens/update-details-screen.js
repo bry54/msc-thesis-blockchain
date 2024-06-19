@@ -86,7 +86,7 @@ const UpdateDetailsScreen = () => {
         {
             name: 'Regulatory Checks',
             dataProp: 'regulatoryChecks',
-            icon: 'calendar-check'
+            icon: 'tasks'
         },
         {
             name: 'Transportation Information',
@@ -116,6 +116,7 @@ const UpdateDetailsScreen = () => {
         <ScrollView>
             {groupings.map((group, index) => (
                 <ListItem.Accordion
+                    containerStyle={{marginBottom: 10}}
                     key={index}
                     content={
                         <>
@@ -129,6 +130,7 @@ const UpdateDetailsScreen = () => {
                     onPress={() => {
                         updateExpandedState(index);
                     }}
+                    bottomDivider={true}
                 >
                     <>
                         {
@@ -151,7 +153,7 @@ const UpdateDetailsScreen = () => {
 
                         {
                             group.dataProp === 'pricingDetail' && (
-                                <UpdatePricingDetails pricingDetail={prod.pricingDetail || []} />
+                                <UpdatePricingDetails product={prod} />
                             )
                         }
 

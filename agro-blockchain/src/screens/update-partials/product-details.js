@@ -17,7 +17,7 @@ export const UpdateProductDetails = ({ product }) => {
     const [visible, setVisible] = useState(false);
 
     return (
-        <View style={{ padding: 10}} >
+        <View style={{ padding: 0}} >
             <ListItem.Swipeable
                 rightContent={(reset) => (
                     <EditBtn onPress={() => setVisible(false)} />

@@ -104,7 +104,7 @@ export class TransportationDetailsService {
       throw new NotFoundException('Transportation detail not found');
     }
 
-    production.transportationDetail.splice(index);
+    production.transportationDetail.splice(index, 1);
 
     production = await this.repo.save(production);
 

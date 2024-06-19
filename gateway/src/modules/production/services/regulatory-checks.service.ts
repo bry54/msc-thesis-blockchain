@@ -105,7 +105,7 @@ export class RegulatoryChecksService {
       throw new NotFoundException('RegulatoryCheck not found');
     }
 
-    production.regulatoryChecks.splice(regulatoryCheckIndex);
+    production.regulatoryChecks.splice(regulatoryCheckIndex, 1);
 
     production = await this.repo.save(production);
 
