@@ -276,6 +276,8 @@ export const UpdateTransportationDetails = ({ product }) => {
 
                     </ListItem.Swipeable>
 
+                    <Icon name='long-arrow-down' type='font-awesome' size={18} style={{ backgroundColor: 'white' }} />
+
                     <ListItem.Swipeable
                         rightContent={(reset) => (
                             <EditBtn onPress={() => {
@@ -289,6 +291,8 @@ export const UpdateTransportationDetails = ({ product }) => {
                         <TransportationDetail
                             data={l.destination} />
                     </ListItem.Swipeable>
+
+                    <Divider style={{height: 10}}></Divider>
                 </View>
             ))}
         </>
