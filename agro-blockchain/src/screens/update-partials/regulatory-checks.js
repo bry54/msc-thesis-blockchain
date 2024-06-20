@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import {View} from "react-native";
 import axios from "axios";
 import {API_HOST} from "../../store/constants";
+import {useSelector} from "react-redux";
 
 const EditBtn = ({ onPress }) =>{
     return (
@@ -30,6 +31,14 @@ export const UpdateRegulatoryChecks = ({ product }) => {
     const [records, setRecords] = useState([]);
     const [selectedRec, setSelectedRec] = useState(null);
     const [visible, setVisible] = useState(false);
+    const { user } = useSelector((state) => state.auth);
+
+    const reqConfigs = {
+        headers: {
+            'accept': '*/*',
+            'Authorization': `Bearer ${user?.accessToken}`
+        }
+    }
 
     const updateSelectedRec = (value) => {
         setSelectedRec((prevState) => ({
@@ -48,24 +57,24 @@ export const UpdateRegulatoryChecks = ({ product }) => {
     }
 
     const queryRecords = async () =>{
-        const response = await axios.get(`${API_HOST}/regulatory-checks/${product.id}`)
+        const response = await axios.get(`${API_HOST}/regulatory-checks/${product.id}`, reqConfigs)
         const data = response.data
 
         setRecords(data)
     }
 
     const patchRec = async () => {
-        await axios.patch(`${API_HOST}/regulatory-checks/${product.id}/update/${selectedRec.id}`, selectedRec)
+        await axios.patch(`${API_HOST}/regulatory-checks/${product.id}/update/${selectedRec.id}`, selectedRec, reqConfigs)
         queryRecords();
     }
 
     const deleteRec = async () => {
-        await axios.delete(`${API_HOST}/regulatory-checks/${product.id}/delete/${selectedRec.id}`)
+        await axios.delete(`${API_HOST}/regulatory-checks/${product.id}/delete/${selectedRec.id}`, reqConfigs)
         queryRecords();
     }
 
     const createRec = async () => {
-        await axios.post(`${API_HOST}/regulatory-checks/${product.id}/create`, selectedRec)
+        await axios.post(`${API_HOST}/regulatory-checks/${product.id}/create`, selectedRec, reqConfigs)
         queryRecords();
     }
 

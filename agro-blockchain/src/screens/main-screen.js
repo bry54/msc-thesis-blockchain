@@ -16,7 +16,7 @@ const MainScreen = () => {
         <ScrollView>
             <View style={{ marginVertical: 0 }}>
                 {
-                    isLoading ? (
+                    isLoading || !product ? (
                         <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                             <Skeleton width={120} height={40} />
                             <Skeleton circle width={40} height={40} />
@@ -68,21 +68,21 @@ const MainScreen = () => {
                                     <ListItem bottomDivider>
                                         <ListItem.Content>
                                             <ListItem.Title>Latest Transportation</ListItem.Title>
-                                            <ListItem.Subtitle>President</ListItem.Subtitle>
+                                            <ListItem.Subtitle>Some transportation information</ListItem.Subtitle>
                                         </ListItem.Content>
                                     </ListItem>
 
                                     <ListItem bottomDivider>
                                         <ListItem.Content>
                                             <ListItem.Title>Latest Pricing</ListItem.Title>
-                                            <ListItem.Subtitle>President</ListItem.Subtitle>
+                                            <ListItem.Subtitle>Some pricing information</ListItem.Subtitle>
                                         </ListItem.Content>
                                     </ListItem>
 
                                     <ListItem bottomDivider>
                                         <ListItem.Content>
                                             <ListItem.Title>Latest Regulation Check</ListItem.Title>
-                                            <ListItem.Subtitle>President</ListItem.Subtitle>
+                                            <ListItem.Subtitle>Some regulation check information</ListItem.Subtitle>
                                         </ListItem.Content>
                                     </ListItem>
                                 </View>

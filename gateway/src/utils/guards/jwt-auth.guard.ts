@@ -10,7 +10,9 @@ import { Repository } from 'typeorm';
 import { getRequestFromContext } from '../helpers/request-helpers';
 import {ExtractJwt} from "passport-jwt";
 
-const publicEndpoints: string[] = ['health-check', 'auth/login'];
+const publicEndpoints: string[] = [
+    'health-check', 'auth/login', 'production/:id'
+];
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -23,7 +25,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   async canActivate(context: ExecutionContext) {
     const request = getRequestFromContext(context);
 
-    if (publicEndpoints.some((path) => request.url.includes(path))) {
+    if (publicEndpoints.some((path) => request.path.includes(path))) {
+      return true;
+    }
+
+
+    if (publicEndpoints.some((path) => request.route.path.includes(path))) {
       return true;
     }
 

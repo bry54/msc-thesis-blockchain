@@ -12,16 +12,14 @@ const QRScannerScreen = () => {
     const dispatch = useDispatch();
 
     const onSuccess = async (e) => {
-        const id = e.data
+        const id = e.data = 'e7331ece-ab36-4327-afd0-2a6fcd3b62b2'
         await dispatch(queryOne(id));
 
         navigation.navigate('Main');
     };
 
     if (permission){
-        onSuccess({
-            data: 'd194b0c7-57bc-4c79-aa92-e1c49faf0b0e',
-        })
+        onSuccess({})
     }
 
     if (!permission) {

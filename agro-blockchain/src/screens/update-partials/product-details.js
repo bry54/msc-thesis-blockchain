@@ -1,6 +1,7 @@
 import {Text, View} from "react-native";
 import React, {useState} from "react";
 import {Button, Icon, Overlay, ListItem} from "@rneui/themed";
+import {useSelector} from "react-redux";
 
 const EditBtn = ({ onPress }) =>{
     return (
@@ -15,6 +16,14 @@ const EditBtn = ({ onPress }) =>{
 
 export const UpdateProductDetails = ({ product }) => {
     const [visible, setVisible] = useState(false);
+    const { user } = useSelector((state) => state.auth);
+
+    const reqConfigs = {
+        headers: {
+            'accept': '*/*',
+            'Authorization': `Bearer ${user?.accessToken}`
+        }
+    }
 
     return (
         <View style={{ padding: 0}} >

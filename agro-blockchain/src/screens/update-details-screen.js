@@ -7,71 +7,32 @@ import {UpdateRegulatoryChecks} from "./update-partials/regulatory-checks";
 import {UpdateProductDetails} from "./update-partials/product-details";
 
 const prod = {
-    "id": "d194b0c7-57bc-4c79-aa92-e1c49faf0b0e",
-    "createdAt": "2024-06-13T10:52:01.950Z",
-    "updatedDate": "2024-06-18T09:03:47.000Z",
+    "id": "e7331ece-ab36-4327-afd0-2a6fcd3b62b2",
+    "createdAt": "2024-06-20T09:59:37.929Z",
+    "updatedDate": "2024-06-20T12:02:55.000Z",
     "deletedDate": null,
-    "updatedBy": null,
+    "deletedBy": null,
+    "createdBy": "b15c6056-f847-444e-9753-b44007d3337a",
+    "updatedBy": "b15c6056-f847-444e-9753-b44007d3337a",
     "product": {
         "name": "Oranges",
-        "category": "Fruits"
+        "category": "Citrus Fruit"
     },
     "origin": {
-        "name": "Mahiya & Sons",
+        "id": "263cfc84-9c63-487f-b1e7-87e8ba593c0e",
+        "name": "Mahiya & Sons Wholesalers",
         "type": "FARM ORGANIZATION",
-        "contactNumber": "+2638347917",
-        "location": "Beatrice, Zimbabwe"
+        "contactNumber": "+90 533 000 79 19",
+        "location": "KKTC, Lefke"
     },
     "planting": {
-        "quantity": "100",
-        "date": "2024-06-13T13:49:06.897Z"
+        "quantity": "400 pieces",
+        "date": "2024-06-16T21:00:00.000Z"
     },
     "harvesting": {},
-    "regulatoryChecks": [
-        {
-            "notes": "This is from Swagger",
-            "signedBy": {
-                "fullName": "string",
-                "username": "string",
-                "password": "string",
-                "stakeholderId": "string",
-                "role": "FARMER"
-            },
-            "id": "a96862af-6e49-4f53-9197-a06b57a787a1",
-            "date": "2024-06-18T12:03:47.595Z"
-        }
-    ],
-    "transportationDetail": [
-        {
-            "departure": {
-                "name": "Mahiya farm",
-                "address": "Haspolat",
-                "date": "18.06.2024",
-                "notes": "Dispatching 200 Units",
-                "responsiblePerson": "Brian Sithole"
-            },
-            "destination": {
-                "name": "Molto Wholesalers",
-                "address": "Kyrenia",
-                "date": "18.06.2024",
-                "notes": "Received 200 Units",
-                "responsiblePerson": "Brenda Sithole"
-            },
-            "id": "8ede9583-1d71-4d7a-ab63-7507a3dc2fdd"
-        }
-    ],
-    "pricingDetail": [
-        {
-            "stakeHolder": {
-                "name": "string",
-                "type": "FARM ORGANIZATION",
-                "contactNumber": "string",
-                "location": "string"
-            },
-            "pricePerUnit": "600 TL",
-            "id": "ef2f78e8-fef8-4ee5-8450-e7786f6b7578"
-        }
-    ]
+    "regulatoryChecks": [],
+    "transportationDetail": [],
+    "pricingDetail": []
 }
 
 const UpdateDetailsScreen = () => {

@@ -4,6 +4,7 @@ import {View, StyleSheet} from "react-native";
 import axios from "axios";
 import {API_HOST} from "../../store/constants";
 import { Dropdown } from 'react-native-element-dropdown';
+import {useSelector} from "react-redux";
 
 const EditBtn = ({ onPress }) =>{
     return (
@@ -46,6 +47,8 @@ const LocationSelect = ({ options, location, onChangeFn }) => {
 
     let opts = options
 
+    console.log(opts)
+
     if (location === 'destination'){
         opts = options.filter(option => option.id !== value);
     }
@@ -69,6 +72,7 @@ const LocationSelect = ({ options, location, onChangeFn }) => {
             onChange={item => {
                 setValue(`${item.id}`);
                 setIsFocus(false);
+
                 const value = {
                     name: `${item.name}, ${item.type}`,
                     address: item.location,
@@ -100,7 +104,16 @@ export const UpdateTransportationDetails = ({ product }) => {
     const [visible, setVisible] = useState(false);
     const [locations, setLocations] = useState([]);
 
-    const updateRecDetails = (mainProp, prop, value) => {
+    const { user } = useSelector((state) => state.auth);
+
+    const reqConfigs = {
+        headers: {
+            'accept': '*/*',
+            'Authorization': `Bearer ${user?.accessToken}`
+        }
+    }
+
+    /*const updateRecDetails = (mainProp, prop, value) => {
         if (prop === 'obj'){
             // Update the state with all changes at once
             setSelectedRec(prevState => {
@@ -124,20 +137,20 @@ export const UpdateTransportationDetails = ({ product }) => {
                 }
             ));
         }
-    }
+    }*/
 
-    const updateSelectedRec = (value) => {
+    const updateSelectedRec = (prop, value) => {
         setSelectedRec((prevState) => ({
             ...prevState,
-            ...value
+            [prop]: value
         }));
     }
 
     const queryRecords = async () =>{
-        const response = await axios.get(`${API_HOST}/transportation-details/${product.id}`)
+        const response = await axios.get(`${API_HOST}/transportation-details/${product.id}`, reqConfigs)
         const data = response.data
 
-        const locResponse = await axios.get(`${API_HOST}/stakeholder`)
+        const locResponse = await axios.get(`${API_HOST}/stakeholder`, reqConfigs)
         const locations = locResponse.data.data
 
         setRecords(data)
@@ -145,17 +158,17 @@ export const UpdateTransportationDetails = ({ product }) => {
     }
 
     const patchRec = async () => {
-        await axios.patch(`${API_HOST}/transportation-details/${product.id}/update/${selectedRec.id}`, selectedRec)
+        await axios.patch(`${API_HOST}/transportation-details/${product.id}/update/${selectedRec.id}`, selectedRec, reqConfigs)
         queryRecords();
     }
 
     const deleteRec = async () => {
-        await axios.delete(`${API_HOST}/transportation-details/${product.id}/delete/${selectedRec.id}`)
+        await axios.delete(`${API_HOST}/transportation-details/${product.id}/delete/${selectedRec.id}`, reqConfigs)
         queryRecords();
     }
 
     const createRec = async () => {
-        await axios.post(`${API_HOST}/transportation-details/${product.id}/create`, selectedRec)
+        await axios.post(`${API_HOST}/transportation-details/${product.id}/create`, selectedRec, reqConfigs)
         queryRecords();
     }
 
@@ -173,7 +186,7 @@ export const UpdateTransportationDetails = ({ product }) => {
                         selectedRec?.id && (<Input
                             placeholder='Enter transportation notes'
                             value={selectedRec?.[editableElement]?.notes || ''}
-                            onChangeText={value => updateRecDetails(editableElement, 'notes', value)}
+                            onChangeText={value => updateSelectedRec(editableElement, 'notes', value)}
                         />)
                     }
 
@@ -186,17 +199,17 @@ export const UpdateTransportationDetails = ({ product }) => {
                                     <LocationSelect
                                         location='departure'
                                         options={locations}
-                                        onChangeFn={updateRecDetails}
+                                        onChangeFn={updateSelectedRec()}
                                     />
 
                                     <Input
                                         placeholder='Enter departure notes'
                                         value={selectedRec?.departure.notes || ''}
-                                        onChangeText={value => updateRecDetails('departure', 'notes', value)}
+                                        onChangeText={value => updateSelectedRec('departure.notes', value)}
                                     />
                                 </View>
 
-                                {selectedRec?.departure.name && <View style={{marginVertical: 10}}>
+                                {selectedRec?.departure.id && <View style={{marginVertical: 10}}>
                                     <LocationSelect
                                         location='destination'
                                         options={locations}
