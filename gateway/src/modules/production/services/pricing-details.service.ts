@@ -7,12 +7,14 @@ import { PricingDetail } from '../dto/create-production.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { BlockchainService } from '../../fabric/services/blockchain.service';
 import { ChaincodeNames } from '../../../utils/enums/chaincode-operations.enum';
+import {User} from "../../users/entities/user.entity";
 
 @Injectable()
 export class PricingDetailsService {
   constructor(
     @InjectRepository(Production) private repo: Repository<Production>,
-    private readonly blochchainService: BlockchainService,
+    private readonly blockchainService: BlockchainService,
+    @InjectRepository(User) private userRepo: Repository<User>,
     private readonly logger: PinoLogger,
   ) {}
 
@@ -26,14 +28,32 @@ export class PricingDetailsService {
     return production.pricingDetail;
   }
 
-  async createOne(productionId: string, dto: PricingDetail) {
+  async createOne(
+      productionId: string,
+      dto: PricingDetail,
+      authenticated: any
+  ) {
     let production = await this.repo.findOne({ where: { id: productionId } });
+    let user = await this.userRepo.findOne({ where: { id: authenticated.userId }, relations: ['stakeholder'] });
 
     if (!production) {
       throw new NotFoundException('Production not found');
     }
 
     dto.id = uuidv4();
+    dto.date = new Date().toISOString()
+
+    if (user){
+      dto.signedBy = {
+        id: user.id,
+        fullName: user.fullName,
+      }
+
+      if (user.stakeholder) {
+        const {id, name, type, contactNumber, location} = user.stakeholder;
+        dto.stakeHolder = {id, name, type, contactNumber, location}
+      }
+    }
 
     if (!production.pricingDetail) {
       production.pricingDetail = [dto];
@@ -41,7 +61,8 @@ export class PricingDetailsService {
       production.pricingDetail.push(dto);
     }
     production = await this.repo.save(production);
-    await this.blochchainService.updateOne(
+
+    await this.blockchainService.updateOne(
       ChaincodeNames.PRODUCTIONS,
       production.id,
       {
@@ -78,7 +99,7 @@ export class PricingDetailsService {
 
     production = await this.repo.save(production);
 
-    await this.blochchainService.updateOne(
+    await this.blockchainService.updateOne(
       ChaincodeNames.PRODUCTIONS,
       production.id,
       {
@@ -108,7 +129,7 @@ export class PricingDetailsService {
 
     production = await this.repo.save(production);
 
-    await this.blochchainService.updateOne(
+    await this.blockchainService.updateOne(
       ChaincodeNames.PRODUCTIONS,
       production.id,
       {

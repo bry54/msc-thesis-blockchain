@@ -7,12 +7,15 @@ import { RegulatoryCheck } from '../dto/create-production.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { BlockchainService } from '../../fabric/services/blockchain.service';
 import { ChaincodeNames } from '../../../utils/enums/chaincode-operations.enum';
+import {User} from "../../users/entities/user.entity";
+import {use} from "passport";
 
 @Injectable()
 export class RegulatoryChecksService {
   constructor(
     @InjectRepository(Production) private repo: Repository<Production>,
     private readonly blochchainService: BlockchainService,
+    @InjectRepository(User) private userRepo: Repository<User>,
     private readonly logger: PinoLogger,
   ) {}
 
@@ -26,11 +29,29 @@ export class RegulatoryChecksService {
     return production.regulatoryChecks;
   }
 
-  async createOne(productionId: string, dto: RegulatoryCheck) {
+  async createOne(productionId: string, dto: RegulatoryCheck, authenticated) {
     let production = await this.repo.findOne({ where: { id: productionId } });
+    let user = await this.userRepo.findOne({ where: { id: authenticated.userId }, relations: ['stakeholder'] });
 
     if (!production) {
       throw new NotFoundException('Production not found');
+    }
+
+    if (user){
+      const { id, fullName, } = user;
+      dto.signedBy = {
+        id,
+        fullName,
+      }
+
+      if (user.stakeholder){
+        dto.signedBy.stakeholder = {
+          id: user.stakeholderId,
+              type: user.stakeholder.type,
+              location: user.stakeholder.location,
+              contactNumber: user.stakeholder.contactNumber,
+        }
+      }
     }
 
     dto.id = uuidv4();

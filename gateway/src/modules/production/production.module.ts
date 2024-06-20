@@ -10,9 +10,11 @@ import { TransportationDetailsService } from './services/transportation-details.
 import { TransportationDetailsController } from './controllers/transportation-details.controller';
 import { PricingDetailsService } from './services/pricing-details.service';
 import { PricingDetailsController } from './controllers/pricing-details.controller';
+import {User} from "../users/entities/user.entity";
+import {Stakeholder} from "../stakeholder/entities/stakeholder.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Production])],
+  imports: [TypeOrmModule.forFeature([Production, User, Stakeholder])],
   controllers: [
     ProductionController,
     BlockchainController,

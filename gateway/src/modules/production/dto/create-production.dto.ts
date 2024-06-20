@@ -29,38 +29,31 @@ export class Harvesting {
 export class RegulatoryCheck {
   id: string;
 
-  @ApiProperty()
-  notes: string;
-
   date: string;
 
+  signedBy: Partial<User>;
+
   @ApiProperty()
-  signedBy: User;
+  notes: string;
 }
 
 export class HoldingArea {
   @ApiProperty()
-  name: string;
-
-  @ApiProperty()
-  address: string;
-
-  @ApiProperty()
-  date: string;
-
-  @ApiProperty()
   notes: string;
 
   @ApiProperty()
+  stakeholderId: string
+
+  date: string;
+
+  stakeholder: Partial<Stakeholder>;
+
   responsiblePerson: Partial<User>;
 }
 
 export class TransportationDetail {
   id: string;
 
-  @ApiProperty()
-  responsiblePerson: Partial<User>;
-  _
   @ApiProperty()
   departure: HoldingArea;
 
@@ -71,8 +64,11 @@ export class TransportationDetail {
 export class PricingDetail {
   id: string;
 
-  @ApiProperty()
-  stakeHolder: Stakeholder;
+  date: string;
+
+  stakeHolder: Partial<Stakeholder>;
+
+  signedBy: Partial<User>;
 
   @ApiProperty()
   pricePerUnit: string;

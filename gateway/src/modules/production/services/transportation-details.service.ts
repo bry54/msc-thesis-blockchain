@@ -7,16 +7,25 @@ import { TransportationDetail } from '../dto/create-production.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { BlockchainService } from '../../fabric/services/blockchain.service';
 import { ChaincodeNames } from '../../../utils/enums/chaincode-operations.enum';
+import {Stakeholder} from "../../stakeholder/entities/stakeholder.entity";
+import {User} from "../../users/entities/user.entity";
+import {use} from "passport";
 
 @Injectable()
 export class TransportationDetailsService {
   constructor(
-    @InjectRepository(Production) private repo: Repository<Production>,
-    private readonly blochchainService: BlockchainService,
-    private readonly logger: PinoLogger,
+      @InjectRepository(Production) private repo: Repository<Production>,
+      @InjectRepository(Stakeholder) private stakeholderRepo: Repository<Stakeholder>,
+      @InjectRepository(User) private userRepo: Repository<User>,
+      private readonly blochchainService: BlockchainService,
+      private readonly logger: PinoLogger,
   ) {}
 
-  async getAll(productionId: string): Promise<TransportationDetail[] | void> {
+  async getAll(
+      productionId: string
+  ): Promise<TransportationDetail[] | void> {
+
+    return []
     const production = await this.repo.findOne({ where: { id: productionId } });
 
     if (!production) {
@@ -26,14 +35,62 @@ export class TransportationDetailsService {
     return production.transportationDetail;
   }
 
-  async createOne(productionId: string, dto: TransportationDetail) {
+  async createOne(
+      productionId: string,
+      dto: TransportationDetail,
+      authenticated: any
+  ) {
     let production = await this.repo.findOne({ where: { id: productionId } });
+    let user = await this.userRepo.findOne({ where: { id: authenticated.userId }, relations: ['stakeholder'] });
 
     if (!production) {
       throw new NotFoundException('Production not found');
     }
 
+    const departureId = dto.departure.stakeholderId;
+    const destinationId = dto.destination.stakeholderId;
+
     dto.id = uuidv4();
+
+    if (departureId){
+      const departurePlace = await this.stakeholderRepo.findOne({where: {id: departureId}});
+
+      if (!departurePlace) {
+        throw new NotFoundException('Origin does not exist');
+      }
+
+      let {id, name, type, contactNumber, location} = departurePlace;
+      dto.departure.stakeholder = {id, name, type, contactNumber, location};
+
+      if(user) {
+        let {id, fullName, stakeholder} = user;
+        dto.departure.responsiblePerson = {
+          id,
+          fullName,
+        }
+
+        if (user.stakeholder){
+          dto.departure.responsiblePerson.stakeholder = {
+            id: user.stakeholder?.id,
+                name: user.stakeholder?.name,
+                location: user.stakeholder?.location,
+                contactNumber: user.stakeholder?.contactNumber,
+          }
+        }
+      }
+
+      dto.departure.date = new Date().toISOString();
+    }
+
+    if (destinationId){
+      const stakeholder = await this.stakeholderRepo.findOne({where: {id: destinationId}});
+      if (!stakeholder) {
+        throw new NotFoundException('Destination does not exist');
+      }
+      const { id, name, type, contactNumber, location} = stakeholder;
+
+      dto.destination.stakeholder = { id, name, type, contactNumber, location };
+    }
 
     if (!production.transportationDetail) {
       production.transportationDetail = [dto];
@@ -42,20 +99,20 @@ export class TransportationDetailsService {
     }
     production = await this.repo.save(production);
     await this.blochchainService.updateOne(
-      ChaincodeNames.PRODUCTIONS,
-      production.id,
-      {
-        transportationDetail: production.transportationDetail,
-      } as Partial<Production>,
+        ChaincodeNames.PRODUCTIONS,
+        production.id,
+        {
+          transportationDetail: production.transportationDetail,
+        } as Partial<Production>,
     );
 
     return dto;
   }
 
   async updateOne(
-    productionId: string,
-    transportationId: string,
-    dto: TransportationDetail,
+      productionId: string,
+      transportationId: string,
+      dto: TransportationDetail,
   ): Promise<TransportationDetail> {
     let production = await this.repo.findOne({ where: { id: productionId } });
 
@@ -64,7 +121,7 @@ export class TransportationDetailsService {
     }
 
     const index = production.transportationDetail.findIndex(
-      (transportation) => transportation.id === transportationId,
+        (transportation) => transportation.id === transportationId,
     );
 
     if (index === -1) {
@@ -79,11 +136,11 @@ export class TransportationDetailsService {
     production = await this.repo.save(production);
 
     await this.blochchainService.updateOne(
-      ChaincodeNames.PRODUCTIONS,
-      production.id,
-      {
-        transportationDetail: production.transportationDetail,
-      } as Partial<Production>,
+        ChaincodeNames.PRODUCTIONS,
+        production.id,
+        {
+          transportationDetail: production.transportationDetail,
+        } as Partial<Production>,
     );
 
     return production.transportationDetail[index];
@@ -97,7 +154,7 @@ export class TransportationDetailsService {
     }
 
     const index = production.transportationDetail.findIndex(
-      (transportation) => transportation.id === transportationId,
+        (transportation) => transportation.id === transportationId,
     );
 
     if (index === -1) {
@@ -109,11 +166,11 @@ export class TransportationDetailsService {
     production = await this.repo.save(production);
 
     await this.blochchainService.updateOne(
-      ChaincodeNames.PRODUCTIONS,
-      production.id,
-      {
-        transportationDetail: production.transportationDetail,
-      } as Partial<Production>,
+        ChaincodeNames.PRODUCTIONS,
+        production.id,
+        {
+          transportationDetail: production.transportationDetail,
+        } as Partial<Production>,
     );
 
     return;

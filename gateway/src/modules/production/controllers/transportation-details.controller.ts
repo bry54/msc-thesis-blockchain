@@ -4,6 +4,7 @@ import { TransportationDetail } from '../dto/create-production.dto';
 import { TransportationDetailsService } from '../services/transportation-details.service';
 import {AuthUser} from "../../../utils/helpers/request-helpers";
 import {User} from "../../users/entities/user.entity";
+import {use} from "passport";
 
 @ApiBearerAuth()
 @ApiTags('Transportation Details')
@@ -12,7 +13,10 @@ export class TransportationDetailsController {
   constructor(public service: TransportationDetailsService) {}
 
   @Get(':productionId')
-  async getAll(@Param('productionId') productionId: string) {
+  async getAll(
+      @Param('productionId') productionId: string,
+      @AuthUser() user: User,
+  ) {
     return await this.service.getAll(productionId);
   }
 
@@ -20,9 +24,9 @@ export class TransportationDetailsController {
   async createOne(
     @Param('productionId') productionId: string,
     @Body() dto: TransportationDetail,
-    @AuthUser() user: Partial<User>,
+    @AuthUser() authenticated: any,
   ) {
-    return await this.service.createOne(productionId, dto, user);
+    return await this.service.createOne(productionId, dto, authenticated);
   }
 
   @Patch(':productionId/update/:transportationId')

@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post } 
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import { PricingDetail } from '../dto/create-production.dto';
 import { PricingDetailsService } from '../services/pricing-details.service';
+import {AuthUser} from "../../../utils/helpers/request-helpers";
 
 @ApiBearerAuth()
 @ApiTags('Pricing Details')
@@ -18,8 +19,9 @@ export class PricingDetailsController {
   async createOne(
     @Param('productionId') productionId: string,
     @Body() dto: PricingDetail,
+    @AuthUser() authenticated: any,
   ) {
-    return await this.service.createOne(productionId, dto);
+    return await this.service.createOne(productionId, dto, authenticated);
   }
 
   @Patch(':productionId/update/:pricingId')

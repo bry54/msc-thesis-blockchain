@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post } 
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import { RegulatoryChecksService } from '../services/regulatory-checks.service';
 import { RegulatoryCheck } from '../dto/create-production.dto';
+import {AuthUser} from "../../../utils/helpers/request-helpers";
 
 @ApiBearerAuth()
 @ApiTags('Regulatory Checks')
@@ -18,8 +19,9 @@ export class RegulatoryChecksController {
   async createRegulatoryCheck(
     @Param('productionId') productionId: string,
     @Body() dto: RegulatoryCheck,
+    @AuthUser() authenticated: any,
   ) {
-    return await this.service.createOne(productionId, dto);
+    return await this.service.createOne(productionId, dto, authenticated);
   }
 
   @Patch(':productionId/update/:checkId')
