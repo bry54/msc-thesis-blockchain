@@ -1,9 +1,10 @@
-import {Column, Entity, JoinColumn, ManyToOne} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '../../../utils/helpers/base.entity';
 import {Stakeholder} from "../../stakeholder/entities/stakeholder.entity";
 import {Roles} from "../../../utils/enums/stakeholder-types.enum";
 import {IsEnum, IsOptional, IsUUID} from "class-validator";
+import {AccessToken} from "./access-token.entity";
 
 @Entity()
 export class User extends BaseEntity {
@@ -37,5 +38,8 @@ export class User extends BaseEntity {
     onDelete: "CASCADE"
   })
   @JoinColumn({name: 'stakeholder_id'})
-  stakeholder: Stakeholder;
+  stakeholder: Partial<Stakeholder>;
+
+  @OneToMany(() => AccessToken, (rel) => rel.user)
+  accessTokens: Partial<AccessToken>[];
 }
