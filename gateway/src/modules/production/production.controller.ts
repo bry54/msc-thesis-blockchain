@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { ProductionService } from './production.service';
 import { Crud, CrudController } from '@dataui/crud';
 import { crudGeneralOptions } from '../../utils/helpers/request-helpers';
-import { ApiTags } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import { Production } from './entities/production.entity';
 
 @Crud({
@@ -17,6 +17,8 @@ import { Production } from './entities/production.entity';
     ...crudGeneralOptions.query,
   },
 })
+
+@ApiBearerAuth()
 @ApiTags('Production')
 @Controller('production')
 export class ProductionController implements CrudController<Production> {

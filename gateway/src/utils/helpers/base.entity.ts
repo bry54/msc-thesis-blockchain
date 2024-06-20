@@ -14,5 +14,11 @@ export class BaseEntity {
   deletedDate: Date;
 
   @Column({ nullable: true })
+  deletedBy: string;
+
+  @Column({ nullable: true })
+  createdBy: string;
+
+  @Column({ nullable: true })
   updatedBy: string;
 }

@@ -1,8 +1,9 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import { RegulatoryChecksService } from '../services/regulatory-checks.service';
 import { RegulatoryCheck } from '../dto/create-production.dto';
 
+@ApiBearerAuth()
 @ApiTags('Regulatory Checks')
 @Controller('regulatory-checks')
 export class RegulatoryChecksController {

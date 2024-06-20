@@ -1,7 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { FabricService } from './fabric.service';
-import { ApiTags } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @ApiTags('Fabric')
 @Controller('fabric')
 export class FabricController {

@@ -1,8 +1,9 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import { PricingDetail } from '../dto/create-production.dto';
 import { PricingDetailsService } from '../services/pricing-details.service';
 
+@ApiBearerAuth()
 @ApiTags('Pricing Details')
 @Controller('pricing-details')
 export class PricingDetailsController {

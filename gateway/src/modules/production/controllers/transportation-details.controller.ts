@@ -1,8 +1,11 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import { TransportationDetail } from '../dto/create-production.dto';
 import { TransportationDetailsService } from '../services/transportation-details.service';
+import {AuthUser} from "../../../utils/helpers/request-helpers";
+import {User} from "../../users/entities/user.entity";
 
+@ApiBearerAuth()
 @ApiTags('Transportation Details')
 @Controller('transportation-details')
 export class TransportationDetailsController {
@@ -17,8 +20,9 @@ export class TransportationDetailsController {
   async createOne(
     @Param('productionId') productionId: string,
     @Body() dto: TransportationDetail,
+    @AuthUser() user: Partial<User>,
   ) {
-    return await this.service.createOne(productionId, dto);
+    return await this.service.createOne(productionId, dto, user);
   }
 
   @Patch(':productionId/update/:transportationId')

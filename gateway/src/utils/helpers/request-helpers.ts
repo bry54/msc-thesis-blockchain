@@ -1,4 +1,4 @@
-import { ExecutionContext } from '@nestjs/common';
+import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 import { CrudOptions } from '@dataui/crud';
 
 export function getRequestFromContext(context: ExecutionContext) {
@@ -27,3 +27,10 @@ export const crudGeneralOptions: Partial<CrudOptions> = {
     exclude: ['password', 'accessToken'],
   },
 };
+
+export const AuthUser = createParamDecorator(
+    (data: unknown, ctx: ExecutionContext) => {
+      const request = ctx.switchToHttp().getRequest();
+      return request.user;
+    },
+);

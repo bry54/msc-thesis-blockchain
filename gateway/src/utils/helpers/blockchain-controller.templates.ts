@@ -1,10 +1,11 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiOperation, ApiParam, ApiTags} from '@nestjs/swagger';
 import { ChaincodeNames } from '../enums/chaincode-operations.enum';
 
 const resource = '';
 const CHAINCODE_NAME = '' as ChaincodeNames;
 
+@ApiBearerAuth()
 @ApiTags(`Blockchain ${resource} queries`)
 @Controller(`blockchain/${resource}`)
 export class BlockchainController {

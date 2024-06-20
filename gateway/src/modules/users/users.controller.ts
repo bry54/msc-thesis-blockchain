@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiTags } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 import { Crud, CrudController } from '@dataui/crud';
 import { User } from './entities/user.entity';
 import { crudGeneralOptions } from '../../utils/helpers/request-helpers';
@@ -21,6 +21,8 @@ import { crudGeneralOptions } from '../../utils/helpers/request-helpers';
     },
   },
 })
+
+@ApiBearerAuth()
 @ApiTags('Users')
 @Controller('user')
 export class UsersController implements CrudController<User> {
