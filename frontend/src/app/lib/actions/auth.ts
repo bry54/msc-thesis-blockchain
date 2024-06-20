@@ -52,7 +52,15 @@ export async function createSession(dto: SignInResponseDto) {
 }
 
 export async function deleteSession() {
-  cookies().getAll().map(c =>{
+  cookies().getAll().map((c: any) =>{
     cookies().delete(c.name)
   })
+}
+
+export async function getCookie () {
+  const cookieStore = cookies();
+
+  return {
+    auth: cookieStore.get('Auth')?.value
+  }
 }

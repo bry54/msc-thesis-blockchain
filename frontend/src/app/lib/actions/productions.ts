@@ -1,8 +1,16 @@
 import axios from 'axios';
+import {getCookie} from "@/app/lib/actions/auth";
 
 export const queryProductions = async () => {
+  const cookies = await getCookie();
+
   try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/production` );
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/production`,{
+      headers: {
+        'accept': '*/*',
+        'Authorization': `Bearer ${cookies.auth}`
+      }
+    } );
     return response.data.data.map((d: any) => ({ key: d.id, ...d }))
   } catch (e: any){
     console.log(e.response?.data || e.message);
@@ -11,8 +19,15 @@ export const queryProductions = async () => {
 }
 
 export const queryProduction = async (id: string) => {
+  const cookies = await getCookie();
+
   try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/production/${id}` );
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/production/${id}`,{
+      headers: {
+        'accept': '*/*',
+        'Authorization': `Bearer ${cookies.auth}`
+      }
+    } );
     return  response.data
   } catch (e: any){
     console.log(e.response?.data || e.message);
@@ -21,8 +36,15 @@ export const queryProduction = async (id: string) => {
 }
 
 export const queryProductHistory = async (id: string) => {
+  const cookies = await getCookie();
+
   try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST_BLOCKCHAIN}/production/${id}/history` );
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST_BLOCKCHAIN}/production/${id}/history`,{
+      headers: {
+        'accept': '*/*',
+        'Authorization': `Bearer ${cookies.auth}`
+      }
+    } );
     return  response.data
   } catch (e: any){
     console.log(e.response?.data || e.message);
@@ -31,8 +53,15 @@ export const queryProductHistory = async (id: string) => {
 }
 
 export const deleteProduction = async (id: string) => {
+  const cookies = await getCookie();
+
   try {
-    const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_HOST}/production/${id}` );
+    const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_HOST}/production/${id}`,{
+      headers: {
+        'accept': '*/*',
+        'Authorization': `Bearer ${cookies.auth}`
+      }
+    } );
     return response.data
   } catch (e: any){
     console.log(e.response?.data || e.message);
@@ -40,8 +69,16 @@ export const deleteProduction = async (id: string) => {
   }
 }
 
-export const updateProduction = async (id: string, data: any) => {  try {
-    const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_HOST}/production/${id}`, data );
+export const updateProduction = async (id: string, data: any) => {
+  const cookies = await getCookie();
+
+  try {
+    const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_HOST}/production/${id}`, data, {
+      headers: {
+        'accept': '*/*',
+        'Authorization': `Bearer ${cookies.auth}`
+      }
+    } );
     return response.data
   } catch (e: any){
     console.log(e.response?.data || e.message);
@@ -50,8 +87,15 @@ export const updateProduction = async (id: string, data: any) => {  try {
 }
 
 export const addProduction = async (values: any) => {
+  const cookies = await getCookie();
+
   try {
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/production`, values );
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/production`, values, {
+      headers: {
+        'accept': '*/*',
+        'Authorization': `Bearer ${cookies.auth}`
+      }
+    } );
     return response.data
   } catch (e: any){
     console.log(e.response?.data || e.message);

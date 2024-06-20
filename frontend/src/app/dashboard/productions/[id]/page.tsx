@@ -124,7 +124,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   };
 
   const handleRecordUpdate = async () =>{
-    const id = params.id
+    const pId = params.id
     updateProcessingState('updating', true)
     try {
       const values: any = form.getFieldsValue();
@@ -135,11 +135,9 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         category: values.category
       }
 
-      const origin = {
-        farmId: initialPlace.id,
-        name: initialPlace.name,
-        location: initialPlace.location,
-      }
+      const {id, name, type, location, contactNumber} = initialPlace;
+
+      const origin = {id, name, type, location, contactNumber}
 
       const planting = {
         quantity: values.quantity,
@@ -163,9 +161,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         }
       }
 
-      console.log('data', JSON.stringify(data));
-
-      await updateProduction(id, data)
+      await updateProduction(pId, data)
       await fetchProduct()
       await fetchHistory()
 
@@ -318,7 +314,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                      category: collectionState.product.product.category,
                      plantingDate: collectionState.product.product?.planting?.date,
                      quantity: collectionState.product.product?.planting?.quantity,
-                     stakeholderId: collectionState.product.product?.origin?.farmId,
+                     stakeholderId: collectionState.product?.origin?.id,
                    }}
                    onFinish={() => alert('onFinish invoked')}
                    onFinishFailed={() => alert('onFinishFailed invoked')}
