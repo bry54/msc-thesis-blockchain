@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import { TypeOrmCrudService } from '@dataui/crud-typeorm';
 import { Production } from './entities/production.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,11 +8,14 @@ import { PinoLogger } from 'nestjs-pino';
 import { CrudRequest } from '@dataui/crud';
 import { ChaincodeNames } from '../../utils/enums/chaincode-operations.enum';
 import { BlockchainService } from '../fabric/services/blockchain.service';
+import {Stakeholder} from "../stakeholder/entities/stakeholder.entity";
+import {User} from "../users/entities/user.entity";
 
 @Injectable()
 export class ProductionService extends TypeOrmCrudService<Production> {
   constructor(
     @InjectRepository(Production) repo: Repository<Production>,
+    @InjectRepository(User) private userRepo: Repository<User>,
     private readonly fabricService: FabricService,
     private blockchainService: BlockchainService,
     private readonly logger: PinoLogger,
@@ -24,6 +27,28 @@ export class ProductionService extends TypeOrmCrudService<Production> {
     req: CrudRequest,
     dto: DeepPartial<Production>,
   ): Promise<Production> {
+    const authenticated = dto.authenticated;
+
+    delete dto.authenticated;
+
+    if (!dto.origin?.id){
+      const user = await this.userRepo.findOne({
+        where: {id: authenticated.userId},
+        relations: ['stakeholder'],
+      });
+
+      if (user.stakeholder) {
+        const {id, name, type, location, contactNumber} = user.stakeholder;
+        dto.origin = {
+          id, name, type, location, contactNumber
+        }
+      }
+    }
+
+    if (!dto.origin?.id){
+      throw new BadRequestException('Provide product origin');
+    }
+
     const res = await super.createOne(req, dto);
     await this.blockchainService.createOne(ChaincodeNames.PRODUCTIONS, res);
     return res;

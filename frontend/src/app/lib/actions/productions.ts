@@ -39,6 +39,7 @@ export const deleteProduction = async (id: string) => {
     throw new Error(e.response?.data?.message || 'Error deleting production');
   }
 }
+
 export const updateProduction = async (id: string, data: any) => {  try {
     const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_HOST}/production/${id}`, data );
     return response.data

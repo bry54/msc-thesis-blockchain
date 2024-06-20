@@ -32,28 +32,29 @@ export class Production extends BaseEntity {
 
   @ApiProperty({ type: Planting })
   @IsOptional()
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'json', nullable: false, default: '{}' })
   planting: Planting;
 
   @ApiProperty({ type: Harvesting })
   @IsOptional()
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'json', nullable: false, default: '{}' })
   harvesting: Harvesting;
 
   @ApiProperty({ type: RegulatoryCheck, isArray: true })
   @IsOptional()
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'json', nullable: true, default: '[]' })
   regulatoryChecks: RegulatoryCheck[];
 
   @ApiProperty({ type: TransportationDetail, isArray: true })
   @IsOptional()
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'json', nullable: true, default: '[]' })
   transportationDetail: TransportationDetail[];
 
   @ApiProperty({ type: PricingDetail, isArray: true })
   @IsOptional()
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'json', nullable: false, default: '[]' })
   pricingDetail: PricingDetail[];
 
-
+  // Only needed to provide authenticated user when creating new production record.
+  authenticated: any
 }

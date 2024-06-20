@@ -117,11 +117,9 @@ export default function SettingsPage() {
       category: values.type
     }
 
-    const origin = {
-      farmId: values.origin,
-      name: initialPlace.name,
-      location: initialPlace.location,
-    }
+    const {id, name, type, location, contactNumber} = initialPlace;
+
+    const origin = {id, name, type, location, contactNumber}
 
     const planting = {
       quantity: values.quantity,
