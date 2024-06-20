@@ -12,8 +12,10 @@ import {FabricModule} from './modules/fabric/fabric.module';
 import {StakeholderModule} from './modules/stakeholder/stakeholder.module';
 import {SnakeNamingStrategy} from 'typeorm-naming-strategies';
 import {ProductionModule} from './modules/production/production.module';
-import {SetUserInterceptor} from "./utils/interceptors/set-user.interceptor";
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import {CrudUserAppendInterceptor} from "./utils/interceptors/user-interceptor.service";
+import {APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
+import {JwtAuthGuard} from "./utils/guards/jwt-auth.guard";
+import {User} from "./modules/users/entities/user.entity";
 
 @Module({
   imports: [
@@ -38,6 +40,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       load: [configuration],
     }),
     LoggerModule.forRoot(loggerParams),
+    TypeOrmModule.forFeature([User]),
     FabricModule,
     AuthModule,
     UsersModule,
@@ -49,12 +52,12 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     AppService,
     {
       provide: APP_INTERCEPTOR,
-      useClass: SetUserInterceptor,
-    }
-    /*{
+      useClass: CrudUserAppendInterceptor,
+    },
+    {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    },*/
+    }
   ],
 })
 export class AppModule {}

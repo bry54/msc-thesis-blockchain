@@ -7,6 +7,9 @@ import { SignInDto } from './dto/sign-in.dto';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
 import { SignInResponseDto, TokenDto } from './dto/token.dto';
+import {InjectRepository} from "@nestjs/typeorm";
+import {Repository} from "typeorm";
+import {AccessToken} from "../users/entities/access-token.entity";
 
 @Injectable()
 export class AuthService {
@@ -15,6 +18,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private readonly logger: PinoLogger,
+    @InjectRepository(AccessToken) private tokensRepo: Repository<AccessToken>,
   ) {}
 
   async login(dto: SignInDto): Promise<SignInResponseDto> {
@@ -33,15 +37,38 @@ export class AuthService {
     const payload: TokenDto = {
       username: user.username,
       sub: user.id,
-      role: null,
-      organizationId: null,
+      role: user.role,
+      organizationId: user.stakeholderId,
     };
+
+    const token = this.jwtService.sign(payload, {
+      issuer: this.configService.get('auth.jwtIssuer'),
+    });
+
+    const exising = await this.tokensRepo.findOne({
+      where: {
+        userId: user.id,
+        agent: dto.agent,
+      },
+    })
+
+    if (exising){
+      await this.tokensRepo.update({
+        id: exising.id,
+      }, {
+        value: token
+      })
+    } else {
+      await this.tokensRepo.save({
+        userId: user.id,
+        agent: dto.agent,
+        value: token
+      })
+    }
 
     return {
       fullName: user.fullName,
-      accessToken: this.jwtService.sign(payload, {
-        issuer: this.configService.get('auth.jwtIssuer'),
-      }),
+      accessToken: token,
     };
   }
 
