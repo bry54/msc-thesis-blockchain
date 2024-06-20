@@ -34,7 +34,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (canActivate) {
       const accessToken = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
       const user = await this.usersRepo.findOne({
-        where: {id: request.user.id},
+        where: {id: request.user.userId},
         relations: ['accessTokens']
       });
 

@@ -21,19 +21,19 @@ export class CrudUserAppendInterceptor {
 
     const action = getAction(handler);
     const body: BaseEntity = request.body;
-    const user = request.user;
+    const authenticated = request.user;
 
-    if (user){
+    if (authenticated){
       switch (action) {
         case CrudActions.CreateOne:
-          body.createdBy = user.id
-          body.updatedBy = user.id
+          body.createdBy = authenticated.userId
+          body.updatedBy = authenticated.userId
           break;
         case CrudActions.DeleteOne:
-          body.deletedBy = user.id
+          body.deletedBy = authenticated.userId
           break;
         default:
-          body.updatedBy = user.id;
+          body.updatedBy = authenticated.userId;
       }
     }
 

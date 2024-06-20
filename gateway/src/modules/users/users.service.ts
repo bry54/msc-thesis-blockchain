@@ -1,17 +1,18 @@
-import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { DeepPartial, Repository } from 'typeorm';
-import { PinoLogger } from 'nestjs-pino';
-import { TypeOrmCrudService } from '@dataui/crud-typeorm';
-import { CrudRequest } from '@dataui/crud';
-import { ChaincodeNames } from '../../utils/enums/chaincode-operations.enum';
-import { BlockchainService } from '../fabric/services/blockchain.service';
+import {BadRequestException, ConflictException, Injectable, OnModuleInit} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
+import {InjectRepository} from '@nestjs/typeorm';
+import {User} from './entities/user.entity';
+import {DeepPartial, Repository} from 'typeorm';
+import {PinoLogger} from 'nestjs-pino';
+import {TypeOrmCrudService} from '@dataui/crud-typeorm';
+import {CrudRequest} from '@dataui/crud';
+import {ChaincodeNames} from '../../utils/enums/chaincode-operations.enum';
+import {BlockchainService} from '../fabric/services/blockchain.service';
 import * as bcrypt from 'bcrypt';
+import {Roles} from "../../utils/enums/stakeholder-types.enum";
 
 @Injectable()
-export class UsersService extends TypeOrmCrudService<User> {
+export class UsersService extends TypeOrmCrudService<User> implements OnModuleInit{
   constructor(
     @InjectRepository(User) public repo: Repository<User>,
     private blockchainService: BlockchainService,
@@ -74,5 +75,17 @@ export class UsersService extends TypeOrmCrudService<User> {
       deletedDate: rec.deletedDate,
     });
     return res;
+  }
+
+  async onModuleInit(): Promise<any> {
+    const users = await this.repo.find()
+    if (!users.length) {
+      await this.repo.save({
+        fullName: 'Administrator',
+        username: 'admin@root.com',
+        password: bcrypt.hashSync('1', 10),
+        role: Roles.ADMINISTRATOR
+      })
+    }
   }
 }
