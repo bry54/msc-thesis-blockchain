@@ -1,23 +1,34 @@
 import {Button, Divider, Icon, Input, ListItem, Overlay, Text} from "@rneui/themed";
 import React, {useEffect, useState} from "react";
-import {View, StyleSheet} from "react-native";
+import {StyleSheet, View} from "react-native";
 import axios from "axios";
 import {API_HOST} from "../../store/constants";
-import { Dropdown } from 'react-native-element-dropdown';
 import {useSelector} from "react-redux";
+import {Picker} from "@react-native-picker/picker";
 
-const EditBtn = ({ onPress }) =>{
+const RightSwipeActions = ({ onPress, onApprove=false }) =>{
     return (
-        <Button
-            title="Edit"
-            onPress={ onPress }
-            icon={{ name: 'edit', color: 'white' }}
-            buttonStyle={{ minHeight: '100%', backgroundColor: 'blue' }}
-        />
+        <View style={{ flex: 1, flexDirection: "row" }}>
+            <Button
+                title="Edit"
+                onPress={ onPress }
+                iconPosition="top"
+                icon={{ name: 'edit', color: 'white' }}
+                buttonStyle={{ minHeight: '100%', backgroundColor: 'blue' }}
+            />
+
+            {onApprove && <Button
+                title={'Confirm'}
+                onPress={onApprove}
+                iconPosition="top"
+                icon={{name: 'check', color: 'white'}}
+                buttonStyle={{minHeight: '100%', backgroundColor: 'green'}}
+            />}
+        </View>
     )
 }
 
-const DeleteBtn = ({ onPress }) => {
+const LeftSwipeActions = ({ onPress }) => {
     return (
         <Button
             title="Delete"
@@ -35,65 +46,9 @@ const TransportationDetail = ({ data, icon }) => {
             <ListItem.Content containerStyle={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
                 <ListItem.Title>{ data?.name}</ListItem.Title>
                 <ListItem.Subtitle>{ data?.notes}</ListItem.Subtitle>
-                <ListItem.Subtitle>{ data?.responsiblePerson}, {data?.date}</ListItem.Subtitle>
+                <ListItem.Subtitle>{ data?.responsiblePerson?.fullName}, {data?.date}</ListItem.Subtitle>
             </ListItem.Content>
         </>
-    )
-}
-
-const LocationSelect = ({ options, location, onChangeFn }) => {
-    const [value, setValue] = useState(null);
-    const [isFocus, setIsFocus] = useState(false);
-
-    let opts = options
-
-    console.log(opts)
-
-    if (location === 'destination'){
-        opts = options.filter(option => option.id !== value);
-    }
-
-    return (
-        <Dropdown
-            style={[styles.dropdown, isFocus && { borderColor: 'transparent', borderWidth: 0 }]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            iconStyle={styles.iconStyle}
-            data={ opts }
-            maxHeight={300}
-            labelField="name"
-            valueField="id"
-            placeholder={!isFocus ? `Select ${location}` : '...'}
-            searchPlaceholder="Search..."
-            value={value}
-            onFocus={() => setIsFocus(true)}
-            onBlur={() => setIsFocus(false)}
-            onChange={item => {
-                setValue(`${item.id}`);
-                setIsFocus(false);
-
-                const value = {
-                    name: `${item.name}, ${item.type}`,
-                    address: item.location,
-                }
-                // Create a new object based on the updates needed
-                const updates = Object.keys(value).reduce((acc, v) => {
-                    acc[v] = value[v];
-                    return acc;
-                }, {});
-
-                onChangeFn(location, 'obj', updates);
-            }}
-            renderLeftIcon={() => (
-                <Icon
-                    style={styles.icon}
-                    color={isFocus ? 'blue' : 'black'}
-                    name="place"
-                    size={20}
-                />
-            )}
-        />
     )
 }
 
@@ -104,6 +59,8 @@ export const UpdateTransportationDetails = ({ product }) => {
     const [visible, setVisible] = useState(false);
     const [locations, setLocations] = useState([]);
 
+    const [formData, setFormData] = useState({});
+
     const { user } = useSelector((state) => state.auth);
 
     const reqConfigs = {
@@ -113,38 +70,36 @@ export const UpdateTransportationDetails = ({ product }) => {
         }
     }
 
-    /*const updateRecDetails = (mainProp, prop, value) => {
-        if (prop === 'obj'){
-            // Update the state with all changes at once
-            setSelectedRec(prevState => {
-                const currentMainPropState = prevState[mainProp] || {};
-                return {
-                    ...prevState,
-                    [mainProp]: {
-                        ...currentMainPropState,
-                        ...value
-                    }
-                }
-            });
-        } else {
-            setSelectedRec((prev) => (
-                {
-                    ...prev,
-                    [mainProp]: {
-                        ...prev[mainProp],
-                        [prop]: value
-                    }
-                }
-            ));
-        }
-    }*/
-
-    const updateSelectedRec = (prop, value) => {
+    const handleSelectedRecordChange = (rec) =>{
         setSelectedRec((prevState) => ({
             ...prevState,
-            [prop]: value
+            ...rec
+        }))
+
+        setFormData((prevState) =>({
+            id: rec?.id,
+            departure: {
+                notes: rec?.departure?.notes || '',
+                stakeholderId: rec?.departure?.stakeholderId || '',
+                date: rec?.departure?.date,
+            },
+            destination: {
+                notes: rec?.destination?.notes || '',
+                stakeholderId: rec?.destination?.stakeholderId || '',
+                date: rec?.destination?.date,
+            },
         }));
     }
+
+    const handleRecordChanges = (parent, prop, value) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            [parent]: {
+                ...prevState[parent],
+                [prop]: value,
+            },
+        }));
+    };
 
     const queryRecords = async () =>{
         const response = await axios.get(`${API_HOST}/transportation-details/${product.id}`, reqConfigs)
@@ -157,18 +112,29 @@ export const UpdateTransportationDetails = ({ product }) => {
         setLocations(locations)
     }
 
-    const patchRec = async () => {
-        await axios.patch(`${API_HOST}/transportation-details/${product.id}/update/${selectedRec.id}`, selectedRec, reqConfigs)
+    const patchRec = async (data) => {
+        if (data?.isConfirming){
+            await axios.patch(`${API_HOST}/transportation-details/${product.id}/update/${data.id}`, {
+                isConfirming: true
+            }, reqConfigs)
+        } else {
+            await axios.patch(`${API_HOST}/transportation-details/${product.id}/update/${selectedRec.id}`, formData, reqConfigs)
+        }
+
+
         queryRecords();
     }
 
-    const deleteRec = async () => {
-        await axios.delete(`${API_HOST}/transportation-details/${product.id}/delete/${selectedRec.id}`, reqConfigs)
+    const deleteRec = async (id) => {
+        await axios.delete(`${API_HOST}/transportation-details/${product.id}/delete/${id}`, reqConfigs)
         queryRecords();
     }
 
     const createRec = async () => {
-        await axios.post(`${API_HOST}/transportation-details/${product.id}/create`, selectedRec, reqConfigs)
+        const data = formData;
+        delete data.id
+
+        await axios.post(`${API_HOST}/transportation-details/${product.id}/create`, data, reqConfigs)
         queryRecords();
     }
 
@@ -181,49 +147,54 @@ export const UpdateTransportationDetails = ({ product }) => {
             <Overlay
                 overlayStyle={{ width: '95%'}}
                 isVisible={visible} onBackdropPress={() => setVisible(false)}>
-                <View style={{}}>
-                    {
-                        selectedRec?.id && (<Input
-                            placeholder='Enter transportation notes'
-                            value={selectedRec?.[editableElement]?.notes || ''}
-                            onChangeText={value => updateSelectedRec(editableElement, 'notes', value)}
-                        />)
-                    }
+                <View style={styles.container}>
+                    <View>
+                        <Text>Departure Organization:</Text>
+                        <Picker
+                            selectedValue={formData?.departure?.stakeholderId || null}
+                            style={styles.picker}
+                            onValueChange={(value) => handleRecordChanges('departure', 'stakeholderId', value)}
+                        >
+                            <Picker.Item label="Select Origin" value={null} />
+                            {
+                                locations.map(l => (
+                                    <Picker.Item key={l.id} label={l.name} value={l.id} />
+                                ))
+                            }
+                        </Picker>
 
-                    {
-                        !selectedRec?.id && (
-                            <>
-                                <Text h4 style={{marginVertical: 10, fontWeight: 'light'}}> Provide transportation data</Text>
-                                <Divider/>
-                                <View style={{marginVertical: 10}}>
-                                    <LocationSelect
-                                        location='departure'
-                                        options={locations}
-                                        onChangeFn={updateSelectedRec()}
-                                    />
+                        <Text>Departure Notes:</Text>
+                        <Input
+                            style={styles.input}
+                            value={formData.departure.notes}
+                            onChangeText={(value) => handleRecordChanges('departure', 'notes', value)}
+                        />
+                    </View>
 
-                                    <Input
-                                        placeholder='Enter departure notes'
-                                        value={selectedRec?.departure.notes || ''}
-                                        onChangeText={value => updateSelectedRec('departure.notes', value)}
-                                    />
-                                </View>
+                    <Divider />
 
-                                {selectedRec?.departure.id && <View style={{marginVertical: 10}}>
-                                    <LocationSelect
-                                        location='destination'
-                                        options={locations}
-                                        onChangeFn={updateRecDetails}
-                                    />
-                                    <Input
-                                        placeholder='Enter destination notes'
-                                        value={selectedRec?.destination.notes || ''}
-                                        onChangeText={value => updateRecDetails('destination', 'notes', value)}
-                                    />
-                                </View>}
-                            </>
-                        )
-                    }
+                    <View>
+                        <Text>Destination Organization:</Text>
+                        <Picker
+                            selectedValue={formData?.destination?.stakeholderId || null}
+                            style={styles.picker}
+                            onValueChange={(value) => handleRecordChanges('destination', 'stakeholderId', value)}
+                        >
+                            <Picker.Item label="Select Destination" value={null} />
+                            {
+                                locations.map(l => (
+                                    <Picker.Item key={l.id} label={l.name} value={l.id} />
+                                ))
+                            }
+                        </Picker>
+
+                        <Text>Destination Notes:</Text>
+                        <Input
+                            style={styles.input}
+                            value={formData?.destination?.notes}
+                            onChangeText={(value) => handleRecordChanges('destination', 'notes', value)}
+                        />
+                    </View>
                 </View>
 
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10}}>
@@ -232,7 +203,7 @@ export const UpdateTransportationDetails = ({ product }) => {
                         title="Save"
                         buttonStyle={{ paddingHorizontal: 20 }}
                         onPress={() => {
-                            if (selectedRec?.id) {
+                            if (formData?.id) {
                                 patchRec()
                             } else {
                                 createRec()
@@ -265,7 +236,7 @@ export const UpdateTransportationDetails = ({ product }) => {
                     justifyContent: 'center',
                 }}
                 onPress={() =>{
-                    setSelectedRec({departure: {}, destination: {} });
+                    handleSelectedRecordChange({departure: {}, destination: {} });
                     setEditableElement(null);
                     setVisible(true)
                 }}
@@ -275,20 +246,21 @@ export const UpdateTransportationDetails = ({ product }) => {
                 <View key={i}>
                     <ListItem.Swipeable
                         leftContent={(reset) => (
-                            <DeleteBtn
-                                onPress={() => {
-                                    setSelectedRec(l);
+                            <LeftSwipeActions
+                                onPress={async () => {
+                                    await handleSelectedRecordChange(l);
                                     setVisible(false);
-                                    deleteRec();
+                                    deleteRec(l.id);
                                     reset()
                                 }}
                             />
                         )}
                         rightContent={(reset) => (
-                            <EditBtn onPress={() => {
+                            <RightSwipeActions onPress={() => {
+                                console.log(l)
                                 reset();
                                 setVisible(true);
-                                setSelectedRec(l)
+                                handleSelectedRecordChange(l)
                                 setEditableElement('departure');
                             }} />
                         )}
@@ -304,12 +276,18 @@ export const UpdateTransportationDetails = ({ product }) => {
 
                     <ListItem.Swipeable
                         rightContent={(reset) => (
-                            <EditBtn onPress={() => {
-                                reset();
-                                setVisible(true);
-                                setSelectedRec(l)
-                                setEditableElement('destination')
-                            }} />
+                            <RightSwipeActions
+                                onApprove={() => {
+                                    reset()
+                                    handleSelectedRecordChange(l)
+                                    patchRec({isConfirming: true, id: l.id})
+                                }}
+                                onPress={() => {
+                                    reset();
+                                    setVisible(true);
+                                    handleSelectedRecordChange(l)
+                                    setEditableElement('destination')
+                                }} />
                         )}
                     >
                         <TransportationDetail
@@ -330,12 +308,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         padding: 16,
     },
-    dropdown: {
+    picker: {
         height: 50,
-        borderColor: 'gray',
-        borderBottomWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 8,
+        width: '100%',
+        marginBottom: 12,
     },
     icon: {
         marginRight: 5,

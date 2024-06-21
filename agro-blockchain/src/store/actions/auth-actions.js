@@ -5,7 +5,7 @@ export const login = ({ username, password }) => {
     return async dispatch => {
         dispatch({ type: AuthActions.LOGIN_REQUEST });
         try {
-            const response = await axios.post(`${API_HOST}/auth/login`, { username, password });
+            const response = await axios.post(`${API_HOST}/auth/login`, { agent: 'MOBILE', username, password });
             const { accessToken, fullName } = response.data;
             dispatch({
                 type: AuthActions.LOGIN_SUCCESS,

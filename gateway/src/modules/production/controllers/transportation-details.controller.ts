@@ -34,11 +34,13 @@ export class TransportationDetailsController {
     @Param('productionId') productionId: string,
     @Param('transportationId') transportationId: string,
     @Body() dto: TransportationDetail,
+    @AuthUser() authenticated: any,
   ) {
     const updatedProduction = await this.service.updateOne(
       productionId,
       transportationId,
       dto,
+        authenticated
     );
     if (!updatedProduction) {
       throw new NotFoundException('Production or Transportation not found');

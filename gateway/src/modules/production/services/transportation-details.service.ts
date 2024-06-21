@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
 import { Production } from '../entities/production.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -17,15 +17,13 @@ export class TransportationDetailsService {
       @InjectRepository(Production) private repo: Repository<Production>,
       @InjectRepository(Stakeholder) private stakeholderRepo: Repository<Stakeholder>,
       @InjectRepository(User) private userRepo: Repository<User>,
-      private readonly blochchainService: BlockchainService,
+      private readonly blockchainService: BlockchainService,
       private readonly logger: PinoLogger,
   ) {}
 
   async getAll(
       productionId: string
   ): Promise<TransportationDetail[] | void> {
-
-    return []
     const production = await this.repo.findOne({ where: { id: productionId } });
 
     if (!production) {
@@ -41,53 +39,43 @@ export class TransportationDetailsService {
       authenticated: any
   ) {
     let production = await this.repo.findOne({ where: { id: productionId } });
-    let user = await this.userRepo.findOne({ where: { id: authenticated.userId }, relations: ['stakeholder'] });
+    let user = await this.userRepo.findOne({ where: { id: authenticated.userId } });
 
     if (!production) {
       throw new NotFoundException('Production not found');
     }
 
-    const departureId = dto.departure.stakeholderId;
-    const destinationId = dto.destination.stakeholderId;
+    const departureId = dto.departure?.stakeholderId;
+    const destinationId = dto.destination?.stakeholderId;
+
+    if (!departureId || !destinationId) {
+      throw new BadRequestException('Provide product origin and destination');
+    }
 
     dto.id = uuidv4();
 
     if (departureId){
-      const departurePlace = await this.stakeholderRepo.findOne({where: {id: departureId}});
+      let departurePlace: Stakeholder | Partial<Stakeholder> = await this.stakeholderRepo.findOne({where: {id: departureId}});
 
-      if (!departurePlace) {
+      if (!departurePlace){
         throw new NotFoundException('Origin does not exist');
       }
 
       let {id, name, type, contactNumber, location} = departurePlace;
       dto.departure.stakeholder = {id, name, type, contactNumber, location};
 
-      if(user) {
-        let {id, fullName, stakeholder} = user;
-        dto.departure.responsiblePerson = {
-          id,
-          fullName,
-        }
+      dto.departure.responsiblePerson = {id: user.id, fullName: user.fullName };
 
-        if (user.stakeholder){
-          dto.departure.responsiblePerson.stakeholder = {
-            id: user.stakeholder?.id,
-                name: user.stakeholder?.name,
-                location: user.stakeholder?.location,
-                contactNumber: user.stakeholder?.contactNumber,
-          }
-        }
-      }
-
-      dto.departure.date = new Date().toISOString();
+      if (!dto.departure.date)
+        dto.departure.date = new Date().toISOString();
     }
 
     if (destinationId){
-      const stakeholder = await this.stakeholderRepo.findOne({where: {id: destinationId}});
-      if (!stakeholder) {
+      const destinationPlace = await this.stakeholderRepo.findOne({where: {id: destinationId}});
+      if (!destinationPlace) {
         throw new NotFoundException('Destination does not exist');
       }
-      const { id, name, type, contactNumber, location} = stakeholder;
+      const { id, name, type, contactNumber, location} = destinationPlace;
 
       dto.destination.stakeholder = { id, name, type, contactNumber, location };
     }
@@ -97,8 +85,10 @@ export class TransportationDetailsService {
     } else {
       production.transportationDetail.push(dto);
     }
+
     production = await this.repo.save(production);
-    await this.blochchainService.updateOne(
+
+    await this.blockchainService.updateOne(
         ChaincodeNames.PRODUCTIONS,
         production.id,
         {
@@ -112,7 +102,8 @@ export class TransportationDetailsService {
   async updateOne(
       productionId: string,
       transportationId: string,
-      dto: TransportationDetail,
+      dto: any, //TransportationDetail | {isConfirming: boolean},
+      authenticated: any
   ): Promise<TransportationDetail> {
     let production = await this.repo.findOne({ where: { id: productionId } });
 
@@ -128,14 +119,52 @@ export class TransportationDetailsService {
       throw new NotFoundException('Transportation detail not found');
     }
 
-    production.transportationDetail[index] = {
-      ...production.transportationDetail[index],
-      ...dto,
-    };
+    const transportationDetail = production.transportationDetail[index];
+
+    if (dto.isConfirming){
+      const user = await this.userRepo.findOne({ where: { id: authenticated.userId } });
+      const {id, fullName, role} = user
+      transportationDetail.destination.responsiblePerson = {id, fullName, role}
+      delete dto.isConfirming;
+    } else {
+
+      const departureId = dto.departure.stakeholderId;
+      const destinationId = dto.destination.stakeholderId
+
+      if (!departureId || !destinationId){
+        throw new BadRequestException('Provide product origin and destination')
+      }
+
+      let departurePlace: Stakeholder | Partial<Stakeholder> = await this.stakeholderRepo.findOne({where: {id: departureId}});
+      let destinationPlace: Stakeholder | Partial<Stakeholder> = await this.stakeholderRepo.findOne({where: {id: destinationId}});
+
+      if (!departurePlace){
+        throw new NotFoundException('Origin does not exist');
+      } else {
+        let {id, name, type, contactNumber, location} = departurePlace;
+        dto.departure.stakeholder = {id, name, type, contactNumber, location};
+        dto.departure.responsiblePerson = transportationDetail.departure.responsiblePerson
+        dto.departure.date = transportationDetail.departure.date;
+      }
+
+      if (!destinationPlace){
+        throw new NotFoundException('Destination does not exist');
+      } else {
+        let {id, name, type, contactNumber, location} = destinationPlace;
+        dto.destination.stakeholder = {id, name, type, contactNumber, location};
+        dto.destination.responsiblePerson = transportationDetail.destination.responsiblePerson
+        dto.destination.date = transportationDetail.destination.date;
+      }
+
+      production.transportationDetail[index] = {
+        ...transportationDetail,
+        ...dto,
+      };
+    }
 
     production = await this.repo.save(production);
 
-    await this.blochchainService.updateOne(
+    await this.blockchainService.updateOne(
         ChaincodeNames.PRODUCTIONS,
         production.id,
         {
@@ -165,7 +194,7 @@ export class TransportationDetailsService {
 
     production = await this.repo.save(production);
 
-    await this.blochchainService.updateOne(
+    await this.blockchainService.updateOne(
         ChaincodeNames.PRODUCTIONS,
         production.id,
         {
