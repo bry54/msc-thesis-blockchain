@@ -3,7 +3,7 @@ import { Avatar, List } from 'antd';
 import axios from "axios";
 import moment from "moment";
 
-export const ProductDetails = ({ productId }) =>{
+export const ProductDetails = ({ theProduct, productId }) =>{
     const [record, setRecord] = useState({});
 
     const queryRecord = async () =>{
@@ -14,7 +14,11 @@ export const ProductDetails = ({ productId }) =>{
     }
 
     useEffect(() => {
-        queryRecord();
+        if (theProduct){
+            setRecord(theProduct)
+        } else {
+            queryRecord();
+        }
     },[]);
 
     return (

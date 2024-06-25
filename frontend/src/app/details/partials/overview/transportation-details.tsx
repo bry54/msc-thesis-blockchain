@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { Typography, List } from 'antd';
 import axios from "axios";
 
-export const TransportationDetails = ({ productId }) =>{
+export const TransportationDetails = ({ theProduct, productId }) =>{
     const [records, setRecords] = useState([]);
 
     const queryRecord = async () =>{
@@ -13,7 +13,11 @@ export const TransportationDetails = ({ productId }) =>{
     }
 
     useEffect(() => {
-        queryRecord();
+        if (theProduct){
+            setRecords(theProduct.transportationDetail || [])
+        } else {
+            queryRecord();
+        }
     },[]);
 
     return (

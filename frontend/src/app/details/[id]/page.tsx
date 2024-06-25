@@ -12,7 +12,7 @@ export default function OpenDetailsPage({ params }: { params: { id: string } }) 
     {
       key: '1',
       label: 'Current State',
-      children: (<Overview productId={params.id}/>),
+      children: (<Overview productId={params.id} theProduct={null}/>),
       icon: (<TagsOutlined />)
     },
     {
