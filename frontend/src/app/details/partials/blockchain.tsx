@@ -1,7 +1,10 @@
 import {Button, Modal, Table, TableColumnsType} from "antd";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Overview from "@/app/details/partials/overview";
 import axios from "axios";
+import {QueryClient, QueryClientProvider, useQuery} from "@tanstack/react-query";
+
+const queryClient = new QueryClient()
 
 interface DataType {
     key: React.Key;
@@ -55,13 +58,17 @@ const data: DataType[] = [
 
 export default function Blockchain ({ productId }: { productId: string }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [data, setData] = useState({});
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [data, setData] = useState(0);
 
-    const showModal = async (transactionId: string) => {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/blockchain/production/${productId}`)
-        const rec = response.data
+    const loadHistory = async () =>{
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/blockchain/production/${productId}/history`)
+        const data =response.data
+        setData(data);
+    }
 
-        setData(rec)
+    const showModal = async (transactionId: number) => {
+        setSelectedIndex(transactionId)
         setIsModalOpen(true);
     };
 
@@ -73,6 +80,10 @@ export default function Blockchain ({ productId }: { productId: string }) {
         setIsModalOpen(false);
     };
 
+    useEffect(() => {
+        loadHistory()
+    },[]);
+
     return (
         <>
             <Table
@@ -81,14 +92,14 @@ export default function Blockchain ({ productId }: { productId: string }) {
                 expandable={{
                     expandedRowRender: (record: DataType, index) => (
                         <div style={{ margin: 0 }}>
-                            <Button style={{ width: '100%', marginBottom: 10}} type="primary" onClick={() =>showModal(record.name)}>
+                            <Button style={{ width: '100%', marginBottom: 10}} type="primary" onClick={() =>showModal(index)}>
                                 View Blockchain Record
                             </Button>
 
                             {record.description}
                         </div>)
                 }}
-                dataSource={data}
+                dataSource={data as any}
             />
             <Modal
                 title="Basic Modal"
@@ -97,7 +108,7 @@ export default function Blockchain ({ productId }: { productId: string }) {
                 onCancel={handleCancel}>
                 <Overview
                     productId={null}
-                    theProduct={{}}
+                    theProduct={data[selectedIndex]}
                 />
             </Modal>
         </>
