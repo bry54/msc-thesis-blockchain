@@ -24,18 +24,25 @@ export const TransportationDetails = ({ productId }) =>{
                 <List.Item>
                     <List.Item.Meta
                         title={
-                            <div>
-                                <Typography.Text level={3}>FROM:</Typography.Text> {item.departure.stakeholder.name}
+                            <div style={{ lineHeight: 1.75 }}>
+                                <Typography.Text style={{textDecoration: 'underline', fontWeight: 'bold'}}>From:</Typography.Text>
+                                <br/>{item.departure.stakeholder.name}
                                 <br/>{item.departure.stakeholder.location}
                                 <br/>{item.departure.date}
                             </div>
                         }
                         description={`${item?.departure.notes}`}
                     />
-                    {item.content}
 
                     <List.Item.Meta
-                        title={<div>TO: {item.destination.stakeholder.name} <br/>{item.destination.stakeholder.location}<br/>{item.destination.date}</div>}
+                        title={
+                            <div style={{lineHeight: 1.75}}>
+                                <Typography.Text style={{textDecoration: 'underline', fontWeight: 'bold'}}>To:</Typography.Text>
+                                <br/>{item.destination.stakeholder.name}
+                                <br/>{item.destination.stakeholder.location}
+                                <br/>{item.destination.date}
+                            </div>
+                        }
                         description={`${item?.destination.notes}`}
                     />
                 </List.Item>

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { Avatar, List } from 'antd';
 import axios from "axios";
+import moment from "moment";
 
 export const ProductDetails = ({ productId }) =>{
     const [record, setRecord] = useState({});
@@ -31,21 +32,38 @@ export const ProductDetails = ({ productId }) =>{
 
                     {
                         item === 'origin' && <List.Item.Meta
-                            title={`${record?.origin?.name} | ${record?.origin?.type}`}
+                            title={
+                                <div>
+                                    <span style={{ textTransform: 'capitalize'}}>{record?.origin?.name.toLocaleLowerCase()}</span>
+                                    <br/> <span style={{ textTransform: 'capitalize'}}>{record?.origin?.type.toLocaleLowerCase()}</span>
+                                </div>
+                            }
                             description={`${record?.origin?.location}, ${record?.origin?.contactNumber}` }
                         />
                     }
 
                     {
                         item === 'planting' && <List.Item.Meta
-                            title={<a>Planted On: {record?.planting?.date || '--'}</a>}
+                            title={
+                                <span>
+                                    {
+                                        record?.planting?.date ? `Planted On: ${moment(record?.planting?.date).format('LLL')}` : 'Planted On:--'
+                                    }
+                                </span>
+                            }
                             description={`Quantity Planted: ${record?.planting?.quantity  || '--'} `}
                         />
                     }
 
                     {
                         item === 'harvesting' && <List.Item.Meta
-                            title={<a>Harvested On: {record?.harvesting?.date  || '--'}</a>}
+                            title={
+                                <span>
+                                    {
+                                        record?.harvesting?.date ? `Harvested On: ${moment(record?.harvesting?.date).format('LLL')}` : 'Harvested On: --'
+                                    }
+                                </span>
+                            }
                             description={`Quantity Harvested: ${record?.harvesting?.quantity  || '--'} `}
                         />
                     }
