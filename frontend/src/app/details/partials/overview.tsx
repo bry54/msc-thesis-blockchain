@@ -1,33 +1,30 @@
 import {Collapse, CollapseProps} from "antd";
+import {PricingDetails} from "@/app/details/partials/overview/pricing-details";
+import {ProductDetails} from "@/app/details/partials/overview/product-details";
+import {RegulatoryChecks} from "@/app/details/partials/overview/regulatory-checks";
+import {TransportationDetails} from "@/app/details/partials/overview/transportation-details";
 
 export default function Overview ({ productId }: { productId: string }): JSX.Element {
-    const text = (
-        <p style={{ paddingLeft: 24 }}>
-            A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found
-            as a welcome guest in many households across the world.
-        </p>
-    );
-
     const items: CollapseProps['items'] = [
         {
             key: '0',
             label: 'Product Information',
-            children: text,
+            children: <ProductDetails productId={productId}/>,
         },
         {
             key: '1',
             label: 'Regulatory Checks',
-            children: text,
+            children: <RegulatoryChecks productId={productId}/>,
         },
         {
             key: '2',
             label: 'Transportation Information',
-            children: text,
+            children: <TransportationDetails productId={productId}/>,
         },
         {
             key: '3',
             label: 'Pricing Information',
-            children: text,
+            children: <PricingDetails productId={productId}/>,
         },
     ];
     return (

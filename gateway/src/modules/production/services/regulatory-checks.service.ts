@@ -13,10 +13,10 @@ import {use} from "passport";
 @Injectable()
 export class RegulatoryChecksService {
   constructor(
-    @InjectRepository(Production) private repo: Repository<Production>,
-    private readonly blochchainService: BlockchainService,
-    @InjectRepository(User) private userRepo: Repository<User>,
-    private readonly logger: PinoLogger,
+      @InjectRepository(Production) private repo: Repository<Production>,
+      private readonly blochchainService: BlockchainService,
+      @InjectRepository(User) private userRepo: Repository<User>,
+      private readonly logger: PinoLogger,
   ) {}
 
   async getAll(productionId: string) {
@@ -47,9 +47,10 @@ export class RegulatoryChecksService {
       if (user.stakeholder){
         dto.signedBy.stakeholder = {
           id: user.stakeholderId,
-              type: user.stakeholder.type,
-              location: user.stakeholder.location,
-              contactNumber: user.stakeholder.contactNumber,
+          name: user.stakeholder.name,
+          type: user.stakeholder.type,
+          location: user.stakeholder.location,
+          contactNumber: user.stakeholder.contactNumber,
         }
       }
     }
@@ -64,20 +65,20 @@ export class RegulatoryChecksService {
     }
     production = await this.repo.save(production);
     await this.blochchainService.updateOne(
-      ChaincodeNames.PRODUCTIONS,
-      production.id,
-      {
-        regulatoryChecks: production.regulatoryChecks,
-      } as Partial<Production>,
+        ChaincodeNames.PRODUCTIONS,
+        production.id,
+        {
+          regulatoryChecks: production.regulatoryChecks,
+        } as Partial<Production>,
     );
 
     return dto;
   }
 
   async updateOne(
-    productionId: string,
-    checkId: string,
-    dto: RegulatoryCheck,
+      productionId: string,
+      checkId: string,
+      dto: RegulatoryCheck,
   ): Promise<RegulatoryCheck> {
     let production = await this.repo.findOne({ where: { id: productionId } });
 
@@ -86,7 +87,7 @@ export class RegulatoryChecksService {
     }
 
     const regulatoryCheckIndex = production.regulatoryChecks.findIndex(
-      (check) => check.id === checkId,
+        (check) => check.id === checkId,
     );
 
     if (regulatoryCheckIndex === -1) {
@@ -101,11 +102,11 @@ export class RegulatoryChecksService {
     production = await this.repo.save(production);
 
     await this.blochchainService.updateOne(
-      ChaincodeNames.PRODUCTIONS,
-      production.id,
-      {
-        regulatoryChecks: production.regulatoryChecks,
-      } as Partial<Production>,
+        ChaincodeNames.PRODUCTIONS,
+        production.id,
+        {
+          regulatoryChecks: production.regulatoryChecks,
+        } as Partial<Production>,
     );
 
     return production.regulatoryChecks[regulatoryCheckIndex];
@@ -119,7 +120,7 @@ export class RegulatoryChecksService {
     }
 
     const regulatoryCheckIndex = production.regulatoryChecks.findIndex(
-      (check) => check.id === checkId,
+        (check) => check.id === checkId,
     );
 
     if (regulatoryCheckIndex === -1) {
@@ -131,11 +132,11 @@ export class RegulatoryChecksService {
     production = await this.repo.save(production);
 
     await this.blochchainService.updateOne(
-      ChaincodeNames.PRODUCTIONS,
-      production.id,
-      {
-        regulatoryChecks: production.regulatoryChecks,
-      } as Partial<Production>,
+        ChaincodeNames.PRODUCTIONS,
+        production.id,
+        {
+          regulatoryChecks: production.regulatoryChecks,
+        } as Partial<Production>,
     );
 
     return;

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {Tabs, TabsProps,} from 'antd';
-import {ProductOutlined, QrcodeOutlined} from '@ant-design/icons';
+import {ProductOutlined, QrcodeOutlined, TagsOutlined} from '@ant-design/icons';
 import Overview from "@/app/details/partials/overview";
 import Blockchain from "@/app/details/partials/blockchain";
 
@@ -13,7 +13,7 @@ export default function OpenDetailsPage({ params }: { params: { id: string } }) 
       key: '1',
       label: 'Current State',
       children: (<Overview productId={params.id}/>),
-      icon: (<ProductOutlined/>)
+      icon: (<TagsOutlined />)
     },
     {
       key: '2',

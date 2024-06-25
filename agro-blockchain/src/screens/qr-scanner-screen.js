@@ -4,6 +4,7 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation} from "@react-navigation/native";
 import { useDispatch} from "react-redux";
 import { queryOne} from "../store/actions";
+import {FAB} from "@rneui/themed";
 
 const QRScannerScreen = () => {
     const [facing, setFacing] = useState("back");
@@ -19,7 +20,7 @@ const QRScannerScreen = () => {
     };
 
     if (permission){
-        onSuccess({})
+        //onSuccess({})
     }
 
     if (!permission) {
