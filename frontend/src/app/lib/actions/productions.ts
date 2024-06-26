@@ -37,9 +37,10 @@ export const queryProduction = async (id: string) => {
 
 export const queryProductHistory = async (id: string) => {
   const cookies = await getCookie();
+  const uri = `${process.env.NEXT_PUBLIC_API_HOST}/rec-compare`;
 
   try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST_BLOCKCHAIN}/production/${id}/history`,{
+    const response = await axios.get(uri/*`${process.env.NEXT_PUBLIC_API_HOST_BLOCKCHAIN}/production/${id}/history`*/,{
       headers: {
         'accept': '*/*',
         'Authorization': `Bearer ${cookies.auth}`

@@ -41,6 +41,7 @@ import { queryStakeholders } from '@/app/lib/actions/stakeholders';
 import {RegulatoryChecks} from "@/app/details/partials/overview/regulatory-checks";
 import {TransportationDetails} from "@/app/details/partials/overview/transportation-details";
 import {PricingDetails} from "@/app/details/partials/overview/pricing-details";
+import {compareRecords, SummaryRecord} from "@/app/lib/data-aggragation";
 
 interface Processing {
   deleting: boolean,
@@ -104,7 +105,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     updateProcessingState('fetchingHistory', true)
     try {
       const data: any[] = await queryProductHistory(id)
-      const withSummary = addSummaries(data).map(d => ({ key: d.TxId, ...d}))
+      const withSummary = compareRecords(data).map(d => ({ key: d.TxId, ...d}))
       updateCollectionsState('history', withSummary);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -187,7 +188,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     dataIndex: 'TxId',
     key: 'TxId',
     filters: [],
-    width: '20%',
+    width: '100%',
     render: (data) => (
       <EllipsisMiddle
         suffixCount={8}
@@ -195,19 +196,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         { data }
       </EllipsisMiddle>
     ),
-  }, {
-    title: 'Summary',
-    dataIndex: 'summary',
-    key: 'summary',
-    width: '70%',
-    render: (data) => {
-      if(data.changes)
-        return (<span className="text-sm font-medium font-mono">Record Updated: Changes on {JSON.stringify(Object.keys(data.changes))} </span>)
-      else
-        return (<span className="text-sm font-medium font-mono">{JSON.stringify(data.summary)} </span>)
-    },
-    showSorterTooltip: { target: 'full-header' },
-    filters: [], // specify the condition of filtering result
   }];
 
   return (
@@ -416,33 +404,33 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 scroll={{x: 1000}}
                 loading={processingState.fetchingHistory}
                 columns={columns}
-                dataSource={collectionState.history}
+                dataSource={collectionState.history as SummaryRecord[]}
                 onChange={() => console.log('table changed')}
                 showSorterTooltip={{target: 'sorter-icon'}}
                 expandable={{
-                  expandedRowRender: (record) => {
-                    const changes = record.summary.changes
-                    const summary = record.summary.summary
-                    const data = Object.keys(changes).map(k => {
+                  expandedRowRender: (record: SummaryRecord) => {
+                    const summaries = record.Summaries
+
+                    const data = Object.keys(summaries).map(k => {
                       return {
                         key: k,
-                        data: record.summary.changes[k]
+                        data: summaries[k]
                       }
                     })
                     return (
                       <div>
                         <List
                           header={<p
-                            className={'text-sm font-medium font-mono'}>{JSON.stringify(summary)}</p>}
+                            className={'text-sm font-medium font-mono'}>{JSON.stringify(summaries)}</p>}
                           bordered
                           dataSource={data}
                           renderItem={(item) => (
                             <Badge.Ribbon className='text-sm font-medium font-mono'
-                                          text={record.summary.localTimestamp}>
+                                          text={record.Timestamp}>
                               <List.Item className='text-sm font-medium font-mono'>
                                 <Tag color="geekblue"
                                      icon={
-                                       <AimOutlined/>}>{item.key}</Tag>{JSON.stringify(item.data)}
+                                       <AimOutlined/>}>{item?.key}</Tag>{JSON.stringify(item?.data)}
                               </List.Item>
                             </Badge.Ribbon>
 
@@ -451,7 +439,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                       </div>
                     )
                   },
-                  rowExpandable: (record) => record.summary.summary !== 'Initial record',
+                  rowExpandable: (record: SummaryRecord) => record.Summaries.length != 0 ,
                 }}
               />
             </div>
