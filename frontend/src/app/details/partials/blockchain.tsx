@@ -1,83 +1,56 @@
-import {Button, Modal, Table, TableColumnsType} from "antd";
+import {Button, Modal, Spin, Table, TableColumnsType} from "antd";
 import React, {useEffect, useState} from "react";
 import Overview from "@/app/details/partials/overview";
 import axios from "axios";
-import {QueryClient, QueryClientProvider, useQuery} from "@tanstack/react-query";
+import {compareRecords, SummaryRecord} from "@/app/lib/data-aggragation";
 
-const queryClient = new QueryClient()
-
-interface DataType {
-    key: React.Key;
-    name: string;
-    age: number;
-    address: string;
-    description: string;
-}
-
-const columns: TableColumnsType<DataType> = [
+const columns: TableColumnsType<SummaryRecord> = [
     {
         title: 'Transaction ID',
-        dataIndex: 'name',
-        key: 'name',
+        dataIndex: 'TxId',
+        key: 'TxId',
         width: '100%',
+        render: (value, record) => (<code>{record.TxId}</code>)
     },
     Table.EXPAND_COLUMN,
 
 ];
 
-const data: DataType[] = [
-    {
-        key: 1,
-        name: 'John Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-        description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
-    },
-    {
-        key: 2,
-        name: 'Jim Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-        description: 'My name is Jim Green, I am 42 years old, living in London No. 1 Lake Park.',
-    },
-    {
-        key: 3,
-        name: 'Not Expandable',
-        age: 29,
-        address: 'Jiangsu No. 1 Lake Park',
-        description: 'This not expandable',
-    },
-    {
-        key: 4,
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sydney No. 1 Lake Park',
-        description: 'My name is Joe Black, I am 32 years old, living in Sydney No. 1 Lake Park.',
-    },
-];
-
 export default function Blockchain ({ productId }: { productId: string }) {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedIndex, setSelectedIndex] = useState(0);
-    const [data, setData] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [theProduct, setTheProduct] = useState<SummaryRecord|null >(null);
+    const [data, setData] = useState<SummaryRecord[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const loadHistory = async () =>{
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/blockchain/production/${productId}/history`)
-        const data =response.data
-        setData(data);
+        setIsLoading(true)
+        //const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/blockchain/production/${productId}/history`)
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/rec-compare`).catch(err => {
+            setIsLoading(false)
+            return
+        })
+        const data = response?.data || []
+
+        let withSummary = compareRecords(data);
+        withSummary = withSummary.map(item => ({key: item.TxId, ...item}));
+
+        setData(withSummary);
+        setIsLoading(false)
     }
 
-    const showModal = async (transactionId: number) => {
-        setSelectedIndex(transactionId)
-        setIsModalOpen(true);
+    const showModal = async (selectedItem: SummaryRecord) => {
+        setTheProduct((prevState) => selectedItem);
+
+        setIsModalOpen((prevState) => true);
     };
 
     const handleOk = () => {
-        setIsModalOpen(false);
+        setIsModalOpen((prevState) => false);
     };
 
     const handleCancel = () => {
-        setIsModalOpen(false);
+        setTheProduct((prevState) => null)
+        setIsModalOpen((prevState) => false);
     };
 
     useEffect(() => {
@@ -86,31 +59,43 @@ export default function Blockchain ({ productId }: { productId: string }) {
 
     return (
         <>
+            <Spin
+                fullscreen={true}
+                spinning={isLoading}
+                size="large" />
             <Table
                 columns={columns}
-                rowSelection={{}}
+                //rowSelection={{}}
                 expandable={{
-                    expandedRowRender: (record: DataType, index) => (
+                    expandedRowRender: (record: SummaryRecord, index) => (
                         <div style={{ margin: 0 }}>
-                            <Button style={{ width: '100%', marginBottom: 10}} type="primary" onClick={() =>showModal(index)}>
+                            <>
+                                {
+                                    record?.Summaries.map(s => {
+                                        return (
+                                            <li><code>{JSON.stringify(s)}</code></li>
+                                        )
+                                    })
+                                }
+                            </>
+
+                            <Button style={{ width: '100%', marginBottom: 10, marginTop: 10, backgroundColor: 'purple'}} type="primary" onClick={() =>showModal(record)}>
                                 View Blockchain Record
                             </Button>
-
-                            {record.description}
                         </div>)
                 }}
-                dataSource={data as any}
+                dataSource={data}
             />
-            <Modal
-                title="Basic Modal"
+            {theProduct && <Modal
+                title={<code>{`ID: ${theProduct?.TxId}`}</code>}
                 open={isModalOpen}
                 onOk={handleOk}
                 onCancel={handleCancel}>
                 <Overview
                     productId={null}
-                    theProduct={data[selectedIndex]}
+                    theProduct={theProduct.Record}
                 />
-            </Modal>
+            </Modal>}
         </>
     );
 }

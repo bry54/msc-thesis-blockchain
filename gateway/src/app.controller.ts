@@ -11,4 +11,9 @@ export class AppController {
   healthCheck(): unknown {
     return this.appService.getHealthCheck();
   }
+
+  @Get('rec-compare')
+  recCompare(): unknown {
+    return this.appService.recCompare();
+  }
 }
