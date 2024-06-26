@@ -7,7 +7,7 @@ import {cookies} from 'next/headers';
 export const login = async (formData: Record<string, any>) => {
 
   try {
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/auth/login`, formData);
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_HOST}/auth/login`, {...formData, agent: 'WEB'});
     await createSession(response.data);
     return response.data;
   } catch (e: any) {
