@@ -38,6 +38,9 @@ import moment from 'moment/moment';
 import { addSummaries } from '@/app/lib/helpers';
 import { EllipsisMiddle } from '@/app/lib/components/CommonItems';
 import { queryStakeholders } from '@/app/lib/actions/stakeholders';
+import {RegulatoryChecks} from "@/app/details/partials/overview/regulatory-checks";
+import {TransportationDetails} from "@/app/details/partials/overview/transportation-details";
+import {PricingDetails} from "@/app/details/partials/overview/pricing-details";
 
 interface Processing {
   deleting: boolean,
@@ -285,18 +288,26 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                       {
                         label: 'Regulatory Checks',
                         key: 'regulatoryChecks',
-                        children: 'List all regulatory checks here',
+                        children: <RegulatoryChecks
+                            productId={null}
+                            theProduct={collectionState?.product}
+                        />,
                       },
                       {
                         label: 'Transportation Information',
                         key: 'transportationDetail',
-                        children: 'Listing of all regulatory checks',
-                        //disabled: true,
+                        children: <TransportationDetails
+                            productId={null}
+                            theProduct={collectionState?.product}
+                        />,
                       },
                       {
                         label: 'Pricing Information',
                         key: 'pricingDetail',
-                        children: 'Listing of pricing detail',
+                        children: <PricingDetails
+                            productId={null}
+                            theProduct={collectionState?.product}
+                        />,
                       },
                     ]}
                   />
