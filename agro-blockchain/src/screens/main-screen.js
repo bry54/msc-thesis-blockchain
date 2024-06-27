@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {ScrollView, View} from 'react-native';
+import { Linking, ScrollView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import {Button, Text, Skeleton, Divider, Icon, Card, ListItem} from '@rneui/themed';
 import moment from "moment";
 import axios from "axios";
-import {API_HOST} from "../store/constants";
+import { API_HOST, WEB_APP } from '../store/constants';
 
 const MainScreen = ({ route }) => {
     const {isLoggedIn, user } = useSelector((state) => state.auth);
@@ -13,13 +13,19 @@ const MainScreen = ({ route }) => {
     const navigation = useNavigation();
     const [product, setProduct] = useState(null);
 
-    const {productId} = route.params;
+    let {productId} = route.params;
+
+    if (!productId)
+      productId = '2071bf07-5074-4513-9dfc-0508a88e4123'
 
     const setActiveProduct = async () =>{
-        const response = await axios.get(`${API_HOST}/production/${productId}`)
-        const data = response.data
-
-        setProduct(data)
+        try {
+          const response = await axios.get(`${API_HOST}/production/${productId}`)
+          const data = response.data
+          setProduct(data)
+        } catch (e) {
+          console.error(e, 'ERROR FETCHING PRODUCT')
+        }
     }
 
     useEffect(() => {
@@ -97,9 +103,11 @@ const MainScreen = ({ route }) => {
 
                                 <Button
                                     title="View Product History"
-                                    onPress={() => navigation.navigate('History', {
-                                        product: product
-                                    })}
+                                    onPress={() => {
+                                      navigation.navigate('History', {
+                                        product: product,
+                                      });
+                                    }}
                                     titleStyle={{ fontWeight: '700' }}
                                     buttonStyle={{
                                         backgroundColor: 'rgba(92, 99,216, 1)',

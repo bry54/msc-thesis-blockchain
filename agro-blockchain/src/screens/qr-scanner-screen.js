@@ -13,7 +13,7 @@ const QRScannerScreen = () => {
     const dispatch = useDispatch();
 
     const onSuccess = async (e) => {
-        const id = e.data = '973652dd-8e32-44bc-8cf9-d1d4490a9b93'
+        const id = e.data
         await dispatch(queryOne(id));
 
         navigation.navigate('Main', {

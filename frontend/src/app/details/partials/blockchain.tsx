@@ -105,11 +105,12 @@ export default function Blockchain ({ productId }: { productId: string }) {
                                     bordered
                                     dataSource={data}
                                     renderItem={(item) => (
-                                        <Badge.Ribbon className='text-sm font-medium font-mono' text={record.TxId}>
+                                        <Badge.Ribbon className='text-sm font-medium font-mono' text={record?.Timestamp}>
                                             <List.Item className='text-sm font-medium font-mono'>
                                                 <Tag color="geekblue"
                                                      icon={
-                                                         <AimOutlined/>}>{record?.Timestamp}</Tag>
+                                                         <AimOutlined size={2}/>}
+                                                ></Tag>
                                             </List.Item>
                                         </Badge.Ribbon>
 
