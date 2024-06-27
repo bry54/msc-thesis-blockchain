@@ -6,10 +6,14 @@ export const TransportationDetails = ({ theProduct, productId }) =>{
     const [records, setRecords] = useState([]);
 
     const queryRecord = async () =>{
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/production/${productId}`)
-        const rec = response.data
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/production/${productId}`)
+            const rec = response.data
 
-        setRecords(rec?.transportationDetail)
+            setRecords(rec?.transportationDetail)
+        } catch (e) {
+            console.log(e, 'ERROR FETCHING TRANSPORTATION DETAILS')
+        }
     }
 
     useEffect(() => {

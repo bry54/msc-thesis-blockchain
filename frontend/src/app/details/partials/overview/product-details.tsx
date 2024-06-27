@@ -4,13 +4,17 @@ import axios from "axios";
 import moment from "moment";
 
 export const ProductDetails = ({ theProduct, productId }) =>{
-    const [record, setRecord] = useState({});
+    const [record, setRecord] = useState<any>({});
 
     const queryRecord = async () =>{
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/production/${productId}`)
-        const rec = response.data
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/production/${productId}`, {})
+            const rec = response.data
 
-        setRecord(rec)
+            setRecord(rec)
+        } catch(error){
+            console.log(error, 'ERROR FETCHING PRODUCT DETAILS')
+        }
     }
 
     useEffect(() => {

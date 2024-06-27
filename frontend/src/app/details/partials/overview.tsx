@@ -41,7 +41,11 @@ export default function Overview ({ productId, theProduct }: { productId: string
     ];
     return (
         <div>
-            <Collapse items={items} bordered={false} defaultActiveKey={['0']}/>
+            <Collapse
+                items={items}
+                bordered={false}
+                defaultActiveKey={['0']}
+            />
         </div>
     )
 }

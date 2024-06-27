@@ -1,8 +1,9 @@
-import {Button, Modal, Spin, Table, TableColumnsType} from "antd";
+import {Badge, Button, List, Modal, Spin, Table, TableColumnsType, Tag} from "antd";
 import React, {useEffect, useState} from "react";
 import Overview from "@/app/details/partials/overview";
 import axios from "axios";
-import {compareRecords, SummaryRecord} from "@/app/lib/data-aggragation";
+import {compareRecords, Summary, SummaryRecord} from "@/app/lib/data-aggragation";
+import {AimOutlined} from "@ant-design/icons";
 
 const columns: TableColumnsType<SummaryRecord> = [
     {
@@ -67,22 +68,57 @@ export default function Blockchain ({ productId }: { productId: string }) {
                 columns={columns}
                 //rowSelection={{}}
                 expandable={{
-                    expandedRowRender: (record: SummaryRecord, index) => (
-                        <div style={{ margin: 0 }}>
-                            <>
-                                {
-                                    record?.Summaries.map(s => {
-                                        return (
-                                            <li><code>{JSON.stringify(s)}</code></li>
-                                        )
-                                    })
-                                }
-                            </>
+                    expandedRowRender: (record: SummaryRecord) => {
+                        const summaries = record.Summaries
 
-                            <Button style={{ width: '100%', marginBottom: 10, marginTop: 10, backgroundColor: 'purple'}} type="primary" onClick={() =>showModal(record)}>
-                                View Blockchain Record
-                            </Button>
-                        </div>)
+                        const data = Object.keys(summaries).map(k => {
+                            return {
+                                key: k,
+                                data: summaries[k]
+                            }
+                        })
+                        return (
+                            <div>
+                                <List
+                                    header={
+                                        <ol className={'text-sm font-medium font-mono'} style={{lineHeight: 1.75}}>
+                                            {
+                                                summaries.map((s: Summary) => {
+                                                    const keys = Object.keys(s)
+                                                    const data = keys.map((k) => (s[k]))
+
+                                                    if (Array.isArray(data)) {
+                                                        return data.map(inner => {
+                                                            if (Array.isArray(inner)) {
+                                                                return inner.map(s => <code><li>&bull; {JSON.stringify(s)}</li></code>)
+                                                            }
+                                                            return <code><li> &bull; {JSON.stringify(inner)}</li></code>
+                                                        })
+                                                    } else {
+                                                        return <code><li> &bull;  {JSON.stringify(data)}</li></code>
+                                                    }
+                                                })
+                                            }
+                                            {/*JSON.stringify(summaries)*/}
+                                        </ol>
+                                    }
+                                    bordered
+                                    dataSource={data}
+                                    renderItem={(item) => (
+                                        <Badge.Ribbon className='text-sm font-medium font-mono' text={record.TxId}>
+                                            <List.Item className='text-sm font-medium font-mono'>
+                                                <Tag color="geekblue"
+                                                     icon={
+                                                         <AimOutlined/>}>{record?.Timestamp}</Tag>
+                                            </List.Item>
+                                        </Badge.Ribbon>
+
+                                    )}
+                                />
+                            </div>
+                        )
+                    },
+                    rowExpandable: (record: SummaryRecord) => record.Summaries.length != 0 ,
                 }}
                 dataSource={data}
             />

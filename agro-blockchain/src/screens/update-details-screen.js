@@ -6,38 +6,9 @@ import {UpdatePricingDetails} from "./update-partials/pricing-details";
 import {UpdateRegulatoryChecks} from "./update-partials/regulatory-checks";
 import {UpdateProductDetails} from "./update-partials/product-details";
 
-const prod = {
-    "id": "e7331ece-ab36-4327-afd0-2a6fcd3b62b2",
-    "createdAt": "2024-06-20T09:59:37.929Z",
-    "updatedDate": "2024-06-20T12:02:55.000Z",
-    "deletedDate": null,
-    "deletedBy": null,
-    "createdBy": "b15c6056-f847-444e-9753-b44007d3337a",
-    "updatedBy": "b15c6056-f847-444e-9753-b44007d3337a",
-    "product": {
-        "name": "Oranges",
-        "category": "Citrus Fruit"
-    },
-    "origin": {
-        "id": "263cfc84-9c63-487f-b1e7-87e8ba593c0e",
-        "name": "Mahiya & Sons Wholesalers",
-        "type": "FARM ORGANIZATION",
-        "contactNumber": "+90 533 000 79 19",
-        "location": "KKTC, Lefke"
-    },
-    "planting": {
-        "quantity": "400 pieces",
-        "date": "2024-06-16T21:00:00.000Z"
-    },
-    "harvesting": {},
-    "regulatoryChecks": [],
-    "transportationDetail": [],
-    "pricingDetail": []
-}
+const UpdateDetailsScreen = ({product}) => {
 
-const UpdateDetailsScreen = () => {
-
-    const [expanded, setExpanded] = useState([0])
+    const [expanded, setExpanded] = useState([0]);
     const groupings = [
         {
             name: 'General Information',
@@ -60,7 +31,6 @@ const UpdateDetailsScreen = () => {
             icon: 'tags'
         },
     ]
-
     const updateExpandedState = (index) => {
         let arr = [...expanded]
         if (arr.includes(index)) {
@@ -96,25 +66,25 @@ const UpdateDetailsScreen = () => {
                     <>
                         {
                             !group.dataProp && (
-                                <UpdateProductDetails product = {prod} />
+                                <UpdateProductDetails product = {product} />
                             )
                         }
 
                         {
                             group.dataProp === 'regulatoryChecks' && (
-                                <UpdateRegulatoryChecks product={prod} />
+                                <UpdateRegulatoryChecks product={product} />
                             )
                         }
 
                         {
                             group.dataProp === 'transportationDetail' && (
-                                <UpdateTransportationDetails product={prod} />
+                                <UpdateTransportationDetails product={product} />
                             )
                         }
 
                         {
                             group.dataProp === 'pricingDetail' && (
-                                <UpdatePricingDetails product={prod} />
+                                <UpdatePricingDetails product={product} />
                             )
                         }
 

@@ -41,7 +41,7 @@ import { queryStakeholders } from '@/app/lib/actions/stakeholders';
 import {RegulatoryChecks} from "@/app/details/partials/overview/regulatory-checks";
 import {TransportationDetails} from "@/app/details/partials/overview/transportation-details";
 import {PricingDetails} from "@/app/details/partials/overview/pricing-details";
-import {compareRecords, SummaryRecord} from "@/app/lib/data-aggragation";
+import {compareRecords, Summary, SummaryRecord} from "@/app/lib/data-aggragation";
 
 interface Processing {
   deleting: boolean,
@@ -190,262 +190,282 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     filters: [],
     width: '100%',
     render: (data) => (
-      <EllipsisMiddle
-        suffixCount={8}
-        textClasses="text-sm font-bold font-mono">
-        { data }
-      </EllipsisMiddle>
+        <EllipsisMiddle
+            suffixCount={8}
+            textClasses="text-sm font-bold font-mono">
+          { data }
+        </EllipsisMiddle>
     ),
   }];
 
   return (
-    <div className='text-neutral-950'>
-      <header className="bg-white shadow">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="lg:flex lg:items-center lg:justify-between">
-            <div className="min-w-0 flex-1">
-              <h2
-                className="font-medium text-2xl leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                Product History
-              </h2>
-              <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
-                <HeaderIconWithText
-                  icon={<BarcodeOutlined className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400 font-mono"
-                                         aria-hidden="true" />}
-                  label={collectionState?.product?.id || '--'}
-                />
-                <HeaderIconWithText
-                  icon={<InfoOutlined className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                      aria-hidden="true" />}
-                  label={collectionState?.product?.product?.name || '--'}
-                />
+      <div className='text-neutral-950'>
+        <header className="bg-white shadow">
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <div className="lg:flex lg:items-center lg:justify-between">
+              <div className="min-w-0 flex-1">
+                <h2
+                    className="font-medium text-2xl leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                  Product History
+                </h2>
+                <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
+                  <HeaderIconWithText
+                      icon={<BarcodeOutlined className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400 font-mono"
+                                             aria-hidden="true" />}
+                      label={collectionState?.product?.id || '--'}
+                  />
+                  <HeaderIconWithText
+                      icon={<InfoOutlined className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                          aria-hidden="true" />}
+                      label={collectionState?.product?.product?.name || '--'}
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="mt-5 flex lg:ml-4 lg:mt-0">
-              <Link href='/dashboard/productions'>
-                <HeaderButton
-                  btnClasses="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  icon={<LeftOutlined className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />}
-                  label="Back"
-                />
-              </Link>
+              <div className="mt-5 flex lg:ml-4 lg:mt-0">
+                <Link href='/dashboard/productions'>
+                  <HeaderButton
+                      btnClasses="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      icon={<LeftOutlined className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />}
+                      label="Back"
+                  />
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main>
-        <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-          <div className="h-full">
-            <div className="">
-              <div className="flex">
-                <div className="flex-none w-1/3">
-                  <Card
-                    style={{ width: 300 }}
-                    cover={
-                      <QRCode
-                        style={{ width: '100%', height: '100%' }}
-                        icon={'/assets/blockchain.png'}
-                        value={collectionState?.product?.id || '--'}
-                        bgColor={'#ececec'}
-                        iconSize={24}
-                      />
-                    }
-                    actions={[
-                      <EditOutlined key="edit" color={'blue'} onClick={() => updatePopsState('editModal', true, '')}/>,
-                      <DeleteOutlined key="setting" color={'red'}/>,
-                    ]}
-                  >
-                    <Card.Meta
-                      title={collectionState?.product?.product?.name}
-                      description={(
-                        <>
-                          Category: {collectionState?.product?.product?.category}<br />
-                          Planted On: {moment(collectionState?.product?.planting?.date).format("MMMM Do YYYY") }<br />
-                          Origin: {collectionState?.product?.origin?.name}<br />
-                        </>
-                      )}
-                    />
-                  </Card>
-                </div>
-                <div className="flex-initial w-2/3 mb-10">
-                  <Tabs
-                    defaultActiveKey="1"
-                    items={[
-                      {
-                        label: 'Regulatory Checks',
-                        key: 'regulatoryChecks',
-                        children: <RegulatoryChecks
-                            productId={null}
-                            theProduct={collectionState?.product}
-                        />,
-                      },
-                      {
-                        label: 'Transportation Information',
-                        key: 'transportationDetail',
-                        children: <TransportationDetails
-                            productId={null}
-                            theProduct={collectionState?.product}
-                        />,
-                      },
-                      {
-                        label: 'Pricing Information',
-                        key: 'pricingDetail',
-                        children: <PricingDetails
-                            productId={null}
-                            theProduct={collectionState?.product}
-                        />,
-                      },
-                    ]}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {collectionState.product && (<Form form={form}
-                   name="updateProduct"
-                   labelCol={{ span: 8 }}
-                   wrapperCol={{ span: 16 }}
-                   style={{ maxWidth: 600 }}
-                   initialValues={{
-                     name: collectionState.product.product.name,
-                     category: collectionState.product.product.category,
-                     plantingDate: collectionState.product.product?.planting?.date,
-                     quantity: collectionState.product.product?.planting?.quantity,
-                     stakeholderId: collectionState.product?.origin?.id,
-                   }}
-                   onFinish={() => alert('onFinish invoked')}
-                   onFinishFailed={() => alert('onFinishFailed invoked')}
-                   autoComplete="off">
-
-              <Modal
-                title="Update Product Information"
-                open={popUpState.editModal}
-                onOk={handleRecordUpdate}
-                confirmLoading={processingState.updating}
-                onCancel={() => updatePopsState('editModal', false, '')}>
-                <Form.Item
-                  label="Product Name"
-                  name="name"
-                  rules={[{ required: true, message: 'Type to override product name' }]}>
-                  <Input
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label="Product Type"
-                  name="category"
-                  rules={[{ required: true, message: 'Type to override product type' }]}>
-                  <Input
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label="Planting Date"
-                  name="plantingDate"
-                  rules={[{ required: true, message: 'Select to override planting data' }]}>
-                  <DatePicker />
-                </Form.Item>
-
-                <Form.Item
-                  label="Quantity Planted"
-                  name="quantity"
-                  rules={[{ required: true, message: 'Type to override quantity planted ' }]}>
-                  <Input
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  name="stakeholderId"
-                  label="Origin"
-                  rules={[{ required: true, message: 'Please select origin!' }]}>
-                  <Select placeholder="select product origin">
-                    {collectionState.stakeholders.map(s => {
-                      return (<Select.Option key={s.id} value={s.id}> {s.name} </Select.Option>);
-                    })}
-                  </Select>
-                </Form.Item>
-              </Modal>
-            </Form>)}
-
-            <div className="">
-              <Divider orientation="left"><p className={'text-2xl font-medium'}>Record History on blockchain</p></Divider>
-              <Table
-                title={() => (
-                  <div className={'mt-3 mb-3 flex justify-between'}>
-                    <div>
-                      <h1 className="text-2xl">Record History on blockchain</h1>
-                      <span className={'text-sm'}>This is a read only table, with a history of all changes made to this entry</span>
-                    </div>
-
-                    <div className='flex flex-end'>
-                      <HeaderButton
-                        btnClasses="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-                        icon={<ArrowPathRoundedSquareIcon className="-ml-0.5 mr-1.5 h-5 w-5"
-                                                          aria-hidden="true"/>}
-                        label="Refresh"
-                        clickHandler={fetchHistory}
-                      />
-
-                      <HeaderButton
-                        btnClasses="inline-flex items-center rounded-md bg-teal-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
-                        icon={<DownloadOutlined className="-ml-0.5 mr-1.5 h-5 w-5"
-                                                aria-hidden="true"/>}
-                        label="Download"
-                        clickHandler={() => alert('exports full log of record history')}
-                      />
-                    </div>
-                  </div>
-                )}
-                scroll={{x: 1000}}
-                loading={processingState.fetchingHistory}
-                columns={columns}
-                dataSource={collectionState.history as SummaryRecord[]}
-                onChange={() => console.log('table changed')}
-                showSorterTooltip={{target: 'sorter-icon'}}
-                expandable={{
-                  expandedRowRender: (record: SummaryRecord) => {
-                    const summaries = record.Summaries
-
-                    const data = Object.keys(summaries).map(k => {
-                      return {
-                        key: k,
-                        data: summaries[k]
-                      }
-                    })
-                    return (
-                      <div>
-                        <List
-                          header={<p
-                            className={'text-sm font-medium font-mono'}>{JSON.stringify(summaries)}</p>}
-                          bordered
-                          dataSource={data}
-                          renderItem={(item) => (
-                            <Badge.Ribbon className='text-sm font-medium font-mono'
-                                          text={record.Timestamp}>
-                              <List.Item className='text-sm font-medium font-mono'>
-                                <Tag color="geekblue"
-                                     icon={
-                                       <AimOutlined/>}>{item?.key}</Tag>{JSON.stringify(item?.data)}
-                              </List.Item>
-                            </Badge.Ribbon>
-
+        <main>
+          <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+            <div className="h-full">
+              <div className="">
+                <div className="flex">
+                  <div className="flex-none w-1/3">
+                    <Card
+                        style={{ width: 300 }}
+                        cover={
+                          <QRCode
+                              style={{ width: '100%', height: '100%' }}
+                              icon={'/assets/blockchain.png'}
+                              value={collectionState?.product?.id || '--'}
+                              bgColor={'#ececec'}
+                              iconSize={24}
+                          />
+                        }
+                        actions={[
+                          <EditOutlined key="edit" color={'blue'} onClick={() => updatePopsState('editModal', true, '')}/>,
+                          <DeleteOutlined key="setting" color={'red'}/>,
+                        ]}
+                    >
+                      <Card.Meta
+                          title={collectionState?.product?.product?.name}
+                          description={(
+                              <>
+                                Category: {collectionState?.product?.product?.category}<br />
+                                Planted On: {moment(collectionState?.product?.planting?.date).format("MMMM Do YYYY") }<br />
+                                Origin: {collectionState?.product?.origin?.name}<br />
+                              </>
                           )}
-                        />
-                      </div>
-                    )
-                  },
-                  rowExpandable: (record: SummaryRecord) => record.Summaries.length != 0 ,
-                }}
-              />
+                      />
+                    </Card>
+                  </div>
+                  <div className="flex-initial w-2/3 mb-10">
+                    {collectionState?.product && <Tabs
+                        defaultActiveKey="1"
+                        items={[
+                          {
+                            label: 'Regulatory Checks',
+                            key: 'regulatoryChecks',
+                            children: <RegulatoryChecks
+                                productId={null}
+                                theProduct={collectionState?.product}
+                            />,
+                          },
+                          {
+                            label: 'Transportation Information',
+                            key: 'transportationDetail',
+                            children: <TransportationDetails
+                                productId={null}
+                                theProduct={collectionState?.product}
+                            />,
+                          },
+                          {
+                            label: 'Pricing Information',
+                            key: 'pricingDetail',
+                            children: <PricingDetails
+                                productId={null}
+                                theProduct={collectionState?.product}
+                            />,
+                          },
+                        ]}
+                    />
+                    }
+                  </div>
+                </div>
+              </div>
+
+              {collectionState.product && (<Form form={form}
+                                                 name="updateProduct"
+                                                 labelCol={{ span: 8 }}
+                                                 wrapperCol={{ span: 16 }}
+                                                 style={{ maxWidth: 600 }}
+                                                 initialValues={{
+                                                   name: collectionState.product.product.name,
+                                                   category: collectionState.product.product.category,
+                                                   plantingDate: collectionState.product.product?.planting?.date,
+                                                   quantity: collectionState.product.product?.planting?.quantity,
+                                                   stakeholderId: collectionState.product?.origin?.id,
+                                                 }}
+                                                 onFinish={() => alert('onFinish invoked')}
+                                                 onFinishFailed={() => alert('onFinishFailed invoked')}
+                                                 autoComplete="off">
+
+                <Modal
+                    title="Update Product Information"
+                    open={popUpState.editModal}
+                    onOk={handleRecordUpdate}
+                    confirmLoading={processingState.updating}
+                    onCancel={() => updatePopsState('editModal', false, '')}>
+                  <Form.Item
+                      label="Product Name"
+                      name="name"
+                      rules={[{ required: true, message: 'Type to override product name' }]}>
+                    <Input
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                      label="Product Type"
+                      name="category"
+                      rules={[{ required: true, message: 'Type to override product type' }]}>
+                    <Input
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                      label="Planting Date"
+                      name="plantingDate"
+                      rules={[{ required: true, message: 'Select to override planting data' }]}>
+                    <DatePicker />
+                  </Form.Item>
+
+                  <Form.Item
+                      label="Quantity Planted"
+                      name="quantity"
+                      rules={[{ required: true, message: 'Type to override quantity planted ' }]}>
+                    <Input
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                      name="stakeholderId"
+                      label="Origin"
+                      rules={[{ required: true, message: 'Please select origin!' }]}>
+                    <Select placeholder="select product origin">
+                      {collectionState.stakeholders.map(s => {
+                        return (<Select.Option key={s.id} value={s.id}> {s.name} </Select.Option>);
+                      })}
+                    </Select>
+                  </Form.Item>
+                </Modal>
+              </Form>)}
+
+              <div className="">
+                <Divider orientation="left"><p className={'text-2xl font-medium'}>Record History on blockchain</p></Divider>
+                <Table
+                    title={() => (
+                        <div className={'mt-3 mb-3 flex justify-between'}>
+                          <div>
+                            <h1 className="text-2xl">Record History on blockchain</h1>
+                            <span className={'text-sm'}>This is a read only table, with a history of all changes made to this entry</span>
+                          </div>
+
+                          <div className='flex flex-end'>
+                            <HeaderButton
+                                btnClasses="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                                icon={<ArrowPathRoundedSquareIcon className="-ml-0.5 mr-1.5 h-5 w-5"
+                                                                  aria-hidden="true"/>}
+                                label="Refresh"
+                                clickHandler={fetchHistory}
+                            />
+
+                            <HeaderButton
+                                btnClasses="inline-flex items-center rounded-md bg-teal-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                                icon={<DownloadOutlined className="-ml-0.5 mr-1.5 h-5 w-5"
+                                                        aria-hidden="true"/>}
+                                label="Download"
+                                clickHandler={() => alert('exports full log of record history')}
+                            />
+                          </div>
+                        </div>
+                    )}
+                    scroll={{x: 1000}}
+                    loading={processingState.fetchingHistory}
+                    columns={columns}
+                    dataSource={collectionState.history as SummaryRecord[]}
+                    onChange={() => console.log('table changed')}
+                    showSorterTooltip={{target: 'sorter-icon'}}
+                    expandable={{
+                      expandedRowRender: (record: SummaryRecord) => {
+                        const summaries = record.Summaries
+
+                        const data = Object.keys(summaries).map(k => {
+                          return {
+                            key: k,
+                            data: summaries[k]
+                          }
+                        })
+                        return (
+                            <div>
+                              <List
+                                  header={
+                                    <ol className={'text-sm font-medium font-mono'} style={{lineHeight: 1.75}}>
+                                      {
+                                        summaries.map((s: Summary) => {
+                                          const keys = Object.keys(s)
+                                          const data = keys.map((k) => (s[k]))
+
+                                          if (Array.isArray(data)) {
+                                            return data.map(inner => {
+                                              if (Array.isArray(inner)) {
+                                                return inner.map(s => <code><li>&bull; {JSON.stringify(s)}</li></code>)
+                                              }
+                                              return <code><li> &bull; {JSON.stringify(inner)}</li></code>
+                                            })
+                                          } else {
+                                            return <code><li> &bull;  {JSON.stringify(data)}</li></code>
+                                          }
+                                        })
+                                      }
+                                      {/*JSON.stringify(summaries)*/}
+                                    </ol>
+                                  }
+                                  bordered
+                                  dataSource={data}
+                                  renderItem={(item) => (
+                                      <Badge.Ribbon className='text-sm font-medium font-mono' text={record.TxId}>
+                                        <List.Item className='text-sm font-medium font-mono'>
+                                          <Tag color="geekblue"
+                                               icon={
+                                                 <AimOutlined/>}>{record?.Timestamp}</Tag>
+                                        </List.Item>
+                                      </Badge.Ribbon>
+
+                                  )}
+                              />
+                            </div>
+                        )
+                      },
+                      rowExpandable: (record: SummaryRecord) => record.Summaries.length != 0 ,
+                    }}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
   );
 }

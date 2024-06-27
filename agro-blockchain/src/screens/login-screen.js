@@ -1,10 +1,10 @@
 // screens/LoginScreen.js
-import React, { useState } from 'react';
-import { View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../store/actions';
-import { useNavigation } from '@react-navigation/native';
-import {Button, Text, Input} from '@rneui/themed';
+import React, {useState} from 'react';
+import {Image, View} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import {login} from '../store/actions';
+import {useNavigation} from '@react-navigation/native';
+import {Button, Input, Text} from '@rneui/themed';
 
 const LoginScreen = () => {
     const [authCredentials, setAuthCredentials] = useState({username: '', password: ''});
@@ -16,7 +16,7 @@ const LoginScreen = () => {
         await dispatch(login(authCredentials));
 
         if (auth.isLoggedIn)
-            navigation.navigate('Main');
+            navigation.navigate('QRScanner');
     };
 
     const updateAuthCredentials = (prop, val) => {
@@ -30,6 +30,15 @@ const LoginScreen = () => {
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Image
+                style={{
+                    width: 75,
+                    height: 75,
+                    marginVertical: 20
+                }}
+                source={require('../../assets/mark.png')}
+            />
+
             <Input
                 placeholder="Username"
                 value={authCredentials.username}

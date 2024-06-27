@@ -21,7 +21,9 @@ async function bootstrap() {
   const prefix = config.get('app.prefix');
 
   app.setGlobalPrefix(prefix);
-  app.enableCors();
+  app.enableCors({
+    origin: '*'
+  });
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Supply Chain Application Gateway')

@@ -102,14 +102,21 @@ export const UpdateTransportationDetails = ({ product }) => {
     };
 
     const queryRecords = async () =>{
-        const response = await axios.get(`${API_HOST}/transportation-details/${product.id}`, reqConfigs)
-        const data = response.data
+        try{
+            const response = await axios.get(`${API_HOST}/transportation-details/${product.id}`, reqConfigs)
+            const data = response.data
+            setRecords(data)
+        } catch (e) {
+            console.log(e, 'ERROR FETCHING DETAILS')
+        }
 
-        const locResponse = await axios.get(`${API_HOST}/stakeholder`, reqConfigs)
-        const locations = locResponse.data.data
-
-        setRecords(data)
-        setLocations(locations)
+        try {
+            const locResponse = await axios.get(`${API_HOST}/stakeholder`, reqConfigs)
+            const locations = locResponse.data.data
+            setLocations(locations)
+        } catch (e) {
+            console.log(e, 'ERROR FETCHING LOCATIONS')
+        }
     }
 
     const patchRec = async (data) => {
@@ -166,7 +173,7 @@ export const UpdateTransportationDetails = ({ product }) => {
                         <Text>Departure Notes:</Text>
                         <Input
                             style={styles.input}
-                            value={formData.departure.notes}
+                            value={formData?.departure?.notes}
                             onChangeText={(value) => handleRecordChanges('departure', 'notes', value)}
                         />
                     </View>
@@ -257,7 +264,6 @@ export const UpdateTransportationDetails = ({ product }) => {
                         )}
                         rightContent={(reset) => (
                             <RightSwipeActions onPress={() => {
-                                console.log(l)
                                 reset();
                                 setVisible(true);
                                 handleSelectedRecordChange(l)
@@ -266,7 +272,7 @@ export const UpdateTransportationDetails = ({ product }) => {
                         )}
                     >
                         <TransportationDetail
-                            data={l.departure}
+                            data={l?.departure}
                             icon={'upload'}
                         />
 
@@ -291,7 +297,7 @@ export const UpdateTransportationDetails = ({ product }) => {
                         )}
                     >
                         <TransportationDetail
-                            data={l.destination}
+                            data={l?.destination}
                             icon={'download'}
                         />
                     </ListItem.Swipeable>

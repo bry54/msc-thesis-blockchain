@@ -1,25 +1,38 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, View} from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import {Button, Text, Skeleton, Divider, Icon, Card, ListItem} from '@rneui/themed';
 import moment from "moment";
+import axios from "axios";
+import {API_HOST} from "../store/constants";
 
-const MainScreen = () => {
+const MainScreen = ({ route }) => {
     const {isLoggedIn, user } = useSelector((state) => state.auth);
     const qrScanState = useSelector((state) => state.qrScan);
     const navigation = useNavigation();
+    const [product, setProduct] = useState(null);
 
-    const { product, isLoading } = qrScanState;
+    const {productId} = route.params;
+
+    const setActiveProduct = async () =>{
+        const response = await axios.get(`${API_HOST}/production/${productId}`)
+        const data = response.data
+
+        setProduct(data)
+    }
+
+    useEffect(() => {
+        setActiveProduct();
+    },[]);
 
     return (
         <ScrollView>
             <View style={{ marginVertical: 0 }}>
                 {
-                    isLoading || !product ? (
+                    !product ? (
                         <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                            <Skeleton width={120} height={40} />
-                            <Skeleton circle width={40} height={40} />
+                            <Text>Product not found</Text>
                         </View>
                     ) : (
                         <View style={{ flexDirection: 'column' }}>
@@ -31,18 +44,11 @@ const MainScreen = () => {
                                     </View>
                                 </Card.Title>
                                 <Card.Divider />
-                                <Card.Image
-                                    style={{ padding: 0 }}
-                                    source={{
-                                        uri:
-                                            'https://awildgeographer.files.wordpress.com/2015/02/john_muir_glacier.jpg',
-                                    }}
-                                />
                                 <View style={{ marginBottom: 10 }}>
                                     <ListItem bottomDivider>
                                         <ListItem.Content style={{ flexDirection: 'row', paddingVertical: 10, justifyContent: 'space-between' }}>
                                             <View>
-                                                <ListItem.Title>Planting</ListItem.Title>
+                                                <ListItem.Title>Date Planted</ListItem.Title>
                                                 <ListItem.Subtitle>
                                                     { product?.planting?.date ? moment(product.planting.date).format('dd/mm/yy') : `--` }
                                                 </ListItem.Subtitle>
@@ -53,7 +59,7 @@ const MainScreen = () => {
                                             </View>
 
                                             <View>
-                                                <ListItem.Title>Harvesting</ListItem.Title>
+                                                <ListItem.Title>Date Harvested</ListItem.Title>
                                                 <ListItem.Subtitle>
                                                     { product?.harvesting?.date ? moment(product.harvesting.date).format('dd/mm/yy') : `--` }
                                                 </ListItem.Subtitle>
@@ -112,7 +118,7 @@ const MainScreen = () => {
                                     <>
                                         <Button
                                             title="Update Product Details"
-                                            onPress={() => navigation.navigate('UpdateDetails')}
+                                            onPress={() => navigation.navigate('UpdateDetails', { product: product })}
                                             titleStyle={{ fontWeight: '700' }}
                                             buttonStyle={{
                                                 backgroundColor: 'rgba(92, 99,216, 1)',
