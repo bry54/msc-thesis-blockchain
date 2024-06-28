@@ -22,7 +22,7 @@ const QRScannerScreen = () => {
     };
 
     if (permission){
-        onSuccess({})
+        //onSuccess({})
     }
 
     if (!permission) {

@@ -46,7 +46,7 @@ export const addSummaries =(records: any[]): any[] => {
   return records;
 }
 
-const convertTimestampToLocalTime =(timestamp: {seconds: number, nanos: number}) => {
+export const convertTimestampToLocalTime =(timestamp: {seconds: number, nanos: number}) => {
   const utcDate = new Date(timestamp.seconds * 1000 + timestamp.nanos / 1000000);
   return utcDate.toLocaleString();
 }

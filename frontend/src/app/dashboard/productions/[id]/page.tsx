@@ -35,7 +35,7 @@ import {
   updateProduction,
 } from '@/app/lib/actions/productions';
 import moment from 'moment/moment';
-import { addSummaries } from '@/app/lib/helpers';
+import {addSummaries, convertTimestampToLocalTime} from '@/app/lib/helpers';
 import { EllipsisMiddle } from '@/app/lib/components/CommonItems';
 import { queryStakeholders } from '@/app/lib/actions/stakeholders';
 import {RegulatoryChecks} from "@/app/details/partials/overview/regulatory-checks";
@@ -457,7 +457,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                                   bordered
                                   dataSource={data}
                                   renderItem={(item) => (
-                                      <Badge.Ribbon className='text-sm font-medium font-mono' text={record?.Timestamp}>
+                                      <Badge.Ribbon className='text-sm font-medium font-mono' text={convertTimestampToLocalTime(record?.Timestamp as {nanos: number, seconds: number})}>
                                         <List.Item className='text-sm font-medium font-mono'>
                                           <Tag color="geekblue"
                                                icon={

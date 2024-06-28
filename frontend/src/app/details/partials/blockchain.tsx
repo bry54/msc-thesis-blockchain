@@ -4,8 +4,10 @@ import Overview from "@/app/details/partials/overview";
 import axios from "axios";
 import {compareRecords, Summary, SummaryRecord} from "@/app/lib/data-aggragation";
 import {AimOutlined, CheckCircleOutlined, VerifiedOutlined} from "@ant-design/icons";
+import {convertTimestampToLocalTime} from "@/app/lib/helpers";
 
 const columns: TableColumnsType<SummaryRecord> = [
+    Table.EXPAND_COLUMN,
     {
         title: 'Transaction ID',
         dataIndex: 'TxId',
@@ -13,8 +15,6 @@ const columns: TableColumnsType<SummaryRecord> = [
         width: '100%',
         render: (value, record) => (<code>{record.TxId}</code>)
     },
-    Table.EXPAND_COLUMN,
-
 ];
 
 export default function Blockchain ({ productId }: { productId: string }) {
@@ -116,7 +116,7 @@ export default function Blockchain ({ productId }: { productId: string }) {
                                     bordered
                                     dataSource={data}
                                     renderItem={(item) => (
-                                        <Badge.Ribbon className='text-sm font-medium font-mono' text={record?.Timestamp}>
+                                        <Badge.Ribbon className='text-sm font-medium font-mono' text={convertTimestampToLocalTime(record?.Timestamp as {nanos: number, seconds: number})}>
                                             <List.Item className='text-sm font-medium font-mono'>
                                                 <Tag color="geekblue"
                                                      icon={

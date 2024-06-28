@@ -57,9 +57,6 @@ const MainScreen = ({ route }) => {
 
     let {productId} = route.params;
 
-    if (!productId)
-      productId = 'ef6930c3-1bf5-4a3a-9a31-04d124d5e4f1'
-
     const setActiveProduct = async () =>{
         try {
           const response = await axios.get(`${API_HOST}/production/${productId}`)

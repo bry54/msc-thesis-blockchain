@@ -66,7 +66,7 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
   private async newGrpcConnection(): Promise<grpc.Client> {
     const tlsCertPath = path.resolve(
       //this.configService.get<string>('fabric.cryptoDir'),
-      '/Users/brian/go/src/github.com/bry54/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com',
+      '/home/zeus/go/src/github.com/bry54/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com',
       'peers',
       'peer0.org1.example.com',
       'tls',
@@ -88,7 +88,7 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
   private async newIdentity(): Promise<Identity> {
     const certPath = path.resolve(
       //this.configService.get<string>('fabric.cryptoDir'),
-      '/Users/brian/go/src/github.com/bry54/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com',
+      '/home/zeus/go/src/github.com/bry54/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com',
       'users',
       'User1@org1.example.com',
       'msp',
@@ -105,7 +105,7 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
   private async newSigner(): Promise<Signer> {
     const keyPath = path.resolve(
       //this.configService.get<string>('fabric.cryptoDir'),
-      '/Users/brian/go/src/github.com/bry54/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com',
+      '/home/zeus/go/src/github.com/bry54/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com',
       'users',
       'User1@org1.example.com',
       'msp',
