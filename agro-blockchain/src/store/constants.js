@@ -1,4 +1,4 @@
-const BASE_URL = 'http://192.168.1.102'
+const BASE_URL = 'http://10.0.60.150'
 export const API_HOST = `${BASE_URL}:3020/api/v1`;
 export const WEB_APP = `${BASE_URL}:3000/details`;
 

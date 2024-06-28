@@ -26,7 +26,7 @@ import {
   DownloadOutlined,
   EditOutlined,
   InfoOutlined,
-  LeftOutlined,
+  LeftOutlined, VerifiedOutlined,
 } from '@ant-design/icons';
 import {
   deleteProduction,
@@ -424,33 +424,45 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                                   header={
                                     <ol className={'text-sm font-medium font-mono'} style={{lineHeight: 1.75}}>
                                       {
-                                        summaries.map((s: Summary) => {
+                                        summaries.map((s: Summary, index) => {
                                           const keys = Object.keys(s)
                                           const data = keys.map((k) => (s[k]))
 
                                           if (Array.isArray(data)) {
-                                            return data.map(inner => {
+                                            return data.map((inner, iIndex) => {
                                               if (Array.isArray(inner)) {
-                                                return inner.map(s => <code><li>&bull; {JSON.stringify(s)}</li></code>)
+                                                return inner.map((s, sIndex) => (
+                                                    <li key={sIndex}>
+                                                      &bull; <code>{JSON.stringify(s)}</code>
+                                                    </li>
+                                                ))
                                               }
-                                              return <code><li> &bull; {JSON.stringify(inner)}</li></code>
+                                              return (
+                                                  <li key={iIndex}>
+                                                    &bull; <code>{JSON.stringify(inner)}</code>
+                                                  </li>
+                                              )
                                             })
                                           } else {
-                                            return <code><li> &bull;  {JSON.stringify(data)}</li></code>
+                                            return (
+                                                <li key={index}> &bull;
+                                                  <code>{JSON.stringify(data)}</code>
+                                                </li>
+                                            )
                                           }
                                         })
                                       }
-                                      {/*JSON.stringify(summaries)*/}
                                     </ol>
                                   }
                                   bordered
                                   dataSource={data}
                                   renderItem={(item) => (
-                                      <Badge.Ribbon className='text-sm font-medium font-mono' text={record.TxId}>
+                                      <Badge.Ribbon className='text-sm font-medium font-mono' text={record?.Timestamp}>
                                         <List.Item className='text-sm font-medium font-mono'>
                                           <Tag color="geekblue"
                                                icon={
-                                                 <AimOutlined/>}>{record?.Timestamp}</Tag>
+                                                 <VerifiedOutlined size={2}/>}
+                                          ></Tag>
                                         </List.Item>
                                       </Badge.Ribbon>
 
