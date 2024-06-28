@@ -11,7 +11,7 @@ import { getRequestFromContext } from '../helpers/request-helpers';
 import {ExtractJwt} from "passport-jwt";
 
 const publicEndpoints: string[] = [
-    'health-check', 'auth/login', 'auth/register', 'production/:id', 'rec-compare'
+    'health-check', 'auth/login', 'auth/register', 'production/:id', 'rec-compare', 'blockchain/production/:id'
 ];
 
 @Injectable()

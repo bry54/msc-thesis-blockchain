@@ -7,16 +7,58 @@ import moment from "moment";
 import axios from "axios";
 import { API_HOST, WEB_APP } from '../store/constants';
 
+const TransportationText = ({data}) =>{
+    const length = data.length
+    if (data && length){
+        const info = data[length-1];
+        return (
+            <>From {info?.departure?.stakeholder?.name} to {info?.destination?.stakeholder?.name}</>
+        )
+    } else {
+        return (
+            <>- -</>
+        )
+    }
+}
+
+const RegulationsText = ({data}) =>{
+    const length = data.length
+    if (data && length){
+        const info = data[length-1];
+        return (
+            <>{info?.notes} - {info?.signedBy?.stakeholder?.name}</>
+        )
+    } else {
+        return (
+            <>- -</>
+        )
+    }
+}
+
+const PricingText = ({data}) =>{
+    const length = data.length
+    if (data && length){
+        const info = data[length-1];
+        return (
+            <>{info?.stakeHolder?.name} @ {info?.pricePerUnit}</>
+        )
+    } else {
+        return (
+            <>- -</>
+        )
+    }
+}
+
+
 const MainScreen = ({ route }) => {
     const {isLoggedIn, user } = useSelector((state) => state.auth);
-    const qrScanState = useSelector((state) => state.qrScan);
     const navigation = useNavigation();
     const [product, setProduct] = useState(null);
 
     let {productId} = route.params;
 
     if (!productId)
-      productId = '2071bf07-5074-4513-9dfc-0508a88e4123'
+      productId = 'ef6930c3-1bf5-4a3a-9a31-04d124d5e4f1'
 
     const setActiveProduct = async () =>{
         try {
@@ -33,8 +75,12 @@ const MainScreen = ({ route }) => {
     },[]);
 
     return (
-        <ScrollView>
-            <View style={{ marginVertical: 0 }}>
+        <ScrollView contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'space-between',
+            padding: 16
+        }}>
+            <View style={{ marginVertical: 0, flex: 1 }}>
                 {
                     !product ? (
                         <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
@@ -80,21 +126,33 @@ const MainScreen = ({ route }) => {
                                     <ListItem bottomDivider>
                                         <ListItem.Content>
                                             <ListItem.Title>Latest Transportation</ListItem.Title>
-                                            <ListItem.Subtitle>Some transportation information</ListItem.Subtitle>
+                                            <ListItem.Subtitle>
+                                                <TransportationText
+                                                    data={product.transportationDetail}
+                                                />
+                                            </ListItem.Subtitle>
                                         </ListItem.Content>
                                     </ListItem>
 
                                     <ListItem bottomDivider>
                                         <ListItem.Content>
                                             <ListItem.Title>Latest Pricing</ListItem.Title>
-                                            <ListItem.Subtitle>Some pricing information</ListItem.Subtitle>
+                                            <ListItem.Subtitle>
+                                                <PricingText
+                                                    data={product.pricingDetail}
+                                                />
+                                            </ListItem.Subtitle>
                                         </ListItem.Content>
                                     </ListItem>
 
                                     <ListItem bottomDivider>
                                         <ListItem.Content>
                                             <ListItem.Title>Latest Regulation Check</ListItem.Title>
-                                            <ListItem.Subtitle>Some regulation check information</ListItem.Subtitle>
+                                            <ListItem.Subtitle>
+                                                <RegulationsText
+                                                    data={product.regulatoryChecks}
+                                                />
+                                            </ListItem.Subtitle>
                                         </ListItem.Content>
                                     </ListItem>
                                 </View>
@@ -117,7 +175,6 @@ const MainScreen = ({ route }) => {
                                         paddingVertical: 10,
                                     }}
                                     containerStyle={{
-                                        width: 200,
                                         marginHorizontal: 50,
                                         marginVertical: 10,
                                     }}
@@ -136,7 +193,6 @@ const MainScreen = ({ route }) => {
                                                 paddingVertical: 10,
                                             }}
                                             containerStyle={{
-                                                width: 200,
                                                 marginHorizontal: 50,
                                                 marginVertical: 10,
                                             }}
@@ -173,7 +229,7 @@ const MainScreen = ({ route }) => {
 
             <Divider />
 
-            <Text style={{ color: 'red', textAlign: 'center', padding: 20, lineHeight: 25 }}>
+            <Text style={{ color: 'red', textAlign: 'center', padding: 20, lineHeight: 25, alignItems: 'center' }}>
                 { isLoggedIn ? `Logged in as: ${ user?.fullName }` : `You need to be logged in to perform administrative operations`}
             </Text>
         </ScrollView>

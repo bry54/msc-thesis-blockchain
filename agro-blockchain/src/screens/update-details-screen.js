@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet} from 'react-native';
 import {Icon, ListItem} from "@rneui/themed";
 import {UpdateTransportationDetails} from "./update-partials/transportation-details";
@@ -6,7 +6,7 @@ import {UpdatePricingDetails} from "./update-partials/pricing-details";
 import {UpdateRegulatoryChecks} from "./update-partials/regulatory-checks";
 import {UpdateProductDetails} from "./update-partials/product-details";
 
-const UpdateDetailsScreen = ({product}) => {
+const UpdateDetailsScreen = ({route}) => {
 
     const [expanded, setExpanded] = useState([0]);
     const groupings = [
@@ -31,6 +31,8 @@ const UpdateDetailsScreen = ({product}) => {
             icon: 'tags'
         },
     ]
+    const { product } = route.params
+
     const updateExpandedState = (index) => {
         let arr = [...expanded]
         if (arr.includes(index)) {
@@ -42,6 +44,9 @@ const UpdateDetailsScreen = ({product}) => {
 
         setExpanded(arr)
     }
+
+    useEffect(() => {
+    }, []);
 
     return (
         <ScrollView>
@@ -63,32 +68,32 @@ const UpdateDetailsScreen = ({product}) => {
                     }}
                     bottomDivider={true}
                 >
-                    <>
+                    {product && <>
                         {
                             !group.dataProp && (
-                                <UpdateProductDetails product = {product} />
+                                <UpdateProductDetails product={product}/>
                             )
                         }
 
                         {
                             group.dataProp === 'regulatoryChecks' && (
-                                <UpdateRegulatoryChecks product={product} />
+                                <UpdateRegulatoryChecks product={product}/>
                             )
                         }
 
                         {
                             group.dataProp === 'transportationDetail' && (
-                                <UpdateTransportationDetails product={product} />
+                                <UpdateTransportationDetails product={product}/>
                             )
                         }
 
                         {
                             group.dataProp === 'pricingDetail' && (
-                                <UpdatePricingDetails product={product} />
+                                <UpdatePricingDetails product={product}/>
                             )
                         }
 
-                    </>
+                    </>}
                 </ListItem.Accordion>
             ))}
         </ScrollView>

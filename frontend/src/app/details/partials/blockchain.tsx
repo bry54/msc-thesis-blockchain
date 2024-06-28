@@ -25,8 +25,8 @@ export default function Blockchain ({ productId }: { productId: string }) {
 
     const loadHistory = async () =>{
         setIsLoading(true)
-        //const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/blockchain/production/${productId}/history`)
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/rec-compare`).catch(err => {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/blockchain/production/${productId}/history`)
+            .catch(err => {
             setIsLoading(false)
             return
         })
