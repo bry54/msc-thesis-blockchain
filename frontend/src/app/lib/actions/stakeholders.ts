@@ -25,7 +25,7 @@ export const queryStakeholder = async (id: string) => {
     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_HOST}/stakeholder/${id}`, {
       headers: {
         'accept': '*/*',
-        'Authorization': `Bearer ${cookies.auth}`
+        'Authorization': `Bearer ${cookies?.auth}`
       }
     } );
     return  response.data
