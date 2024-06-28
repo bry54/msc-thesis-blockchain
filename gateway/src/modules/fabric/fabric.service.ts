@@ -35,9 +35,6 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
       return;
     }
 
-    if (!this.configService.get<boolean>('fabric.isEnabled')) {
-      return;
-    }
     await this.displayInputParameters().then((res) => {
       this.logger.info( res,'FABRIC CONFIGURATIONS' );
     });
@@ -65,8 +62,7 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
 
   private async newGrpcConnection(): Promise<grpc.Client> {
     const tlsCertPath = path.resolve(
-      //this.configService.get<string>('fabric.cryptoDir'),
-      '/home/zeus/go/src/github.com/bry54/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com',
+      this.configService.get<string>('fabric.cryptoDir'),
       'peers',
       'peer0.org1.example.com',
       'tls',
@@ -87,8 +83,7 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
 
   private async newIdentity(): Promise<Identity> {
     const certPath = path.resolve(
-      //this.configService.get<string>('fabric.cryptoDir'),
-      '/home/zeus/go/src/github.com/bry54/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com',
+      this.configService.get<string>('fabric.cryptoDir'),
       'users',
       'User1@org1.example.com',
       'msp',
@@ -104,8 +99,7 @@ export class FabricService implements OnModuleInit, OnModuleDestroy {
 
   private async newSigner(): Promise<Signer> {
     const keyPath = path.resolve(
-      //this.configService.get<string>('fabric.cryptoDir'),
-      '/home/zeus/go/src/github.com/bry54/fabric-samples/test-network/organizations/peerOrganizations/org1.example.com',
+      this.configService.get<string>('fabric.cryptoDir'),
       'users',
       'User1@org1.example.com',
       'msp',
