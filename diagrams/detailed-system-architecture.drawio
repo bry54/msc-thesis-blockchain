@@ -1,10 +1,62 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="25.0.3">
-  <diagram name="Page-1" id="D2dz1JFfjsHdksgheJxw">
-    <mxGraphModel>
+<mxfile host="app.diagrams.net">
+  <diagram name="System Architecture">
+    <mxGraphModel dx="1530" dy="930" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+
+        <!-- Frontend Applications -->
+        <mxCell id="frontend" value="Frontend Applications" style="shape=rectangle;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="60" width="200" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="mobileApp" value="Mobile App (React Native)" style="shape=rectangle;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#6c8ebf;" vertex="1" parent="frontend">
+          <mxGeometry x="30" y="30" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="webApp" value="Web App (Next.js, React.js)" style="shape=rectangle;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#6c8ebf;" vertex="1" parent="frontend">
+          <mxGeometry x="30" y="80" width="140" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Backend Application -->
+        <mxCell id="backend" value="Backend Application" style="shape=rectangle;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="320" y="60" width="200" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="backendDetails" value="NestJS, SQL Database, JWT" style="shape=rectangle;whiteSpace=wrap;html=1;fillColor=#e1f7d5;strokeColor=#82b366;" vertex="1" parent="backend">
+          <mxGeometry x="40" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Blockchain Network -->
+        <mxCell id="blockchain" value="Blockchain Network" style="shape=rectangle;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="600" y="60" width="200" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="blockchainDetails" value="Hyperledger Fabric&#10;- Smart Contracts&#10;- Fabric SDK&#10;- Node.js, Go, Java" style="shape=rectangle;whiteSpace=wrap;html=1;fillColor=#fff7e6;strokeColor=#d6b656;" vertex="1" parent="blockchain">
+          <mxGeometry x="20" y="40" width="160" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Database -->
+        <mxCell id="database" value="SQL Database" style="shape=ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="320" y="250" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Stakeholders -->
+        <mxCell id="stakeholders" value="Supply Chain Stakeholders&#10;- Farmers&#10;- Distributors&#10;- Retailers&#10;- Consumers" style="shape=rectangle;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="60" y="250" width="200" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- Data Flow -->
+        <mxCell id="frontendToBackend" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6c8ebf;html=1;" edge="1" parent="1" source="frontend" target="backend">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="backendToBlockchain" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#82b366;html=1;" edge="1" parent="1" source="backend" target="blockchain">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="backendToDatabase" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#82b366;html=1;" edge="1" parent="1" source="backend" target="database">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="stakeholdersToFrontend" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;html=1;" edge="1" parent="1" source="stakeholders" target="frontend">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
 </mxfile>
+
