@@ -1,55 +1,36 @@
-<mxfile>
-  <diagram name="Frontend-Backend Communication">
-    <mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#ffffff" math="0" shadow="0">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="26.0.2">
+  <diagram name="Frontend-Backend Communication" id="0">
+    <mxGraphModel dx="1186" dy="621" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#ffffff" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <!-- Frontend: Mobile App -->
-        <mxCell id="frontendMobile" value="Mobile App" style="shape=rectangle;fillColor=#a6cee3;strokeColor=#1f78b4;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="frontendMobile" value="Mobile App" style="shape=rectangle;fillColor=#a6cee3;strokeColor=#1f78b4;rounded=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="40" y="160" width="120" height="60" as="geometry" />
         </mxCell>
-
-        <!-- Frontend: Web App -->
-        <mxCell id="frontendWeb" value="Web App" style="shape=rectangle;fillColor=#b2df8a;strokeColor=#33a02c;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="frontendWeb" value="Web App" style="shape=rectangle;fillColor=#b2df8a;strokeColor=#33a02c;rounded=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="40" y="240" width="120" height="60" as="geometry" />
         </mxCell>
-
-        <!-- Backend Server -->
-        <mxCell id="backendServer" value="Backend Server" style="shape=rectangle;fillColor=#fb9a99;strokeColor=#e31a1c;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="backendServer" value="Backend Server" style="shape=rectangle;fillColor=#fb9a99;strokeColor=#e31a1c;rounded=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="220" y="200" width="150" height="80" as="geometry" />
         </mxCell>
-
-        <!-- SQL Database -->
-        <mxCell id="sqlDatabase" value="SQL Database" style="shape=cylinder;fillColor=#cab2d6;strokeColor=#6a3d9a;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="440" y="180" width="120" height="100" as="geometry" />
+        <mxCell id="sqlDatabase" value="SQL Database" style="shape=cylinder;fillColor=#cab2d6;strokeColor=#6a3d9a;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="440" y="90" width="120" height="100" as="geometry" />
         </mxCell>
-
-        <!-- Blockchain -->
-        <mxCell id="blockchain" value="Blockchain" style="shape=hexagon;fillColor=#fdbf6f;strokeColor=#ff7f00;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="blockchain" value="Blockchain" style="shape=hexagon;fillColor=#fdbf6f;strokeColor=#ff7f00;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="440" y="300" width="120" height="80" as="geometry" />
         </mxCell>
-
-        <!-- Mobile App to Backend -->
-        <mxCell id="mobileToBackend" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#1f78b4;" edge="1" parent="1" source="frontendMobile" target="backendServer">
+        <mxCell id="mobileToBackend" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#1f78b4;" parent="1" source="frontendMobile" target="backendServer" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Web App to Backend -->
-        <mxCell id="webToBackend" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#33a02c;" edge="1" parent="1" source="frontendWeb" target="backendServer">
+        <mxCell id="webToBackend" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#33a02c;" parent="1" source="frontendWeb" target="backendServer" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Backend to SQL Database -->
-        <mxCell id="backendToSQL" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#6a3d9a;" edge="1" parent="1" source="backendServer" target="sqlDatabase">
+        <mxCell id="backendToSQL" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#6a3d9a;" parent="1" source="backendServer" target="sqlDatabase" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Backend to Blockchain -->
-        <mxCell id="backendToBlockchain" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#ff7f00;" edge="1" parent="1" source="backendServer" target="blockchain">
+        <mxCell id="backendToBlockchain" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#ff7f00;" parent="1" source="backendServer" target="blockchain" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
       </root>
     </mxGraphModel>
   </diagram>
