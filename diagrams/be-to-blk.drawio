@@ -1,0 +1,46 @@
+<mxfile>
+  <diagram name="Backend-Blockchain Communication">
+    <mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Backend -->
+        <mxCell id="backend" value="Backend" style="shape=rectangle;fillColor=#fb9a99;strokeColor=#e31a1c;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="100" y="200" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Fabric SDK -->
+        <mxCell id="fabricSDK" value="Fabric SDK" style="shape=rectangle;fillColor=#a6cee3;strokeColor=#1f78b4;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="300" y="200" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Blockchain -->
+        <mxCell id="blockchain" value="Blockchain" style="shape=hexagon;fillColor=#fdbf6f;strokeColor=#ff7f00;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="500" y="200" width="120" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Smart Contracts -->
+        <mxCell id="smartContracts" value="Smart Contracts" style="shape=rectangle;fillColor=#cab2d6;strokeColor=#6a3d9a;rounded=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="500" y="320" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Backend to Fabric SDK -->
+        <mxCell id="backendToSDK" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#1f78b4;" edge="1" parent="1" source="backend" target="fabricSDK">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Fabric SDK to Blockchain -->
+        <mxCell id="sdkToBlockchain" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#ff7f00;" edge="1" parent="1" source="fabricSDK" target="blockchain">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Blockchain to Smart Contracts -->
+        <mxCell id="blockchainToSmartContracts" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;strokeColor=#6a3d9a;" edge="1" parent="1" source="blockchain" target="smartContracts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
