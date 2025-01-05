@@ -18,7 +18,7 @@ const HistoryScreen = ({ route }) => {
                 incognito={true}
                 javaScriptEnabled={true}
                 domStorageEnabled={true}
-                startInLoadingState={true}
+                startInLoadingState={false}
                 onError={syntheticEvent => {
                     const { nativeEvent } = syntheticEvent;
                     console.warn('WebView error: ', nativeEvent);
