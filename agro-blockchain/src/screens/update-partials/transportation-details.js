@@ -156,7 +156,7 @@ export const UpdateTransportationDetails = ({ product }) => {
                 isVisible={visible} onBackdropPress={() => setVisible(false)}>
                 <View style={styles.container}>
                     <View>
-                        <Text>Departure Organization:</Text>
+                        <Text style={{ fontWeight: 'bold'}}>Departure Organization:</Text>
                         <Picker
                             selectedValue={formData?.departure?.stakeholderId || null}
                             style={styles.picker}
@@ -170,7 +170,7 @@ export const UpdateTransportationDetails = ({ product }) => {
                             }
                         </Picker>
 
-                        <Text>Departure Notes:</Text>
+                        <Text style={{ fontWeight: 'bold'}}>Departure Notes:</Text>
                         <Input
                             style={styles.input}
                             value={formData?.departure?.notes}
@@ -178,10 +178,8 @@ export const UpdateTransportationDetails = ({ product }) => {
                         />
                     </View>
 
-                    <Divider />
-
                     <View>
-                        <Text>Destination Organization:</Text>
+                        <Text style={{ fontWeight: 'bold'}}>Destination Organization:</Text>
                         <Picker
                             selectedValue={formData?.destination?.stakeholderId || null}
                             style={styles.picker}
@@ -195,7 +193,7 @@ export const UpdateTransportationDetails = ({ product }) => {
                             }
                         </Picker>
 
-                        <Text>Destination Notes:</Text>
+                        <Text style={{ fontWeight: 'bold'}}>Destination Notes:</Text>
                         <Input
                             style={styles.input}
                             value={formData?.destination?.notes}
@@ -315,9 +313,7 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     picker: {
-        height: 50,
         width: '100%',
-        marginBottom: 12,
     },
     icon: {
         marginRight: 5,
@@ -345,4 +341,7 @@ const styles = StyleSheet.create({
         height: 40,
         fontSize: 16,
     },
+    input:{
+
+    }
 });

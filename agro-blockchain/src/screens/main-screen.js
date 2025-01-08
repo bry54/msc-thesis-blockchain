@@ -99,22 +99,22 @@ const MainScreen = ({ route }) => {
                                             <View>
                                                 <ListItem.Title>Date Planted</ListItem.Title>
                                                 <ListItem.Subtitle>
-                                                    { product?.planting?.date ? moment(product.planting.date).format('dd/mm/yy') : `--` }
+                                                    { product?.planting?.date ? moment(product.planting.date).format('L') : `--` }
                                                 </ListItem.Subtitle>
 
                                                 <ListItem.Subtitle>
-                                                    { product?.planting?.quantity ? product.planting.quantity : '--' }
+                                                    Quantity: { product?.planting?.quantity ? product.planting.quantity : '--' }
                                                 </ListItem.Subtitle>
                                             </View>
 
                                             <View>
                                                 <ListItem.Title>Date Harvested</ListItem.Title>
                                                 <ListItem.Subtitle>
-                                                    { product?.harvesting?.date ? moment(product.harvesting.date).format('dd/mm/yy') : `--` }
+                                                    { product?.harvesting?.date ? moment(product.harvesting.date).format('L') : `--` }
                                                 </ListItem.Subtitle>
 
                                                 <ListItem.Subtitle>
-                                                    { product?.harvesting?.quantity ? product.harvesting.quantity : '--' }
+                                                    Quantity: { product?.harvesting?.quantity ? product.harvesting.quantity : '--' }
                                                 </ListItem.Subtitle>
                                             </View>
                                         </ListItem.Content>

@@ -71,7 +71,7 @@ export default function Blockchain ({ productId }: { productId: string }) {
                     expandedRowRender: (record: SummaryRecord) => {
                         const summaries = record.Summaries
 
-                        const data = Object.keys(summaries).map(k => {
+                        const data = Object.keys(summaries).map((k: string) => {
                             return {
                                 key: k,
                                 data: summaries[k]

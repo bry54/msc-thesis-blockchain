@@ -86,9 +86,9 @@ export const transformSummariesToTreeData = (summaries: Summary[], parentKey = '
     return treeData;
 };
 
-const compareObjects = (obj1: any, obj2: any): Change[] => {
+const compareObjects = (obj1 ={}, obj2 = {}): Change[] => {
     const changes: Change[] = [];
-    const keys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
+    const keys = new Set([...Object.keys(obj1), ...Object.keys(obj2 )]);
 
     keys.forEach((key) => {
         const value1 = obj1[key];

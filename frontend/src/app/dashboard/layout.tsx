@@ -50,9 +50,9 @@ export default function DashboardLayout(
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <img
-                        className="h-8 w-8"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                        alt="Your Company"
+                        className="h-16 min-w-16"
+                        src="/assets/thesis-logo.png"
+                        alt="Logo"
                       />
                     </div>
                     <div className="hidden md:block">

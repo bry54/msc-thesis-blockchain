@@ -2,6 +2,7 @@ import {Text, View} from "react-native";
 import React, {useState} from "react";
 import {Button, Icon, Overlay, ListItem} from "@rneui/themed";
 import {useSelector} from "react-redux";
+import moment from "moment";
 
 const EditBtn = ({ onPress }) =>{
     return (
@@ -45,7 +46,7 @@ export const UpdateProductDetails = ({ product }) => {
                 )}
             >
                 <ListItem.Content>
-                    <ListItem.Title> Planted Date: {product.planting.date} </ListItem.Title>
+                    <ListItem.Title> Planted Date: {product?.planting?.date ? moment(product.planting.date).format('L'):  '--'}  </ListItem.Title>
                     <ListItem.Title> Planted Quantity: {product.planting.quantity}</ListItem.Title>
                 </ListItem.Content>
                 <ListItem.Chevron />
@@ -57,7 +58,7 @@ export const UpdateProductDetails = ({ product }) => {
                 )}
             >
                 <ListItem.Content>
-                    <ListItem.Title> Harvested Date: {product?.harvesting?.date || '--'} </ListItem.Title>
+                    <ListItem.Title> Harvested Date: {product?.harvesting?.date ? moment(product.harvesting.date).format('L') : '--'} </ListItem.Title>
                     <ListItem.Title> Harvested Quantity: {product?.harvesting?.quantity || '--'}</ListItem.Title>
                 </ListItem.Content>
                 <ListItem.Chevron />
