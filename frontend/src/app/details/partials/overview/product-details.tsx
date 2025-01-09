@@ -55,7 +55,7 @@ export const ProductDetails = ({ theProduct, productId }) =>{
                             title={
                                 <span>
                                     {
-                                        record?.planting?.date ? `Planted On: ${moment(record?.planting?.date).format('LLL')}` : 'Planted On:--'
+                                        record?.planting?.date ? `Planted On: ${moment(record?.planting?.date).format('L')}` : 'Planted On:--'
                                     }
                                 </span>
                             }
@@ -68,7 +68,7 @@ export const ProductDetails = ({ theProduct, productId }) =>{
                             title={
                                 <span>
                                     {
-                                        record?.harvesting?.date ? `Harvested On: ${moment(record?.harvesting?.date).format('LLL')}` : 'Harvested On: --'
+                                        record?.harvesting?.date ? `Harvested On: ${moment(record?.harvesting?.date).format('L')}` : 'Harvested On: --'
                                     }
                                 </span>
                             }

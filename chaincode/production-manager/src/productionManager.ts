@@ -71,7 +71,7 @@ export class ProductionManagerContract extends Contract{
         await ctx.stub.putState(rec.ID, Buffer.from(JSON.stringify(rec)));
     }
 
-    @Transaction()
+    @Transaction(true)
     async deleteOne(ctx: Context, recData: string): Promise<void> {
         const toDelete: Production = JSON.parse(recData);
 

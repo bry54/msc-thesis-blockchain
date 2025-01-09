@@ -103,7 +103,7 @@ const MainScreen = ({ route }) => {
                                                 </ListItem.Subtitle>
 
                                                 <ListItem.Subtitle>
-                                                    Quantity: { product?.planting?.quantity ? product.planting.quantity : '--' }
+                                                    { product?.planting?.quantity ? product.planting.quantity : '--' }
                                                 </ListItem.Subtitle>
                                             </View>
 
@@ -114,7 +114,7 @@ const MainScreen = ({ route }) => {
                                                 </ListItem.Subtitle>
 
                                                 <ListItem.Subtitle>
-                                                    Quantity: { product?.harvesting?.quantity ? product.harvesting.quantity : '--' }
+                                                    { product?.harvesting?.quantity ? product.harvesting.quantity : '--' }
                                                 </ListItem.Subtitle>
                                             </View>
                                         </ListItem.Content>

@@ -87,6 +87,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   }
 
   const updatePopsState = async (popUpName: 'deleteModal' | 'addModal' | 'editModal', value: boolean, id: string) => {
+    console.log(collectionState);
     if (popUpName == 'editModal' && value){
       const stakeholders = await queryStakeholders();
       updateCollectionsState('stakeholders', stakeholders)
@@ -246,7 +247,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         cover={
                           <QRCode
                               style={{ width: '100%', height: '100%' }}
-                              icon={'/assets/blockchain.png'}
+                              icon={'/assets/thesis-logo.png'}
                               value={collectionState?.product?.id || '--'}
                               bgColor={'#ececec'}
                               iconSize={24}
@@ -312,8 +313,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                                                  initialValues={{
                                                    name: collectionState.product.product.name,
                                                    category: collectionState.product.product.category,
-                                                   plantingDate: collectionState.product.product?.planting?.date,
-                                                   quantity: collectionState.product.product?.planting?.quantity,
+                                                   //plantingDate: collectionState.product?.planting?.date ? moment(collectionState.product.planting.date).format("MMMM Do YYYY") : null,
+                                                   quantity: collectionState.product?.planting?.quantity,
                                                    stakeholderId: collectionState.product?.origin?.id,
                                                  }}
                                                  onFinish={() => alert('onFinish invoked')}
@@ -348,7 +349,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                       label="Planting Date"
                       name="plantingDate"
                       rules={[{ required: true, message: 'Select to override planting data' }]}>
-                    <DatePicker />
+                    <DatePicker format='YYYY-MM-DD'/>
                   </Form.Item>
 
                   <Form.Item
